@@ -1,13 +1,13 @@
-<#
+﻿<#
 .SYNOPSIS
     Script tu dong tao Labels, Milestones va 62 Issues len GitHub Repository.
 
 .DESCRIPTION
     Su dung GitHub REST API de khoi tao toan bo ha tang quan ly du an phuc vu mon hoc PTPMMNM.
-    Chi can cung cap Ten Repo (owner/repo) va GitHub Personal Access Token (PAT).
+    Chi can cung cap Ten Repo (owner/repo hoac url) va GitHub Personal Access Token (PAT).
 
 .PARAMETER Repo
-    Ten repository tren GitHub theo dinh dang 'owner/repo' (Vi du: 'my-org/language-learning-web-app')
+    Ten repository tren GitHub theo dinh dang 'owner/repo' hoac link day du.
 
 .PARAMETER Token
     GitHub Personal Access Token (PAT) co quyen 'repo' hoac 'issues:write'.
@@ -16,7 +16,7 @@
     Neu bat co nay, script chi in ra cac buoc thuc hien ma khong goi API thuc te.
 
 .EXAMPLE
-    .\scripts\github-setup.ps1 -Repo "your-username/language-learning-app" -Token "ghp_xxxxxxxxxxxx"
+    .\scripts\github-setup.ps1 -Repo "NguyenLuuKienn/language-learning-web-app" -Token "ghp_xxxxxxxxxxxx"
 #>
 
 [CmdletBinding()]
@@ -36,6 +36,9 @@ if (-not $Token -and -not $DryRun) {
     Write-Error "Vui long cung cap GitHub Token qua tham so -Token hoac bien moi truong `$env:GITHUB_TOKEN"
     exit 1
 }
+
+# Tu dong chuan hoa neu nguoi dung truyen URL day du
+$Repo = $Repo -replace '^https?://github\.com/', '' -replace '\.git/?$', '' -replace '/$', ''
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $DataFile = Join-Path $ScriptDir "issues-data.json"
