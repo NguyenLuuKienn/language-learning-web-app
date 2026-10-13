@@ -1,4 +1,5 @@
-﻿import { useState } from 'react';
+﻿import { speakText } from './services/speechService';
+import { useState } from 'react';
 import {
   HomeOutlined,
   CodeOutlined,
@@ -210,7 +211,7 @@ export function App() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      alert('Phát âm: 言い回し (いいまわし)');
+                      speakText('言い回し', 'ja');
                     }}
                     className="w-8 h-8 rounded-lg bg-white border-notebook flex items-center justify-center text-stone-800 hover:bg-stone-50 shadow-2xs"
                   >
@@ -345,7 +346,7 @@ export function App() {
                       <p className="font-semibold text-stone-900">仕様書の言い回しが曖昧なので、修正してください。</p>
                       <p className="text-stone-500 text-[11px]">→ Cách diễn đạt trong tài liệu đặc tả còn mơ hồ, hãy chỉnh sửa lại.</p>
                     </div>
-                    <button className="w-6 h-6 rounded border-notebook flex items-center justify-center text-stone-700 hover:bg-white text-[11px] shrink-0 ml-2">
+                      <button onClick={() => speakText('仕様書の言い回しが曖昧なので、修正してください。', 'ja')} className="w-6 h-6 rounded border-notebook flex items-center justify-center text-stone-700 hover:bg-white text-[11px] shrink-0 ml-2" title="Phát âm câu ví dụ">
                       <SoundOutlined />
                     </button>
                   </div>
@@ -378,7 +379,7 @@ export function App() {
                       <p className="font-semibold text-stone-900">一部の機能はまだ実装されていません。</p>
                       <p className="text-stone-500 text-[11px]">→ Một phần chức năng vẫn chưa được implement (cài đặt).</p>
                     </div>
-                    <button className="w-6 h-6 rounded border-notebook flex items-center justify-center text-stone-700 hover:bg-white text-[11px] shrink-0 ml-2">
+                      <button onClick={() => speakText('一部の機能はまだ実装されていません。', 'ja')} className="w-6 h-6 rounded border-notebook flex items-center justify-center text-stone-700 hover:bg-white text-[11px] shrink-0 ml-2" title="Phát âm câu ví dụ">
                       <SoundOutlined />
                     </button>
                   </div>
@@ -474,7 +475,7 @@ export function App() {
               {/* Khung Câu Hỏi Trắc Nghiệm Kẻ Ô Caro Vàng */}
               <div className="flashcard-yellow-grid rounded-xl border-notebook-2 p-6 sm:p-8 space-y-6">
                 <div className="flex justify-between items-center text-xs">
-                  <button className="px-3 py-1.5 rounded-lg bg-white border-notebook font-bold flex items-center gap-1.5 hover:bg-stone-50">
+                    <button onClick={() => speakText('仕様書の言い回しが曖昧なので、修正してください。', 'ja')} className="px-3 py-1.5 rounded-lg bg-white border-notebook font-bold flex items-center gap-1.5 hover:bg-stone-50" title="Nghe phát âm gợi ý">
                     <SoundOutlined /> Bí quá thì nghe
                   </button>
 
