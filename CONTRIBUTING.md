@@ -1,78 +1,75 @@
-# Quy định và Hướng dẫn Đóng góp (CONTRIBUTING)
+﻿# Quy định và Hướng dẫn Đóng góp (CONTRIBUTING GUIDELINES)
 
-Chào mừng bạn đến với dự án **Language Learning Web Application**! Đây là dự án phục vụ môn học *Phát triển phần mềm mã nguồn mở*, hoạt động theo chuẩn mực đóng góp của cộng đồng OSS quốc tế.
-
----
-
-## 1. Nguyên tắc làm việc & Vai trò
-
-- **Leader:** Quản trị Roadmap, phân rã Issue, Project Board, quản lý Milestone, nghiệm thu Acceptance Criteria.
-- **Maintainer:** Quản trị nhánh chính, thiết lập CI/CD, chuẩn hóa Coding Convention, Review Pull Request, Release.
-- **Core Developer & Contributor:** Nhận Issue, tạo branch tính năng, lập trình, viết Unit/Integration Tests, mở PR và giải trình.
+Chào mừng bạn đến với dự án **Language Learning Web Application**!  
+Để đảm bảo chất lượng mã nguồn, tính nhất quán của kiến trúc Clean Architecture và tránh lỗi khi các thành viên sử dụng công cụ AI sinh mã (AI-assisted coding), toàn bộ thành viên trong nhóm bắt buộc phải tuân thủ nghiêm ngặt các quy tắc dưới đây trước khi commit và mở Pull Request.
 
 ---
 
-## 2. Quy trình Phát triển: Issue → Branch → Commit → PR
+## 🚨 1. QUY TẮC BẮT BUỘC VỀ VIẾT CODE & SỬ DỤNG AI
 
-### Bước 1: Chọn và Nhận Issue
-- Mọi công việc đều bắt đầu từ một Issue trên GitHub Projects.
-- Đảm bảo Issue có đầy đủ: Mô tả công việc, Acceptance Criteria, Assignee, Labels, Milestone.
-- Chuyển trạng thái Issue sang `In Progress` trên GitHub Projects Board.
+### 1.1. Quy chuẩn Comment trong Code:
+* ❌ **CẤM TUYỆT ĐỐI đưa icon/emoji vào comment code:** Không sử dụng các emoji như 🚀, 💡, 🔥, ✨, ⚠️ trong file mã nguồn (`.cs`, `.ts`, `.tsx`, `.js`).
+* ❌ **HẠN CHẾ comment dư thừa:** Không comment lại những gì code đã thể hiện rõ ràng (ví dụ: cấm viết `// hàm lấy user` ngay trên hàm `GetUser()`). Chỉ comment khi thực sự cần thiết để giải thích lý do nghiệp vụ đặc thù (*Explain WHY, not WHAT*).
+* 🌐 **BẮT BUỘC comment bằng Tiếng Anh (English Only):** Toàn bộ comment kỹ thuật, XML docstrings, JSDoc trong mã nguồn phải viết bằng tiếng Anh chuẩn.
 
-### Bước 2: Tạo Nhánh (Branching Strategy)
-- Nhánh `main`: Ổn định, chỉ dùng cho các bản Release đã kiểm thử (Protected).
-- Nhánh `develop`: Nhánh tích hợp chính. Mọi feature PR đều phải trỏ vào `develop` (Protected).
-- Đặt tên nhánh theo cấu trúc:
-  - Tính năng mới: `feature/<issue-number>-<short-description>` (Ví dụ: `feature/10-auth-register-login`)
-  - Sửa lỗi: `fix/<issue-number>-<short-description>` (Ví dụ: `fix/27-srs-idempotency-bug`)
-  - Viết tài liệu: `docs/<issue-number>-<short-description>`
-  - Kiểm thử: `test/<issue-number>-<short-description>`
+### 1.2. Bảo vệ Cấu trúc Dự án (Architectural Integrity):
+* 🏗️ **Backend Clean Architecture:**
+  * Tầng `Domain` là lõi độc lập: Tuyệt đối không được reference hay import thư viện của tầng ngoài (`Infrastructure`, `Application`, `Api`).
+  * `Controllers` trong `Api` chỉ điều phối request/response, **tuyệt đối không viết business logic trực tiếp trong Controller**. Mọi xử lý nghiệp vụ phải nằm trong Service/Application layer.
+  * Khóa chính thực thể bắt buộc dùng `Guid` (định dạng chuỗi `CHAR(36)` thống nhất).
+* ⚛️ **Frontend Feature-First Architecture:**
+  * Mã nguồn chia theo module nghiệp vụ tại `src/features/<module-name>`.
+  * TypeScript Strict Mode: **CẤM lạm dụng kiểu `any`**. Mọi dữ liệu phải có interface/type rõ ràng trong `types/`.
+  * Tách biệt logic API và giao diện UI, sử dụng `apiClient.ts` tập trung.
 
-### Bước 3: Định dạng Commit (Conventional Commits)
-Thông điệp commit phải viết bằng tiếng Anh hoặc tiếng Việt rõ ràng, tuân thủ tiền tố:
-- `feat:` Thêm chức năng mới (Feature)
-- `fix:` Sửa lỗi (Bug fix)
-- `docs:` Thay đổi hoặc bổ sung tài liệu
-- `style:` Định dạng code, dấu cách, chấm phẩy (không đổi logic code)
-- `refactor:` Tái cấu trúc code mà không sửa bug hay thêm feature
-- `test:` Bổ sung hoặc chỉnh sửa test cases
-- `chore:` Thay đổi build tool, dependencies, cấu hình CI
+### 1.3. Kỷ luật Kiểm thử & Build Trước khi Push:
+* 🧪 **Luôn chạy test và build cục bộ thành công 100% trước khi push:**
+  * **Backend:** Chạy `dotnet test backend/LanguageLearning.sln` và `dotnet build backend/LanguageLearning.sln` (đạt **0 Warning, 0 Error**).
+  * **Frontend:** Chạy `npm run build` trong thư mục `frontend/` (đạt **Build passed**).
+  * ❌ **Nghiêm cấm push code khi chưa chạy thử ở local hoặc cố tình bỏ qua test bị fail.**
 
-*Ví dụ:* `feat(auth): implement jwt token generation and refresh token flow (#11)`
-
-### Bước 4: Mở Pull Request (PR)
-- Tạo PR từ nhánh của bạn vào nhánh `develop`.
-- Sử dụng mẫu **Pull Request Template** được cung cấp.
-- Ghi rõ từ khóa đóng Issue: `Closes #<issue-number>` hoặc `Fixes #<issue-number>`.
-- Đính kèm hình ảnh giao diện / bằng chứng kiểm thử (Unit test passing, API response).
-
-### Bước 5: Code Review & Hợp nhất (Merge)
-- Ít nhất 1 thành viên khác (hoặc Maintainer/Leader) phải review và Approve.
-- Tất cả các bước kiểm tra tự động của CI (GitHub Actions) phải đạt màu xanh (Pass).
-- Sau khi được phê duyệt, sử dụng hình thức **Squash and Merge** hoặc **Rebase and Merge** vào `develop`.
+### 1.4. An toàn Bảo mật & Dữ liệu Nhạy cảm:
+* 🔒 **Tuyệt đối không commit secrets:** Không commit `.env`, mật khẩu cơ sở dữ liệu thật, JWT secret key, API keys cá nhân.
+* 🧹 **Không commit tệp rác:** Đảm bảo `.gitignore` đã chặn các thư mục `bin/`, `obj/`, `node_modules/`, `dist/`, `.vs/`, `.idea/`.
 
 ---
 
-## 3. Tiêu chuẩn Mã nguồn (Coding Standards)
+## 🌿 2. QUY TRÌNH PHÁT TRIỂN: ISSUE → BRANCH → COMMIT → PR
 
-- **Backend (C# / .NET):**
-  - Tuân thủ Clean Architecture: Controller gọi Service/Handler, không viết logic trực tiếp trong Controller.
-  - Sử dụng Dependency Injection (DI) đầy đủ.
-  - Sử dụng GUID cho tất cả các định danh Entity.
-  - Xử lý lỗi trả về chuẩn Problem Details (`application/problem+json`).
-- **Frontend (TypeScript / React):**
-  - Sử dụng TypeScript strict mode, tránh dùng kiểu `any`.
-  - Phân chia component theo feature (`src/features/...`).
-  - Sử dụng TanStack Query cho việc fetch và cache dữ liệu API.
-  - Đảm bảo giao diện responsive từ mobile (360px) đến desktop (1280px).
+### Bước 1: Nhận Issue & Tạo Nhánh Tính Năng
+* Mọi công việc phải xuất phát từ một Issue trên GitHub Projects.
+* Nhánh phải được tách từ nhánh **`develop`**:
+  * Tính năng mới: `feature/<issue-number>-<short-description>` (Ví dụ: `feature/10-auth-register-login`)
+  * Sửa lỗi: `fix/<issue-number>-<short-description>`
+  * Kiểm thử: `test/<issue-number>-<short-description>`
+* ❌ **Cấm tự ý tách nhánh từ `main` hoặc push trực tiếp vào `main`/`develop`.**
+
+### Bước 2: Commit theo Chuẩn Conventional Commits
+Tiêu đề commit phải rõ ràng, tuân thủ tiền tố:
+* `feat:` Tính năng mới (ví dụ: `feat(auth): add register and login endpoints (Closes #10)`)
+* `fix:` Sửa lỗi
+* `refactor:` Tái cấu trúc code (không đổi tính năng)
+* `test:` Thêm hoặc sửa test cases
+* `style:` Định dạng code, chuẩn hóa lint
+* `docs:` Cập nhật tài liệu
+
+### Bước 3: Mở Pull Request vào nhánh `develop`
+* Target branch bắt buộc phải là **`develop`**.
+* Điền đầy đủ thông tin theo mẫu **Pull Request Template**.
+* Gắn liên kết đóng Issue: `Closes #<issue-number>`.
+* Đính kèm ảnh chụp màn hình UI hoặc kết quả test thành công.
+
+### Bước 4: Code Review & Phê duyệt
+* PR phải có **ít nhất 1 Approval** từ thành viên khác hoặc Leader/Maintainer.
+* Toàn bộ các luồng kiểm tra tự động của CI (GitHub Actions) phải đạt màu xanh.
+* Không được tự ý bypass rules trừ trường hợp đặc biệt được Leader chỉ định.
 
 ---
 
-## 4. Định nghĩa Hoàn thành (Definition of Done - DoD)
+## ✅ 3. ĐỊNH NGHĨA HOÀN THÀNH (DEFINITION OF DONE - DoD)
 
-Một Issue chỉ được tính là hoàn thành (`Done`) khi:
-1. Mã nguồn đã được merge vào nhánh `develop` qua PR.
-2. Tất cả bài kiểm tra CI chạy thành công (Lint, Build, Unit/Integration tests).
-3. Đã viết Unit Test hoặc Integration Test cho logic nghiệp vụ mới.
-4. Đã cập nhật tài liệu liên quan (OpenAPI spec hoặc docs).
-5. Đáp ứng toàn bộ Acceptance Criteria được ghi trong Issue ban đầu.
+Một task/issue chỉ được chấp nhận là `Done` khi:
+1. Code đã được merge vào `develop` thông qua Pull Request hợp lệ.
+2. Tất cả bài kiểm tra tự động của GitHub Actions CI đều Passed.
+3. Không vi phạm bất kỳ quy tắc code / AI nào ở Mục 1.
+4. Đạt đủ 100% Tiêu chí nghiệm thu (Acceptance Criteria) được mô tả trong Issue.
