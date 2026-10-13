@@ -1,22 +1,18 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import {
-  Flame,
-  Wifi,
-  WifiOff,
-  BookOpen,
-  Layers,
-  Clock,
-  Sparkles,
-  BarChart3,
-  RefreshCw,
-  ShieldCheck,
-  ChevronRight,
-  Play,
-  RotateCw,
-  Volume2,
-  CheckCircle2,
-  GraduationCap
-} from 'lucide-react';
+  BookOutlined,
+  AppstoreOutlined,
+  BarChartOutlined,
+  SyncOutlined,
+  FireFilled,
+  SoundOutlined,
+  CheckCircleFilled,
+  SwapOutlined,
+  WifiOutlined,
+  DisconnectOutlined,
+  RightOutlined,
+  EditOutlined
+} from '@ant-design/icons';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'courses' | 'srs' | 'stats' | 'offline'>('courses');
@@ -36,262 +32,262 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Notification / Sync Bar */}
-      <div className="bg-gradient-to-r from-indigo-900/60 via-purple-900/40 to-slate-900 px-4 py-2 border-b border-indigo-500/20 text-xs flex justify-between items-center backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            Đề tài môn PTPMMNM • MVP v1.0.0
-          </span>
-          <span className="hidden sm:inline text-slate-400">
-            Kiến trúc Clean Architecture + React PWA + MySQL
-          </span>
-        </div>
+    <div className="min-h-screen paper-bg text-stone-800 flex flex-col font-sans">
+      {/* Top Banner Thanh Lịch */}
+      <div className="bg-[#F2ECE1] border-b border-[#E5DEC9] px-6 py-2 text-xs flex justify-between items-center text-stone-600">
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsOnline(!isOnline)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700"
-            title="Nhấp để mô phỏng chuyển đổi Online/Offline"
-          >
-            {isOnline ? (
-              <>
-                <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-300">Trực tuyến</span>
-              </>
-            ) : (
-              <>
-                <WifiOff className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-amber-300">Ngoại tuyến (2 chờ đồng bộ)</span>
-              </>
-            )}
-          </button>
+          <span className="font-semibold text-stone-700 tracking-wide uppercase text-[11px]">
+            Sổ tay học ngoại ngữ • LinguaNote
+          </span>
+          <span className="hidden sm:inline text-stone-400">|</span>
+          <span className="hidden sm:inline text-stone-500">
+            Phương pháp Spaced Repetition ghi nhớ tự nhiên
+          </span>
         </div>
+
+        <button
+          onClick={() => setIsOnline(!isOnline)}
+          className="flex items-center gap-2 px-2.5 py-1 rounded bg-stone-50 hover:bg-white border border-stone-300 text-xs text-stone-700 transition shadow-2xs"
+          title="Nhấp để mô phỏng chuyển đổi Trực tuyến / Ngoại tuyến"
+        >
+          {isOnline ? (
+            <>
+              <WifiOutlined className="text-emerald-600" />
+              <span>Trực tuyến</span>
+            </>
+          ) : (
+            <>
+              <DisconnectOutlined className="text-amber-600" />
+              <span className="text-amber-800 font-medium">Ngoại tuyến (2 ghi chú chờ sync)</span>
+            </>
+          )}
+        </button>
       </div>
 
-      {/* Main Header */}
-      <header className="sticky top-0 z-50 glass-panel border-b border-slate-800/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      {/* Header Giao Diện Nền Giấy Sổ Tay */}
+      <header className="bg-white/90 backdrop-blur-sm border-b border-[#E8E2D5] sticky top-0 z-50 shadow-2xs">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          {/* Logo & Tên Dự Án */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <GraduationCap className="w-6 h-6 text-white" />
+            <div className="w-9 h-9 rounded-lg bg-[#EFE9DC] border border-[#DDD4C3] flex items-center justify-center text-stone-700">
+              <BookOutlined className="text-lg" />
             </div>
             <div>
-              <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">
-                LinguaFlow
+              <span className="font-serif-title font-bold text-xl tracking-tight text-stone-900 block leading-tight">
+                LinguaNote
               </span>
-              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400 block -mt-1">
-                SRS Learning
+              <span className="text-[10px] tracking-wider uppercase text-stone-500 block font-sans">
+                Flashcards & SRS
               </span>
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
+          {/* Navigation Tabs Tinh Gọn */}
+          <nav className="flex items-center gap-1 bg-[#F4EFE6] p-1 rounded-lg border border-[#E5DEC9]">
             <button
               onClick={() => setActiveTab('courses')}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
                 activeTab === 'courses'
-                  ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-white text-stone-900 shadow-2xs font-semibold'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
             >
-              <BookOpen className="w-4 h-4" />
-              Khóa học
+              <BookOutlined />
+              <span>Khóa học</span>
             </button>
+
             <button
               onClick={() => setActiveTab('srs')}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
                 activeTab === 'srs'
-                  ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-white text-stone-900 shadow-2xs font-semibold'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
             >
-              <Layers className="w-4 h-4" />
-              Bộ thẻ & SRS
+              <AppstoreOutlined />
+              <span>Bộ thẻ SRS</span>
             </button>
+
             <button
               onClick={() => setActiveTab('stats')}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
                 activeTab === 'stats'
-                  ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-white text-stone-900 shadow-2xs font-semibold'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
             >
-              <BarChart3 className="w-4 h-4" />
-              Thống kê & Streak
+              <BarChartOutlined />
+              <span>Nhật ký học</span>
             </button>
+
             <button
               onClick={() => setActiveTab('offline')}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
                 activeTab === 'offline'
-                  ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-white text-stone-900 shadow-2xs font-semibold'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
             >
-              <RefreshCw className="w-4 h-4" />
-              Offline Sync
+              <SyncOutlined />
+              <span>Đồng bộ</span>
             </button>
           </nav>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-3">
-            {/* Streak Indicator */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-semibold">
-              <Flame className="w-4 h-4 fill-amber-400 text-amber-400 animate-pulse" />
+          {/* Streak Badge */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF8EB] border border-[#F3E2C2] text-amber-800 text-xs font-semibold shadow-2xs">
+              <FireFilled className="text-amber-500 text-sm" />
               <span>5 ngày</span>
-            </div>
-
-            <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-sm text-indigo-300">
-              LD
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Hero Banner */}
-        <section className="relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-950/80 via-slate-900/90 to-purple-950/50 p-6 sm:p-10 shadow-2xl">
-          <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-              16/16 Modules Bắt buộc • Kiến trúc Monorepo Hoàn chỉnh
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-              Làm chủ ngoại ngữ với thuật toán{' '}
-              <span className="bg-gradient-to-r from-indigo-400 to-violet-300 bg-clip-text text-transparent">
-                Spaced Repetition
-              </span>{' '}
-              thông minh
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
+        {/* Banner Giới Thiệu Dạng Giấy Note Dán */}
+        <section className="paper-card rounded-xl p-6 sm:p-8 relative overflow-hidden bg-[#FFFDF9] border border-[#EBE3D3]">
+          <div className="washi-tape"></div>
+          <div className="max-w-2xl space-y-3">
+            <span className="text-xs uppercase tracking-widest font-semibold text-stone-500">
+              Mục tiêu hôm nay: 15 từ mới • 12 thẻ ôn tập
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-bold font-serif-title text-stone-900 leading-snug">
+              Ôn luyện từ vựng bền bỉ theo chu kỳ khoa học
             </h1>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Học theo khóa học chuẩn A1, tự tạo bộ thẻ flashcards hai mặt, ôn tập ngắt quãng với 4 mức độ nhớ, hỗ trợ học ngoại tuyến PWA và tự động đồng bộ hai chiều.
+            <p className="text-stone-600 text-sm leading-relaxed">
+              Mỗi từ vựng được ghi chú cẩn thận như trên trang giấy tay. Hệ thống Spaced Repetition sẽ tự động tính toán thời điểm vàng để bạn lật lại thẻ trước khi kịp quên.
             </p>
-            <div className="pt-2 flex flex-wrap gap-3">
+            <div className="pt-2 flex gap-3">
               <button
                 onClick={() => setActiveTab('srs')}
-                className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center gap-2"
+                className="px-4 py-2 rounded-lg bg-stone-800 hover:bg-stone-900 text-stone-50 text-xs font-medium transition shadow-2xs flex items-center gap-2"
               >
-                <Play className="w-4 h-4 fill-white" />
-                Ôn tập ngay (12 thẻ đến hạn)
+                <span>Mở phiên ôn tập (12 thẻ)</span>
+                <RightOutlined className="text-[10px]" />
               </button>
               <button
                 onClick={() => setActiveTab('courses')}
-                className="px-5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 font-medium text-sm transition-all flex items-center gap-2"
+                className="px-4 py-2 rounded-lg bg-[#F5EFE6] hover:bg-[#EFE8DD] text-stone-800 border border-[#DDD4C3] text-xs font-medium transition"
               >
-                Tiếp tục bài học gần nhất
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                Học bài tiếp theo (Unit 1 - Lesson 2)
               </button>
             </div>
           </div>
         </section>
 
-        {/* Quick Metrics */}
+        {/* 4 Chỉ Số Tóm Tắt Dạng Thẻ Ghi Chú Mini */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-card rounded-xl p-4 space-y-1">
-            <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-indigo-400" />
-              Thẻ cần ôn hôm nay
+          <div className="paper-card rounded-lg p-4 bg-white border border-[#E8E2D5]">
+            <span className="text-xs text-stone-500 block mb-1">Thẻ đến hạn hôm nay</span>
+            <div className="text-2xl font-bold text-stone-900 font-serif-title">12 thẻ</div>
+            <span className="text-[11px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded mt-2 inline-block">
+              Cần ôn trước 23:59
             </span>
-            <div className="text-2xl font-bold text-white">12</div>
-            <span className="text-[11px] text-indigo-400 font-medium">Lịch SRS v1</span>
           </div>
 
-          <div className="glass-card rounded-xl p-4 space-y-1">
-            <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
-              Từ vựng đã thuộc
+          <div className="paper-card rounded-lg p-4 bg-white border border-[#E8E2D5]">
+            <span className="text-xs text-stone-500 block mb-1">Từ vựng đã thuộc</span>
+            <div className="text-2xl font-bold text-stone-900 font-serif-title">48 / 60</div>
+            <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded mt-2 inline-block">
+              Khóa Tiếng Anh A1
             </span>
-            <div className="text-2xl font-bold text-white">48 / 60</div>
-            <span className="text-[11px] text-emerald-400 font-medium">Khóa English A1</span>
           </div>
 
-          <div className="glass-card rounded-xl p-4 space-y-1">
-            <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-              <Flame className="w-3.5 h-3.5 text-amber-400" />
-              Chuỗi học liên tục
+          <div className="paper-card rounded-lg p-4 bg-white border border-[#E8E2D5]">
+            <span className="text-xs text-stone-500 block mb-1">Chuỗi ngày học</span>
+            <div className="text-2xl font-bold text-stone-900 font-serif-title">5 ngày</div>
+            <span className="text-[11px] text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded mt-2 inline-block">
+              Đều đặn mỗi ngày
             </span>
-            <div className="text-2xl font-bold text-white">5 ngày 🔥</div>
-            <span className="text-[11px] text-amber-400 font-medium">Mục tiêu: 10 thẻ/ngày</span>
           </div>
 
-          <div className="glass-card rounded-xl p-4 space-y-1">
-            <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-              <BarChart3 className="w-3.5 h-3.5 text-purple-400" />
-              Tỷ lệ ghi nhớ
+          <div className="paper-card rounded-lg p-4 bg-white border border-[#E8E2D5]">
+            <span className="text-xs text-stone-500 block mb-1">Tỷ lệ ghi nhớ</span>
+            <div className="text-2xl font-bold text-stone-900 font-serif-title">91.4%</div>
+            <span className="text-[11px] text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded mt-2 inline-block">
+              Đạt chuẩn SRS v1
             </span>
-            <div className="text-2xl font-bold text-white">91.4%</div>
-            <span className="text-[11px] text-purple-400 font-medium">Theo thuật toán SRS</span>
           </div>
         </section>
 
-        {/* Tab 1: Khóa học */}
+        {/* TAB 1: KHÓA HỌC DẠNG CUỐN VỞ GHI BÀI */}
         {activeTab === 'courses' && (
-          <section className="space-y-6">
-            <div className="flex justify-between items-center">
+          <section className="space-y-4">
+            <div className="flex justify-between items-center border-b border-[#E5DEC9] pb-3">
               <div>
-                <h2 className="text-xl font-bold text-white">Khóa học Tiếng Anh A1 Căn bản</h2>
-                <p className="text-xs text-slate-400">Cấu trúc Course → Unit → Lesson với từ vựng và bài tập Quiz</p>
+                <h2 className="text-xl font-bold font-serif-title text-stone-900">
+                  Khóa học: Tiếng Anh A1 Cơ Bản
+                </h2>
+                <p className="text-xs text-stone-500">Giáo trình 5 bài học nền tảng kèm bài tập thực hành</p>
               </div>
-              <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
-                Đã ghi danh
+              <span className="text-xs font-semibold px-2.5 py-1 rounded bg-[#EBF5EE] text-emerald-800 border border-[#CDE5D4]">
+                Đang học
               </span>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-5">
-              <div className="glass-card rounded-xl p-5 space-y-4 border-l-4 border-l-indigo-500">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-xs font-semibold text-indigo-400">Unit 1 • Bài 1</span>
-                    <h3 className="font-bold text-lg text-white mt-0.5">Greetings & Introductions</h3>
+            <div className="space-y-3">
+              {/* Lesson 1 */}
+              <div className="paper-card rounded-lg p-4 bg-white border-l-4 border-l-emerald-600 flex justify-between items-center">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">
+                      Bài 1
+                    </span>
+                    <h3 className="font-bold text-stone-900 text-sm">Greetings & Introductions</h3>
                   </div>
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <p className="text-xs text-stone-500">
+                    Từ vựng chào hỏi, tự giới thiệu tên, nghề nghiệp và đất nước.
+                  </p>
                 </div>
-                <p className="text-xs text-slate-300">
-                  Chào hỏi căn bản, tự giới thiệu tên, tuổi, quốc tịch và các mẫu câu lịch sự.
-                </p>
-                <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
-                  <span>10 Từ vựng • 1 Quiz</span>
-                  <span className="text-emerald-400 font-medium">Hoàn thành 100%</span>
-                </div>
-              </div>
-
-              <div className="glass-card rounded-xl p-5 space-y-4 border-l-4 border-l-indigo-500">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-xs font-semibold text-indigo-400">Unit 1 • Bài 2</span>
-                    <h3 className="font-bold text-lg text-white mt-0.5">Family & Relationships</h3>
-                  </div>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30">
-                    Đang học
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-emerald-700 font-medium flex items-center gap-1">
+                    <CheckCircleFilled /> Hoàn thành
                   </span>
-                </div>
-                <p className="text-xs text-slate-300">
-                  Từ vựng về các thành viên trong gia đình, nghề nghiệp và miêu tả ngoại hình.
-                </p>
-                <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
-                  <span>12 Từ vựng • 1 Quiz</span>
-                  <span className="text-amber-400 font-medium">Tiến độ 60%</span>
+                  <button className="px-3 py-1 text-xs rounded border border-stone-300 hover:bg-stone-50 transition">
+                    Xem lại
+                  </button>
                 </div>
               </div>
 
-              <div className="glass-card rounded-xl p-5 space-y-4 border-l-4 border-l-slate-600 opacity-80">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-xs font-semibold text-slate-400">Unit 1 • Bài 3</span>
-                    <h3 className="font-bold text-lg text-white mt-0.5">Daily Routines</h3>
+              {/* Lesson 2 */}
+              <div className="paper-card rounded-lg p-4 bg-white border-l-4 border-l-amber-600 flex justify-between items-center">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded">
+                      Bài 2
+                    </span>
+                    <h3 className="font-bold text-stone-900 text-sm">Family & Relationships</h3>
                   </div>
-                  <span className="text-xs text-slate-500">Chưa bắt đầu</span>
+                  <p className="text-xs text-stone-500">
+                    Thành viên gia đình, quan hệ bạn bè, đại từ nhân xưng.
+                  </p>
                 </div>
-                <p className="text-xs text-slate-400">
-                  Các hoạt động hằng ngày, cách nói giờ giấc, thói quen sinh hoạt và trạng từ tần suất.
-                </p>
-                <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
-                  <span>15 Từ vựng • 1 Quiz</span>
-                  <button className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1">
-                    Bắt đầu học <ChevronRight className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-amber-700 font-medium">Tiến độ: 60%</span>
+                  <button className="px-3 py-1 text-xs rounded bg-stone-800 text-stone-50 hover:bg-stone-900 transition">
+                    Học tiếp
+                  </button>
+                </div>
+              </div>
+
+              {/* Lesson 3 */}
+              <div className="paper-card rounded-lg p-4 bg-[#FCFAF6] border-l-4 border-l-stone-300 opacity-90 flex justify-between items-center">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded">
+                      Bài 3
+                    </span>
+                    <h3 className="font-bold text-stone-700 text-sm">Daily Routines & Hobbies</h3>
+                  </div>
+                  <p className="text-xs text-stone-400">
+                    Hoạt động hằng ngày, thời gian biểu và sở thích cá nhân.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-stone-400">Chưa bắt đầu</span>
+                  <button className="px-3 py-1 text-xs rounded border border-stone-300 hover:bg-white transition text-stone-600">
+                    Bắt đầu
                   </button>
                 </div>
               </div>
@@ -299,117 +295,127 @@ export function App() {
           </section>
         )}
 
-        {/* Tab 2: Ôn tập Flashcards & SRS */}
+        {/* TAB 2: FLASHCARD GIỐNG THẺ GHI CHÚ INDEX CARD BẰNG GIẤY THẬT */}
         {activeTab === 'srs' && (
-          <section className="space-y-6 max-w-2xl mx-auto">
+          <section className="space-y-6 max-w-xl mx-auto">
             <div className="text-center space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                Phiên ôn tập Spaced Repetition (SRS)
+              <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
+                Thẻ học ôn tập • Spaced Repetition
               </span>
-              <h2 className="text-2xl font-bold text-white">Thẻ 3 / 12 (Đến hạn hôm nay)</h2>
+              <h2 className="text-xl font-bold font-serif-title text-stone-900">
+                Thẻ 3 / 12 (Đến hạn hôm nay)
+              </h2>
             </div>
 
-            {/* Flashcard Component */}
+            {/* Tấm Thẻ Giấy Index Card Hai Mặt */}
             <div
               onClick={() => setIsFlipped(!isFlipped)}
-              className="relative w-full h-80 rounded-2xl cursor-pointer perspective-1000 transition-all duration-300 select-none"
+              className="relative w-full h-72 rounded-xl cursor-pointer select-none transition-all duration-300 hover:shadow-md"
             >
-              <div
-                className={`w-full h-full rounded-2xl p-8 flex flex-col justify-between transition-all duration-500 transform glass-panel border ${
-                  isFlipped ? 'border-indigo-500/60 bg-indigo-950/40' : 'border-slate-800 bg-slate-900/80 hover:border-slate-700'
-                }`}
-              >
-                <div className="flex justify-between items-center text-xs text-slate-400">
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">
-                    Bộ: Tiếng Anh A1 Căn bản
-                  </span>
-                  <span className="flex items-center gap-1 text-indigo-300">
-                    <RotateCw className="w-3.5 h-3.5" /> Nhấp để lật thẻ
+              <div className="flashcard-note w-full h-full rounded-xl p-8 flex flex-col justify-between relative overflow-hidden">
+                <div className="washi-tape"></div>
+
+                <div className="flex justify-between items-center text-xs text-stone-400 border-b border-[#F0EAE1] pb-2">
+                  <span className="font-mono text-stone-600">Deck: Từ vựng A1</span>
+                  <span className="flex items-center gap-1 text-stone-500">
+                    <SwapOutlined /> Nhấp vào thẻ để lật
                   </span>
                 </div>
 
-                <div className="text-center space-y-3">
+                <div className="text-center space-y-3 ruled-paper py-4">
                   {!isFlipped ? (
                     <>
-                      <span className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
-                        Mặt trước (Từ vựng)
+                      <span className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold block -mb-1">
+                        Từ vựng
                       </span>
-                      <h3 className="text-4xl font-extrabold text-white tracking-tight">Perseverance</h3>
-                      <p className="text-sm font-mono text-slate-400">/ˌpɜː.sɪˈvɪə.rəns/</p>
+                      <h3 className="text-4xl font-serif-title font-bold text-stone-900">
+                        Perseverance
+                      </h3>
+                      <p className="text-xs font-mono text-stone-500">/ˌpɜː.sɪˈvɪə.rəns/ (n)</p>
                     </>
                   ) : (
                     <>
-                      <span className="text-xs font-semibold text-emerald-400 uppercase tracking-widest">
-                        Mặt sau (Ý nghĩa & Ví dụ)
+                      <span className="text-[11px] uppercase tracking-widest text-emerald-700 font-semibold block -mb-1">
+                        Ý nghĩa & Ví dụ
                       </span>
-                      <h3 className="text-2xl font-bold text-white">Sự kiên trì, bền chí</h3>
-                      <p className="text-sm text-slate-300 italic max-w-md mx-auto">
-                        &quot;Through perseverance and hard work, he achieved fluency in the language.&quot;
+                      <h3 className="text-2xl font-serif-title font-bold text-stone-900">
+                        Sự kiên trì, bền chí
+                      </h3>
+                      <p className="text-xs text-stone-600 italic max-w-sm mx-auto leading-relaxed">
+                        &ldquo;Success comes through daily practice and perseverance.&rdquo;
                       </p>
                     </>
                   )}
                 </div>
 
-                <div className="flex justify-center items-center gap-2 text-xs text-slate-400">
-                  <Volume2 className="w-4 h-4 text-indigo-400 cursor-pointer hover:scale-110 transition-transform" />
-                  <span>Âm thanh chuẩn UK/US</span>
+                <div className="flex justify-between items-center text-xs text-stone-400 border-t border-[#F0EAE1] pt-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      alert('Phát âm thanh: Perseverance');
+                    }}
+                    className="flex items-center gap-1.5 text-stone-600 hover:text-stone-900"
+                  >
+                    <SoundOutlined /> Phát âm (UK)
+                  </button>
+                  <span className="text-[11px] text-stone-400">Phím tắt: Space (Lật) • 1-4 (Chấm điểm)</span>
                 </div>
               </div>
             </div>
 
-            {/* SRS Rating Buttons (Chỉ hiện khi đã lật mặt sau) */}
+            {/* 4 Nút Đánh Giá Mức Nhớ Chuẩn SRS (Giao Diện Note Tự Nhiên) */}
             {isFlipped && (
-              <div className="space-y-3 pt-2 animate-in fade-in duration-300">
-                <span className="text-xs text-slate-400 block text-center font-medium">
-                  Đánh giá mức độ nhớ của bạn (Thuật toán SRS tính ngày ôn tiếp theo):
+              <div className="space-y-3 pt-2">
+                <span className="text-xs text-stone-500 block text-center">
+                  Bạn ghi nhớ từ này như thế nào? (Chọn mức để lên lịch ôn):
                 </span>
                 <div className="grid grid-cols-4 gap-3">
                   <button
                     onClick={() => setSelectedRating('Again')}
-                    className={`py-3 px-2 rounded-xl border text-center transition-all ${
+                    className={`py-2.5 px-2 rounded-lg border text-center transition ${
                       selectedRating === 'Again'
-                        ? 'bg-rose-600 text-white border-rose-500 scale-105'
-                        : 'bg-rose-950/30 hover:bg-rose-900/40 border-rose-900/50 text-rose-300'
+                        ? 'bg-rose-100 border-rose-400 text-rose-900 font-bold'
+                        : 'bg-white hover:bg-rose-50 border-stone-300 text-stone-800'
                     }`}
                   >
-                    <span className="block font-bold text-sm">Again</span>
-                    <span className="text-[10px] text-rose-400/80">&lt; 10 phút</span>
+                    <span className="block text-xs font-semibold text-rose-700">Again</span>
+                    <span className="text-[10px] text-stone-400">&lt; 10 phút</span>
                   </button>
 
                   <button
                     onClick={() => setSelectedRating('Hard')}
-                    className={`py-3 px-2 rounded-xl border text-center transition-all ${
+                    className={`py-2.5 px-2 rounded-lg border text-center transition ${
                       selectedRating === 'Hard'
-                        ? 'bg-amber-600 text-white border-amber-500 scale-105'
-                        : 'bg-amber-950/30 hover:bg-amber-900/40 border-amber-900/50 text-amber-300'
+                        ? 'bg-amber-100 border-amber-400 text-amber-900 font-bold'
+                        : 'bg-white hover:bg-amber-50 border-stone-300 text-stone-800'
                     }`}
                   >
-                    <span className="block font-bold text-sm">Hard</span>
-                    <span className="text-[10px] text-amber-400/80">1 ngày</span>
+                    <span className="block text-xs font-semibold text-amber-700">Hard</span>
+                    <span className="text-[10px] text-stone-400">1 ngày</span>
                   </button>
 
                   <button
                     onClick={() => setSelectedRating('Good')}
-                    className={`py-3 px-2 rounded-xl border text-center transition-all ${
+                    className={`py-2.5 px-2 rounded-lg border text-center transition ${
                       selectedRating === 'Good'
-                        ? 'bg-emerald-600 text-white border-emerald-500 scale-105'
-                        : 'bg-emerald-950/30 hover:bg-emerald-900/40 border-emerald-900/50 text-emerald-300'
+                        ? 'bg-emerald-100 border-emerald-400 text-emerald-900 font-bold'
+                        : 'bg-white hover:bg-emerald-50 border-stone-300 text-stone-800'
                     }`}
                   >
-                    <span className="block font-bold text-sm">Good</span>
-                    <span className="text-[10px] text-emerald-400/80">3 ngày</span>
+                    <span className="block text-xs font-semibold text-emerald-700">Good</span>
+                    <span className="text-[10px] text-stone-400">3 ngày</span>
                   </button>
 
                   <button
                     onClick={() => setSelectedRating('Easy')}
-                    className={`py-3 px-2 rounded-xl border text-center transition-all ${
+                    className={`py-2.5 px-2 rounded-lg border text-center transition ${
                       selectedRating === 'Easy'
-                        ? 'bg-indigo-600 text-white border-indigo-500 scale-105'
-                        : 'bg-indigo-950/30 hover:bg-indigo-900/40 border-indigo-900/50 text-indigo-300'
+                        ? 'bg-sky-100 border-sky-400 text-sky-900 font-bold'
+                        : 'bg-white hover:bg-sky-50 border-stone-300 text-stone-800'
                     }`}
                   >
-                    <span className="block font-bold text-sm">Easy</span>
-                    <span className="text-[10px] text-indigo-400/80">7 ngày</span>
+                    <span className="block text-xs font-semibold text-sky-700">Easy</span>
+                    <span className="text-[10px] text-stone-400">7 ngày</span>
                   </button>
                 </div>
               </div>
@@ -417,113 +423,112 @@ export function App() {
           </section>
         )}
 
-        {/* Tab 3: Thống kê & Heatmap */}
+        {/* TAB 3: NHẬT KÝ HỌC & HEATMAP */}
         {activeTab === 'stats' && (
-          <section className="space-y-6">
-            <div>
-              <h2 className="text-xl font-bold text-white">Thống kê Hoạt động & Ma trận Học tập</h2>
-              <p className="text-xs text-slate-400">Theo dõi số lượt ôn tập hàng ngày, tỷ lệ nhớ và chuỗi Streak</p>
+          <section className="space-y-4">
+            <div className="border-b border-[#E5DEC9] pb-3">
+              <h2 className="text-xl font-bold font-serif-title text-stone-900">
+                Nhật Ký Học Tập 30 Ngày Gần Nhất
+              </h2>
+              <p className="text-xs text-stone-500">
+                Ghi nhận số lần lật thẻ và hoàn thành mục tiêu học hằng ngày
+              </p>
             </div>
 
-            <div className="glass-panel rounded-2xl p-6 space-y-6">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-semibold text-slate-200">
-                  Heatmap Hoạt động (30 ngày gần nhất)
-                </span>
-                <span className="text-xs text-slate-400">Mục tiêu: Đạt chuẩn hằng ngày</span>
+            <div className="paper-card rounded-xl p-6 bg-white border border-[#E8E2D5] space-y-4">
+              <div className="flex justify-between items-center text-xs text-stone-600">
+                <span className="font-semibold">Mức độ chăm chỉ trong tháng</span>
+                <span>Múi giờ: Asia/Ho_Chi_Minh</span>
               </div>
 
-              {/* Heatmap Grid Demo */}
-              <div className="grid grid-cols-10 sm:grid-cols-15 gap-2">
+              {/* Heatmap Ô Vuông Sổ Tay Màu Xanh Thảo Mộc */}
+              <div className="grid grid-cols-10 sm:grid-cols-15 gap-2 pt-2">
                 {Array.from({ length: 30 }).map((_, index) => {
-                  const intensity = (index * 7) % 5;
-                  const bgColors = [
-                    'bg-slate-800',
-                    'bg-emerald-900/60',
-                    'bg-emerald-700/70',
-                    'bg-emerald-500',
-                    'bg-emerald-400'
+                  const level = (index * 7) % 5;
+                  const colors = [
+                    'bg-[#F5F2EB] border-[#E8E2D5]',
+                    'bg-[#E1EFE3] border-[#C2DEC7]',
+                    'bg-[#B5DFC0] border-[#93CDA3]',
+                    'bg-[#80C993] border-[#5EAE74]',
+                    'bg-[#4FA966] border-[#388D4E]'
                   ];
                   return (
                     <div
                       key={index}
-                      className={`h-7 rounded-md ${bgColors[intensity]} border border-slate-700/40 hover:scale-110 transition-transform cursor-pointer`}
-                      title={`Ngày ${index + 1}: ${intensity * 4} lượt ôn tập`}
+                      className={`h-7 rounded border ${colors[level]} hover:scale-105 transition-transform cursor-pointer`}
+                      title={`Ngày ${index + 1}: ${level * 4} lượt ôn`}
                     />
                   );
                 })}
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-between text-xs text-stone-400 pt-3 border-t border-[#F0EAE1]">
                 <div className="flex items-center gap-1.5">
                   <span>Ít hơn</span>
-                  <div className="w-3 h-3 rounded bg-slate-800" />
-                  <div className="w-3 h-3 rounded bg-emerald-900/60" />
-                  <div className="w-3 h-3 rounded bg-emerald-700/70" />
-                  <div className="w-3 h-3 rounded bg-emerald-500" />
+                  <div className="w-3 h-3 rounded bg-[#F5F2EB] border border-[#E8E2D5]" />
+                  <div className="w-3 h-3 rounded bg-[#E1EFE3]" />
+                  <div className="w-3 h-3 rounded bg-[#B5DFC0]" />
+                  <div className="w-3 h-3 rounded bg-[#4FA966]" />
                   <span>Nhiều hơn</span>
                 </div>
-                <span>Múi giờ: Asia/Ho_Chi_Minh (UTC+7)</span>
+                <span className="text-stone-500">Chuỗi kỷ lục: 14 ngày liên tiếp</span>
               </div>
             </div>
           </section>
         )}
 
-        {/* Tab 4: Offline & Sync */}
+        {/* TAB 4: OFFLINE & ĐỒNG BỘ */}
         {activeTab === 'offline' && (
-          <section className="space-y-6 max-w-3xl mx-auto">
-            <div>
-              <h2 className="text-xl font-bold text-white">Trung tâm Quản trị Ngoại tuyến & Đồng bộ</h2>
-              <p className="text-xs text-slate-400">Kiểm thử tính năng PWA, lưu trữ IndexedDB và giải quyết xung đột</p>
+          <section className="space-y-4 max-w-2xl mx-auto">
+            <div className="border-b border-[#E5DEC9] pb-3">
+              <h2 className="text-xl font-bold font-serif-title text-stone-900">
+                Ghi Chú Ngoại Tuyến & Đồng Bộ
+              </h2>
+              <p className="text-xs text-stone-500">Hỗ trợ học khi mất kết nối mạng và đồng bộ tự động</p>
             </div>
 
-            <div className="glass-panel rounded-2xl p-6 space-y-6">
-              <div className="flex items-center justify-between p-4 rounded-xl bg-slate-800/60 border border-slate-700">
-                <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
-                  <div>
-                    <h4 className="text-sm font-semibold text-white">
-                      Trạng thái mạng: {isOnline ? 'Đang kết nối Internet' : 'Đang ngắt kết nối (Offline)'}
-                    </h4>
-                    <p className="text-xs text-slate-400">
-                      {isOnline
-                        ? 'Tất cả sự kiện ôn tập sẽ gửi trực tiếp về Server ASP.NET Core.'
-                        : 'Sự kiện ôn tập đang được xếp vào IndexedDB cục bộ với UUID idempotent.'}
-                    </p>
-                  </div>
+            <div className="paper-card rounded-xl p-6 bg-white border border-[#E8E2D5] space-y-4">
+              <div className="p-4 rounded-lg bg-[#FAF7F0] border border-[#EBE3D3] flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-bold text-stone-800">
+                    Trạng thái: {isOnline ? 'Đang kết nối Internet' : 'Đang ngắt mạng (Offline)'}
+                  </h4>
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    {isOnline
+                      ? 'Dữ liệu được cập nhật tức thời về server.'
+                      : 'Đang lưu tạm các kết quả ôn tập vào bộ nhớ máy (IndexedDB).'}
+                  </p>
                 </div>
                 <button
                   onClick={() => setIsOnline(!isOnline)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition-all"
+                  className="px-3 py-1.5 rounded text-xs bg-stone-800 hover:bg-stone-900 text-stone-50 transition"
                 >
-                  {isOnline ? 'Mô phỏng mất mạng' : 'Mô phỏng có mạng'}
+                  {isOnline ? 'Ngắt mạng thử' : 'Nối mạng lại'}
                 </button>
               </div>
 
-              <div className="space-y-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Hàng đợi đồng bộ cục bộ (IndexedDB Queue)
-                </h4>
-                <div className="space-y-2">
-                  <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 flex justify-between items-center text-xs">
-                    <div>
-                      <span className="font-mono text-indigo-400">[Review.Submit]</span>{' '}
-                      <span className="text-slate-200">Thẻ #bd19a84e - Đánh giá: Good</span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-medium">
-                      Đã đồng bộ
-                    </span>
-                  </div>
+              <div className="space-y-2 pt-2">
+                <span className="text-xs font-semibold text-stone-600 block">
+                  Hàng đợi đồng bộ (Sync Queue)
+                </span>
+                <div className="p-3 rounded border border-[#EDE7DB] bg-white flex justify-between items-center text-xs">
+                  <span className="text-stone-700">
+                    <EditOutlined className="mr-1 text-stone-400" />
+                    Ôn từ <strong>Perseverance</strong> (Đánh giá: Good)
+                  </span>
+                  <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">
+                    Đã đồng bộ
+                  </span>
+                </div>
 
-                  <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 flex justify-between items-center text-xs">
-                    <div>
-                      <span className="font-mono text-indigo-400">[Review.Submit]</span>{' '}
-                      <span className="text-slate-200">Thẻ #f01a79e4 - Đánh giá: Again</span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-medium">
-                      Chờ đồng bộ (Pending)
-                    </span>
-                  </div>
+                <div className="p-3 rounded border border-[#EDE7DB] bg-white flex justify-between items-center text-xs">
+                  <span className="text-stone-700">
+                    <EditOutlined className="mr-1 text-stone-400" />
+                    Ôn từ <strong>Determination</strong> (Đánh giá: Again)
+                  </span>
+                  <span className="text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-medium">
+                    Chờ gửi lên server
+                  </span>
                 </div>
               </div>
             </div>
@@ -531,13 +536,13 @@ export function App() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-6 text-center text-xs text-slate-500 space-y-2">
-        <p>
-          Dự án Mã nguồn mở: <strong className="text-slate-400">Language Learning Web Application</strong> — Đề tài môn PTPMMNM 2026.
+      {/* Footer Mộc Mạc */}
+      <footer className="border-t border-[#E8E2D5] bg-[#F4EFE6] py-6 text-center text-xs text-stone-500 space-y-1">
+        <p className="font-serif-title text-stone-700 font-semibold">
+          LinguaNote — Sổ tay học ngoại ngữ & Flashcards
         </p>
-        <p>
-          Quy chuẩn kỹ thuật: React 18+ • TypeScript • Tailwind CSS • ASP.NET Core 8 Web API • MySQL 8 • Clean Architecture • PWA Offline.
+        <p className="text-[11px] text-stone-400">
+          Đề tài môn Phát triển phần mềm mã nguồn mở • React TypeScript & ASP.NET Core
         </p>
       </footer>
     </div>

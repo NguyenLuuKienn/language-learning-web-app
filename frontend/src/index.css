@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,27 +6,67 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-indigo-500 selection:text-white;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #F8F6F0;
+    color: #2D2A26;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.01em;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', 'Inter', sans-serif;
+  h1, h2, h3, .font-serif-title {
+    font-family: 'Lora', Georgia, serif;
   }
 }
 
-.glass-panel {
-  @apply bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 shadow-2xl;
+/* Texture nền giấy và sổ tay */
+.paper-bg {
+  background-color: #F8F6F0;
+  background-image: 
+    radial-gradient(#E5DFD5 0.75px, transparent 0.75px);
+  background-size: 24px 24px;
 }
 
-.glass-card {
-  @apply bg-slate-800/50 backdrop-blur-md border border-slate-700/50 hover:border-indigo-500/50 transition-all duration-300;
+/* Thẻ giấy note */
+.paper-card {
+  background-color: #FFFFFF;
+  border: 1px solid #EAE5D9;
+  box-shadow: 0 4px 14px -2px rgba(78, 68, 54, 0.05), 0 2px 6px -1px rgba(78, 68, 54, 0.03);
+  transition: all 0.2s ease-in-out;
 }
 
-.glow-indigo {
-  box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.35);
+.paper-card:hover {
+  border-color: #DCD4C4;
+  box-shadow: 0 8px 20px -3px rgba(78, 68, 54, 0.08);
 }
 
-.glow-emerald {
-  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.35);
+/* Thẻ Flashcard giống giấy ghi chú thật */
+.flashcard-note {
+  background-color: #FEFCF6;
+  border: 1px solid #E6DFCE;
+  box-shadow: 
+    0 10px 25px -5px rgba(60, 52, 42, 0.08),
+    0 4px 10px -2px rgba(60, 52, 42, 0.04);
+}
+
+/* Dòng kẻ tập vở mờ nhẹ */
+.ruled-paper {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 31px,
+    #F0EAE1 31px,
+    #F0EAE1 32px
+  );
+  line-height: 32px;
+}
+
+/* Nhãn dán washi tape */
+.washi-tape {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 22px;
+  background-color: rgba(220, 210, 190, 0.55);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  backdrop-blur: 2px;
 }
