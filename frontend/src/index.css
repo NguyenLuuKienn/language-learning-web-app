@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,67 +6,58 @@
 
 @layer base {
   body {
-    background-color: #F8F6F0;
-    color: #2D2A26;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background-color: #FAF6EE;
+    color: #1F1F1F;
+    font-family: 'Nunito', 'M PLUS Rounded 1c', sans-serif;
     letter-spacing: -0.01em;
   }
-
-  h1, h2, h3, .font-serif-title {
-    font-family: 'Lora', Georgia, serif;
-  }
 }
 
-/* Texture nền giấy và sổ tay */
-.paper-bg {
-  background-color: #F8F6F0;
+/* Nền giấy kẻ ô caro (Graph Grid Paper) */
+.graph-paper {
+  background-color: #FAF6EE;
   background-image: 
-    radial-gradient(#E5DFD5 0.75px, transparent 0.75px);
-  background-size: 24px 24px;
+    linear-gradient(to right, #E8E2D2 1px, transparent 1px),
+    linear-gradient(to bottom, #E8E2D2 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
-/* Thẻ giấy note */
-.paper-card {
-  background-color: #FFFFFF;
-  border: 1px solid #EAE5D9;
-  box-shadow: 0 4px 14px -2px rgba(78, 68, 54, 0.05), 0 2px 6px -1px rgba(78, 68, 54, 0.03);
-  transition: all 0.2s ease-in-out;
+/* Nền thẻ Flashcard vàng ô caro */
+.flashcard-yellow-grid {
+  background-color: #FFF9E6;
+  background-image: 
+    linear-gradient(to right, #F5ECCB 1px, transparent 1px),
+    linear-gradient(to bottom, #F5ECCB 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
-.paper-card:hover {
-  border-color: #DCD4C4;
-  box-shadow: 0 8px 20px -3px rgba(78, 68, 54, 0.08);
+/* Vệt dạ quang highlight vàng */
+.marker-highlight {
+  background: linear-gradient(180deg, transparent 50%, #FDE047 50%);
+  display: inline;
 }
 
-/* Thẻ Flashcard giống giấy ghi chú thật */
-.flashcard-note {
-  background-color: #FEFCF6;
-  border: 1px solid #E6DFCE;
-  box-shadow: 
-    0 10px 25px -5px rgba(60, 52, 42, 0.08),
-    0 4px 10px -2px rgba(60, 52, 42, 0.04);
+/* Viền đen sổ tay đặc trưng */
+.border-notebook {
+  border: 1.5px solid #262626;
 }
 
-/* Dòng kẻ tập vở mờ nhẹ */
-.ruled-paper {
-  background-image: repeating-linear-gradient(
-    transparent,
-    transparent 31px,
-    #F0EAE1 31px,
-    #F0EAE1 32px
-  );
-  line-height: 32px;
+.border-notebook-2 {
+  border: 2px solid #262626;
 }
 
-/* Nhãn dán washi tape */
-.washi-tape {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90px;
-  height: 22px;
-  background-color: rgba(220, 210, 190, 0.55);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  backdrop-blur: 2px;
+/* Hiệu ứng nút bấm phong cách Notebook */
+.notebook-btn {
+  border: 1.5px solid #262626;
+  transition: all 0.15s ease;
+}
+
+.notebook-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 0 #262626;
+}
+
+.notebook-btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
 }

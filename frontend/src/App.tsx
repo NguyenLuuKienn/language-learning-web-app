@@ -1,550 +1,586 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState } from 'react';
 import {
-  BookOutlined,
-  AppstoreOutlined,
-  BarChartOutlined,
-  SyncOutlined,
-  FireFilled,
+  HomeOutlined,
+  CodeOutlined,
+  AudioOutlined,
+  MessageOutlined,
+  TrophyOutlined,
+  TeamOutlined,
+  RiseOutlined,
+  SettingOutlined,
   SoundOutlined,
-  CheckCircleFilled,
   SwapOutlined,
-  WifiOutlined,
-  DisconnectOutlined,
+  ThunderboltOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  LeftOutlined,
   RightOutlined,
-  EditOutlined
+  ReloadOutlined,
+  CustomerServiceOutlined,
+  BookOutlined,
+  FlagOutlined,
+  EyeOutlined,
+  HeartOutlined
 } from '@ant-design/icons';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'courses' | 'srs' | 'stats' | 'offline'>('courses');
-  const [isOnline, setIsOnline] = useState(true);
+  const [currentView, setCurrentView] = useState<'flashcard' | 'lessonList' | 'quiz'>('flashcard');
+  const [activeTabSub, setActiveTabSub] = useState<'vocab' | 'example'>('vocab');
   const [isFlipped, setIsFlipped] = useState(false);
-  const [selectedRating, setSelectedRating] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+  const [selectedQuizOption, setSelectedQuizOption] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen paper-bg text-stone-800 flex flex-col font-sans">
-      {/* Top Banner Thanh Lịch */}
-      <div className="bg-[#F2ECE1] border-b border-[#E5DEC9] px-6 py-2 text-xs flex justify-between items-center text-stone-600">
-        <div className="flex items-center gap-3">
-          <span className="font-semibold text-stone-700 tracking-wide uppercase text-[11px]">
-            Sổ tay học ngoại ngữ • LinguaNote
-          </span>
-          <span className="hidden sm:inline text-stone-400">|</span>
-          <span className="hidden sm:inline text-stone-500">
-            Phương pháp Spaced Repetition ghi nhớ tự nhiên
-          </span>
+    <div className="min-h-screen flex bg-[#FAF6EE] text-[#1F1F1F] font-sans antialiased">
+      {/* ============================================================== */}
+      {/* 1. SIDEBAR BÊN TRÁI PHONG CÁCH NOTEBOOK */}
+      {/* ============================================================== */}
+      <aside className="w-56 bg-[#FAF6EE] border-r-2 border-[#262626] flex flex-col justify-between shrink-0 select-none">
+        <div>
+          {/* Logo Brand Header */}
+          <div className="p-4 border-b-2 border-[#262626] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="bg-[#E11D48] text-white text-[11px] font-mono font-bold px-1.5 py-0.5 rounded border border-[#9F1239]">
+                &lt;iT/&gt;
+              </span>
+              <div className="leading-tight">
+                <span className="font-bold text-sm block tracking-tight text-stone-900">
+                  日本語
+                </span>
+                <span className="text-[10px] uppercase font-bold text-stone-500 block -mt-1 tracking-wider">
+                  KOTOBA
+                </span>
+              </div>
+            </div>
+            {/* Energy / Streak */}
+            <div className="flex items-center gap-1 text-xs font-bold text-stone-700">
+              <ThunderboltOutlined className="text-amber-500 text-sm" />
+              <span>0</span>
+            </div>
+          </div>
+
+          {/* Menu Học Tập */}
+          <div className="p-3 space-y-1">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 px-3 py-1 block">
+              HỌC TẬP
+            </span>
+
+            <button
+              onClick={() => setCurrentView('lessonList')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left ${
+                currentView === 'lessonList'
+                  ? 'bg-white border-notebook shadow-2xs text-stone-900'
+                  : 'text-stone-600 hover:bg-stone-200/50'
+              }`}
+            >
+              <HomeOutlined />
+              <span>Trang chủ</span>
+            </button>
+
+            <button
+              onClick={() => setCurrentView('flashcard')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left ${
+                currentView === 'flashcard'
+                  ? 'bg-white border-notebook shadow-2xs text-stone-900'
+                  : 'text-stone-600 hover:bg-stone-200/50'
+              }`}
+            >
+              <CodeOutlined />
+              <span>Từ vựng IT</span>
+            </button>
+
+            <button
+              onClick={() => setCurrentView('quiz')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left ${
+                currentView === 'quiz'
+                  ? 'bg-white border-notebook shadow-2xs text-stone-900'
+                  : 'text-stone-600 hover:bg-stone-200/50'
+              }`}
+            >
+              <ThunderboltOutlined />
+              <span>Luyện tập Quiz</span>
+            </button>
+
+            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
+              <AudioOutlined />
+              <span>Shadowing</span>
+            </button>
+
+            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
+              <MessageOutlined />
+              <span>Hội thoại</span>
+            </button>
+
+            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
+              <TrophyOutlined />
+              <span>Luyện thi chứng chỉ</span>
+            </button>
+
+            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
+              <TeamOutlined />
+              <span>Luyện phỏng vấn</span>
+            </button>
+
+            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
+              <RiseOutlined />
+              <span>Bảng xếp hạng</span>
+            </button>
+          </div>
         </div>
 
-        <button
-          onClick={() => setIsOnline(!isOnline)}
-          className="flex items-center gap-2 px-2.5 py-1 rounded bg-stone-50 hover:bg-white border border-stone-300 text-xs text-stone-700 transition shadow-2xs"
-          title="Nhấp để mô phỏng chuyển đổi Trực tuyến / Ngoại tuyến"
-        >
-          {isOnline ? (
-            <>
-              <WifiOutlined className="text-emerald-600" />
-              <span>Trực tuyến</span>
-            </>
-          ) : (
-            <>
-              <DisconnectOutlined className="text-amber-600" />
-              <span className="text-amber-800 font-medium">Ngoại tuyến (2 ghi chú chờ sync)</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Header Giao Diện Nền Giấy Sổ Tay */}
-      <header className="bg-white/90 backdrop-blur-sm border-b border-[#E8E2D5] sticky top-0 z-50 shadow-2xs">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          {/* Logo & Tên Dự Án */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#EFE9DC] border border-[#DDD4C3] flex items-center justify-center text-stone-700">
-              <BookOutlined className="text-lg" />
+        {/* Sidebar Footer */}
+        <div className="p-3 border-t-2 border-[#262626] space-y-2">
+          <button className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-stone-600 hover:text-stone-900 transition">
+            <SettingOutlined />
+            <span>Cài đặt</span>
+          </button>
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-white border-notebook">
+            <div className="w-7 h-7 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs">
+              S
             </div>
-            <div>
-              <span className="font-serif-title font-bold text-xl tracking-tight text-stone-900 block leading-tight">
-                LinguaNote
-              </span>
-              <span className="text-[10px] tracking-wider uppercase text-stone-500 block font-sans">
-                Flashcards & SRS
-              </span>
-            </div>
-          </div>
-
-          {/* Navigation Tabs Tinh Gọn */}
-          <nav className="flex items-center gap-1 bg-[#F4EFE6] p-1 rounded-lg border border-[#E5DEC9]">
-            <button
-              onClick={() => setActiveTab('courses')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
-                activeTab === 'courses'
-                  ? 'bg-white text-stone-900 shadow-2xs font-semibold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              <BookOutlined />
-              <span>Khóa học</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('srs')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
-                activeTab === 'srs'
-                  ? 'bg-white text-stone-900 shadow-2xs font-semibold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              <AppstoreOutlined />
-              <span>Bộ thẻ SRS</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('stats')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
-                activeTab === 'stats'
-                  ? 'bg-white text-stone-900 shadow-2xs font-semibold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              <BarChartOutlined />
-              <span>Nhật ký học</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('offline')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
-                activeTab === 'offline'
-                  ? 'bg-white text-stone-900 shadow-2xs font-semibold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              <SyncOutlined />
-              <span>Đồng bộ</span>
-            </button>
-          </nav>
-
-          {/* Streak Badge */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF8EB] border border-[#F3E2C2] text-amber-800 text-xs font-semibold shadow-2xs">
-              <FireFilled className="text-amber-500 text-sm" />
-              <span>5 ngày</span>
+            <div className="text-[11px] leading-tight">
+              <span className="font-bold block text-stone-900">94inu Store</span>
+              <span className="text-stone-400 text-[10px]">Premium</span>
             </div>
           </div>
         </div>
-      </header>
+      </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
-        {/* Banner Giới Thiệu Dạng Giấy Note Dán */}
-        <section className="paper-card rounded-xl p-6 sm:p-8 relative overflow-hidden bg-[#FFFDF9] border border-[#EBE3D3]">
-          <div className="washi-tape"></div>
-          <div className="max-w-2xl space-y-3">
-            <span className="text-xs uppercase tracking-widest font-semibold text-stone-500">
-              Mục tiêu hôm nay: 15 từ mới • 12 thẻ ôn tập
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-bold font-serif-title text-stone-900 leading-snug">
-              Ôn luyện từ vựng bền bỉ theo chu kỳ khoa học
-            </h1>
-            <p className="text-stone-600 text-sm leading-relaxed">
-              Mỗi từ vựng được ghi chú cẩn thận như trên trang giấy tay. Hệ thống Spaced Repetition sẽ tự động tính toán thời điểm vàng để bạn lật lại thẻ trước khi kịp quên.
-            </p>
-            <div className="pt-2 flex gap-3">
-              <button
-                onClick={() => setActiveTab('srs')}
-                className="px-4 py-2 rounded-lg bg-stone-800 hover:bg-stone-900 text-stone-50 text-xs font-medium transition shadow-2xs flex items-center gap-2"
+      {/* ============================================================== */}
+      {/* 2. KHU VỰC NỘI DUNG CHÍNH (NỀN GIẤY KẺ Ô CARO GRAPH PAPER) */}
+      {/* ============================================================== */}
+      <main className="flex-1 graph-paper overflow-y-auto p-6 md:p-8 flex flex-col items-center">
+        <div className="w-full max-w-4xl space-y-6">
+
+          {/* ============================================================== */}
+          {/* VIEW 1: FLASHCARD STUDY (GIỐNG ẢNH 1) */}
+          {/* ============================================================== */}
+          {currentView === 'flashcard' && (
+            <div className="space-y-6">
+              {/* Thanh Toolbar trên cùng của Flashcard */}
+              <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                {/* Tab Từ vựng / Ví dụ */}
+                <div className="flex items-center bg-white rounded-lg border-notebook overflow-hidden">
+                  <button
+                    onClick={() => setActiveTabSub('vocab')}
+                    className={`px-3 py-1.5 flex items-center gap-1.5 font-bold transition ${
+                      activeTabSub === 'vocab' ? 'bg-[#262626] text-white' : 'text-stone-700 hover:bg-stone-100'
+                    }`}
+                  >
+                    <BookOutlined /> Từ vựng
+                  </button>
+                  <button
+                    onClick={() => setActiveTabSub('example')}
+                    className={`px-3 py-1.5 flex items-center gap-1.5 font-bold transition ${
+                      activeTabSub === 'example' ? 'bg-[#262626] text-white' : 'text-stone-700 hover:bg-stone-100'
+                    }`}
+                  >
+                    <BookOutlined /> Ví dụ
+                  </button>
+                </div>
+
+                {/* Bộ đếm số thẻ ở giữa */}
+                <div className="px-4 py-1 rounded-lg bg-white border-notebook font-bold text-sm">
+                  1 / 109
+                </div>
+
+                {/* Các công cụ bên phải */}
+                <div className="flex items-center gap-1.5">
+                  <button className="px-2.5 py-1.5 rounded-lg bg-white notebook-btn text-xs font-bold flex items-center gap-1">
+                    <SwapOutlined /> JA → VI
+                  </button>
+                  <button className="px-2.5 py-1.5 rounded-lg bg-white notebook-btn text-xs font-bold flex items-center gap-1">
+                    <RightOutlined className="text-[10px]" /> Tự động
+                  </button>
+                  <button className="px-2.5 py-1.5 rounded-lg bg-white notebook-btn text-xs font-bold flex items-center gap-1">
+                    <ReloadOutlined /> Xáo trộn
+                  </button>
+                  <button className="p-1.5 rounded-lg bg-white notebook-btn text-xs">
+                    <SettingOutlined />
+                  </button>
+                </div>
+              </div>
+
+              {/* Tấm Thẻ Flashcard Kẻ Ô Vàng To Bự */}
+              <div
+                onClick={() => setIsFlipped(!isFlipped)}
+                className="flashcard-yellow-grid rounded-xl border-notebook-2 p-8 sm:p-12 min-h-[300px] flex flex-col justify-between relative cursor-pointer select-none shadow-sm transition hover:shadow-md"
               >
-                <span>Mở phiên ôn tập (12 thẻ)</span>
-                <RightOutlined className="text-[10px]" />
-              </button>
-              <button
-                onClick={() => setActiveTab('courses')}
-                className="px-4 py-2 rounded-lg bg-[#F5EFE6] hover:bg-[#EFE8DD] text-stone-800 border border-[#DDD4C3] text-xs font-medium transition"
-              >
-                Học bài tiếp theo (Unit 1 - Lesson 2)
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* 4 Chỉ Số Tóm Tắt Dạng Thẻ Ghi Chú Mini */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="paper-card rounded-lg p-4 bg-white border border-[#E8E2D5]">
-            <span className="text-xs text-stone-500 block mb-1">Thẻ đến hạn hôm nay</span>
-            <div className="text-2xl font-bold text-stone-900 font-serif-title">12 thẻ</div>
-            <span className="text-[11px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded mt-2 inline-block">
-              Cần ôn trước 23:59
-            </span>
-          </div>
-
-          <div className="paper-card rounded-lg p-4 bg-white border border-[#E8E2D5]">
-            <span className="text-xs text-stone-500 block mb-1">Từ vựng đã thuộc</span>
-            <div className="text-2xl font-bold text-stone-900 font-serif-title">48 / 60</div>
-            <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded mt-2 inline-block">
-              Khóa Tiếng Anh A1
-            </span>
-          </div>
-
-          <div className="paper-card rounded-lg p-4 bg-white border border-[#E8E2D5]">
-            <span className="text-xs text-stone-500 block mb-1">Chuỗi ngày học</span>
-            <div className="text-2xl font-bold text-stone-900 font-serif-title">5 ngày</div>
-            <span className="text-[11px] text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded mt-2 inline-block">
-              Đều đặn mỗi ngày
-            </span>
-          </div>
-
-          <div className="paper-card rounded-lg p-4 bg-white border border-[#E8E2D5]">
-            <span className="text-xs text-stone-500 block mb-1">Tỷ lệ ghi nhớ</span>
-            <div className="text-2xl font-bold text-stone-900 font-serif-title">91.4%</div>
-            <span className="text-[11px] text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded mt-2 inline-block">
-              Đạt chuẩn SRS v1
-            </span>
-          </div>
-        </section>
-
-        {/* TAB 1: KHÓA HỌC DẠNG CUỐN VỞ GHI BÀI */}
-        {activeTab === 'courses' && (
-          <section className="space-y-4">
-            <div className="flex justify-between items-center border-b border-[#E5DEC9] pb-3">
-              <div>
-                <h2 className="text-xl font-bold font-serif-title text-stone-900">
-                  Khóa học: Tiếng Anh A1 Cơ Bản
-                </h2>
-                <p className="text-xs text-stone-500">Giáo trình 5 bài học nền tảng kèm bài tập thực hành</p>
-              </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded bg-[#EBF5EE] text-emerald-800 border border-[#CDE5D4]">
-                Đang học
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {/* Lesson 1 */}
-              <div className="paper-card rounded-lg p-4 bg-white border-l-4 border-l-emerald-600 flex justify-between items-center">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">
-                      Bài 1
-                    </span>
-                    <h3 className="font-bold text-stone-900 text-sm">Greetings & Introductions</h3>
-                  </div>
-                  <p className="text-xs text-stone-500">
-                    Từ vựng chào hỏi, tự giới thiệu tên, nghề nghiệp và đất nước.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-emerald-700 font-medium flex items-center gap-1">
-                    <CheckCircleFilled /> Hoàn thành
-                  </span>
-                  <button className="px-3 py-1 text-xs rounded border border-stone-300 hover:bg-stone-50 transition">
-                    Xem lại
-                  </button>
-                </div>
-              </div>
-
-              {/* Lesson 2 */}
-              <div className="paper-card rounded-lg p-4 bg-white border-l-4 border-l-amber-600 flex justify-between items-center">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded">
-                      Bài 2
-                    </span>
-                    <h3 className="font-bold text-stone-900 text-sm">Family & Relationships</h3>
-                  </div>
-                  <p className="text-xs text-stone-500">
-                    Thành viên gia đình, quan hệ bạn bè, đại từ nhân xưng.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-amber-700 font-medium">Tiến độ: 60%</span>
-                  <button className="px-3 py-1 text-xs rounded bg-stone-800 text-stone-50 hover:bg-stone-900 transition">
-                    Học tiếp
-                  </button>
-                </div>
-              </div>
-
-              {/* Lesson 3 */}
-              <div className="paper-card rounded-lg p-4 bg-[#FCFAF6] border-l-4 border-l-stone-300 opacity-90 flex justify-between items-center">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded">
-                      Bài 3
-                    </span>
-                    <h3 className="font-bold text-stone-700 text-sm">Daily Routines & Hobbies</h3>
-                  </div>
-                  <p className="text-xs text-stone-400">
-                    Hoạt động hằng ngày, thời gian biểu và sở thích cá nhân.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-stone-400">Chưa bắt đầu</span>
-                  <button className="px-3 py-1 text-xs rounded border border-stone-300 hover:bg-white transition text-stone-600">
-                    Bắt đầu
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* TAB 2: FLASHCARD GIỐNG THẺ GHI CHÚ INDEX CARD BẰNG GIẤY THẬT */}
-        {activeTab === 'srs' && (
-          <section className="space-y-6 max-w-xl mx-auto">
-            <div className="text-center space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-                Thẻ học ôn tập • Spaced Repetition
-              </span>
-              <h2 className="text-xl font-bold font-serif-title text-stone-900">
-                Thẻ 3 / 12 (Đến hạn hôm nay)
-              </h2>
-            </div>
-
-            {/* Tấm Thẻ Giấy Index Card Hai Mặt */}
-            <div
-              onClick={() => setIsFlipped(!isFlipped)}
-              className="relative w-full h-72 rounded-xl cursor-pointer select-none transition-all duration-300 hover:shadow-md"
-            >
-              <div className="flashcard-note w-full h-full rounded-xl p-8 flex flex-col justify-between relative overflow-hidden">
-                <div className="washi-tape"></div>
-
-                <div className="flex justify-between items-center text-xs text-stone-400 border-b border-[#F0EAE1] pb-2">
-                  <span className="font-mono text-stone-600">Deck: Từ vựng A1</span>
-                  <span className="flex items-center gap-1 text-stone-500">
-                    <SwapOutlined /> Nhấp vào thẻ để lật
-                  </span>
-                </div>
-
-                <div className="text-center space-y-3 ruled-paper py-4">
-                  {!isFlipped ? (
-                    <>
-                      <span className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold block -mb-1">
-                        Từ vựng
-                      </span>
-                      <h3 className="text-4xl font-serif-title font-bold text-stone-900">
-                        Perseverance
-                      </h3>
-                      <p className="text-xs font-mono text-stone-500">/ˌpɜː.sɪˈvɪə.rəns/ (n)</p>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-[11px] uppercase tracking-widest text-emerald-700 font-semibold block -mb-1">
-                        Ý nghĩa & Ví dụ
-                      </span>
-                      <h3 className="text-2xl font-serif-title font-bold text-stone-900">
-                        Sự kiên trì, bền chí
-                      </h3>
-                      <p className="text-xs text-stone-600 italic max-w-sm mx-auto leading-relaxed">
-                        &ldquo;Success comes through daily practice and perseverance.&rdquo;
-                      </p>
-                    </>
-                  )}
-                </div>
-
-                <div className="flex justify-between items-center text-xs text-stone-400 border-t border-[#F0EAE1] pt-2">
+                {/* Nút loa phát âm góc trên */}
+                <div className="flex justify-end">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      alert('Phát âm thanh: Perseverance');
+                      alert('Phát âm: 言い回し (いいまわし)');
                     }}
-                    className="flex items-center gap-1.5 text-stone-600 hover:text-stone-900"
+                    className="w-8 h-8 rounded-lg bg-white border-notebook flex items-center justify-center text-stone-800 hover:bg-stone-50 shadow-2xs"
                   >
-                    <SoundOutlined /> Phát âm (UK)
-                  </button>
-                  <span className="text-[11px] text-stone-400">Phím tắt: Space (Lật) • 1-4 (Chấm điểm)</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 4 Nút Đánh Giá Mức Nhớ Chuẩn SRS (Giao Diện Note Tự Nhiên) */}
-            {isFlipped && (
-              <div className="space-y-3 pt-2">
-                <span className="text-xs text-stone-500 block text-center">
-                  Bạn ghi nhớ từ này như thế nào? (Chọn mức để lên lịch ôn):
-                </span>
-                <div className="grid grid-cols-4 gap-3">
-                  <button
-                    onClick={() => setSelectedRating('Again')}
-                    className={`py-2.5 px-2 rounded-lg border text-center transition ${
-                      selectedRating === 'Again'
-                        ? 'bg-rose-100 border-rose-400 text-rose-900 font-bold'
-                        : 'bg-white hover:bg-rose-50 border-stone-300 text-stone-800'
-                    }`}
-                  >
-                    <span className="block text-xs font-semibold text-rose-700">Again</span>
-                    <span className="text-[10px] text-stone-400">&lt; 10 phút</span>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedRating('Hard')}
-                    className={`py-2.5 px-2 rounded-lg border text-center transition ${
-                      selectedRating === 'Hard'
-                        ? 'bg-amber-100 border-amber-400 text-amber-900 font-bold'
-                        : 'bg-white hover:bg-amber-50 border-stone-300 text-stone-800'
-                    }`}
-                  >
-                    <span className="block text-xs font-semibold text-amber-700">Hard</span>
-                    <span className="text-[10px] text-stone-400">1 ngày</span>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedRating('Good')}
-                    className={`py-2.5 px-2 rounded-lg border text-center transition ${
-                      selectedRating === 'Good'
-                        ? 'bg-emerald-100 border-emerald-400 text-emerald-900 font-bold'
-                        : 'bg-white hover:bg-emerald-50 border-stone-300 text-stone-800'
-                    }`}
-                  >
-                    <span className="block text-xs font-semibold text-emerald-700">Good</span>
-                    <span className="text-[10px] text-stone-400">3 ngày</span>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedRating('Easy')}
-                    className={`py-2.5 px-2 rounded-lg border text-center transition ${
-                      selectedRating === 'Easy'
-                        ? 'bg-sky-100 border-sky-400 text-sky-900 font-bold'
-                        : 'bg-white hover:bg-sky-50 border-stone-300 text-stone-800'
-                    }`}
-                  >
-                    <span className="block text-xs font-semibold text-sky-700">Easy</span>
-                    <span className="text-[10px] text-stone-400">7 ngày</span>
+                    <SoundOutlined />
                   </button>
                 </div>
-              </div>
-            )}
-          </section>
-        )}
 
-        {/* TAB 3: NHẬT KÝ HỌC & HEATMAP */}
-        {activeTab === 'stats' && (
-          <section className="space-y-4">
-            <div className="border-b border-[#E5DEC9] pb-3">
-              <h2 className="text-xl font-bold font-serif-title text-stone-900">
-                Nhật Ký Học Tập 30 Ngày Gần Nhất
-              </h2>
-              <p className="text-xs text-stone-500">
-                Ghi nhận số lần lật thẻ và hoàn thành mục tiêu học hằng ngày
-              </p>
-            </div>
-
-            <div className="paper-card rounded-xl p-6 bg-white border border-[#E8E2D5] space-y-4">
-              <div className="flex justify-between items-center text-xs text-stone-600">
-                <span className="font-semibold">Mức độ chăm chỉ trong tháng</span>
-                <span>Múi giờ: Asia/Ho_Chi_Minh</span>
-              </div>
-
-              {/* Heatmap Ô Vuông Sổ Tay Màu Xanh Thảo Mộc */}
-              <div className="grid grid-cols-10 sm:grid-cols-15 gap-2 pt-2">
-                {Array.from({ length: 30 }).map((_, index) => {
-                  const level = (index * 7) % 5;
-                  const colors = [
-                    'bg-[#F5F2EB] border-[#E8E2D5]',
-                    'bg-[#E1EFE3] border-[#C2DEC7]',
-                    'bg-[#B5DFC0] border-[#93CDA3]',
-                    'bg-[#80C993] border-[#5EAE74]',
-                    'bg-[#4FA966] border-[#388D4E]'
-                  ];
-                  return (
-                    <div
-                      key={index}
-                      className={`h-7 rounded border ${colors[level]} hover:scale-105 transition-transform cursor-pointer`}
-                      title={`Ngày ${index + 1}: ${level * 4} lượt ôn`}
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="flex items-center justify-between text-xs text-stone-400 pt-3 border-t border-[#F0EAE1]">
-                <div className="flex items-center gap-1.5">
-                  <span>Ít hơn</span>
-                  <div className="w-3 h-3 rounded bg-[#F5F2EB] border border-[#E8E2D5]" />
-                  <div className="w-3 h-3 rounded bg-[#E1EFE3]" />
-                  <div className="w-3 h-3 rounded bg-[#B5DFC0]" />
-                  <div className="w-3 h-3 rounded bg-[#4FA966]" />
-                  <span>Nhiều hơn</span>
-                </div>
-                <span className="text-stone-500">Chuỗi kỷ lục: 14 ngày liên tiếp</span>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* TAB 4: OFFLINE & ĐỒNG BỘ */}
-        {activeTab === 'offline' && (
-          <section className="space-y-4 max-w-2xl mx-auto">
-            <div className="border-b border-[#E5DEC9] pb-3">
-              <h2 className="text-xl font-bold font-serif-title text-stone-900">
-                Ghi Chú Ngoại Tuyến & Đồng Bộ
-              </h2>
-              <p className="text-xs text-stone-500">Hỗ trợ học khi mất kết nối mạng và đồng bộ tự động</p>
-            </div>
-
-            <div className="paper-card rounded-xl p-6 bg-white border border-[#E8E2D5] space-y-4">
-              <div className="p-4 rounded-lg bg-[#FAF7F0] border border-[#EBE3D3] flex items-center justify-between">
-                <div>
-                  <h4 className="text-xs font-bold text-stone-800">
-                    Trạng thái: {isOnline ? 'Đang kết nối Internet' : 'Đang ngắt mạng (Offline)'}
-                  </h4>
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    {isOnline
-                      ? 'Dữ liệu được cập nhật tức thời về server.'
-                      : 'Đang lưu tạm các kết quả ôn tập vào bộ nhớ máy (IndexedDB).'}
+                {/* Nội dung từ vựng chính giữa */}
+                <div className="text-center space-y-2 my-auto">
+                  <h2 className="text-4xl sm:text-5xl font-extrabold text-stone-900 tracking-tight">
+                    言い回し
+                  </h2>
+                  <p className="text-stone-600 font-medium text-sm sm:text-base">
+                    いいまわし
+                  </p>
+                  <span className="text-[11px] font-bold text-stone-400 uppercase tracking-widest block">
+                    NGÔN HỒI
+                  </span>
+                  <p className="text-lg sm:text-xl font-bold text-stone-900 pt-1">
+                    Cách nói, cách diễn đạt
                   </p>
                 </div>
-                <button
-                  onClick={() => setIsOnline(!isOnline)}
-                  className="px-3 py-1.5 rounded text-xs bg-stone-800 hover:bg-stone-900 text-stone-50 transition"
-                >
-                  {isOnline ? 'Ngắt mạng thử' : 'Nối mạng lại'}
+
+                {/* Chỉ báo lật thẻ dưới cùng */}
+                <div className="text-center text-xs text-stone-400 flex items-center justify-center gap-1">
+                  <SwapOutlined /> Click để lật
+                </div>
+              </div>
+
+              {/* Hàng Nút Đánh Giá & Điều Hướng (4 Nút) */}
+              <div className="flex items-center justify-center gap-3">
+                <button className="px-5 py-2.5 rounded-lg bg-white notebook-btn text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                  <LeftOutlined className="text-[10px]" /> Trước
+                </button>
+
+                <button className="px-6 py-2.5 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] text-white notebook-btn text-xs font-bold flex items-center gap-1.5 shadow-2xs">
+                  <CloseOutlined /> Chưa thuộc
+                </button>
+
+                <button className="px-6 py-2.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white notebook-btn text-xs font-bold flex items-center gap-1.5 shadow-2xs">
+                  <CheckOutlined /> Đã thuộc
+                </button>
+
+                <button className="px-5 py-2.5 rounded-lg bg-white notebook-btn text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                  Sau <RightOutlined className="text-[10px]" />
                 </button>
               </div>
 
-              <div className="space-y-2 pt-2">
-                <span className="text-xs font-semibold text-stone-600 block">
-                  Hàng đợi đồng bộ (Sync Queue)
-                </span>
-                <div className="p-3 rounded border border-[#EDE7DB] bg-white flex justify-between items-center text-xs">
-                  <span className="text-stone-700">
-                    <EditOutlined className="mr-1 text-stone-400" />
-                    Ôn từ <strong>Perseverance</strong> (Đánh giá: Good)
-                  </span>
-                  <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">
-                    Đã đồng bộ
-                  </span>
+              {/* Phần "Chọn chế độ học" */}
+              <div className="space-y-3 pt-4">
+                <h3 className="font-bold text-sm text-stone-900">Chọn chế độ học</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  <button
+                    onClick={() => setCurrentView('flashcard')}
+                    className="p-3 rounded-lg bg-[#262626] text-white border-notebook text-left space-y-2 transition"
+                  >
+                    <div className="flex items-center gap-1.5 text-xs font-bold">
+                      <BookOutlined /> Flashcard
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 font-medium inline-block">
+                      Chưa học
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setCurrentView('quiz')}
+                    className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-2 transition"
+                  >
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+                      <CodeOutlined /> Trắc nghiệm
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-600 font-medium inline-block">
+                      Chưa học
+                    </span>
+                  </button>
+
+                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-2 transition">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+                      <ThunderboltOutlined /> Gõ từ
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-600 font-medium inline-block">
+                      Chưa học
+                    </span>
+                  </button>
+
+                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-2 transition">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+                      <BookOutlined /> Đọc hiểu
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-600 font-medium inline-block">
+                      Chưa học
+                    </span>
+                  </button>
+
+                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-2 transition">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+                      <CustomerServiceOutlined /> Nghe ghép câu
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-600 font-medium inline-block">
+                      Chưa học
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Danh sách 2 Thẻ từ vựng chi tiết bên dưới */}
+              <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                {/* Thẻ 1 */}
+                <div className="bg-white rounded-xl border-notebook p-4 space-y-3 shadow-2xs">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-stone-400">1.</span>
+                      <h4 className="text-xl font-bold text-stone-900">言い回し</h4>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-medium text-stone-600 block">いいまわし</span>
+                      <span className="text-[10px] font-bold text-stone-400 uppercase">NGÔN HỒI</span>
+                      <span className="text-xs font-bold text-stone-800 block">Cách nói, cách diễn đạt</span>
+                    </div>
+                    <div className="flex gap-1">
+                      <button className="w-7 h-7 rounded border-notebook flex items-center justify-center hover:bg-stone-100 text-xs">
+                        <FlagOutlined />
+                      </button>
+                      <button className="w-7 h-7 rounded border-notebook flex items-center justify-center hover:bg-stone-100 text-xs">
+                        <SoundOutlined />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-stone-200 pt-3 text-xs text-stone-700 flex justify-between items-center bg-[#FAF6EE] p-2.5 rounded-lg border border-[#E5DEC9]">
+                    <div className="space-y-0.5">
+                      <p className="font-semibold text-stone-900">仕様書の言い回しが曖昧なので、修正してください。</p>
+                      <p className="text-stone-500 text-[11px]">→ Cách diễn đạt trong tài liệu đặc tả còn mơ hồ, hãy chỉnh sửa lại.</p>
+                    </div>
+                    <button className="w-6 h-6 rounded border-notebook flex items-center justify-center text-stone-700 hover:bg-white text-[11px] shrink-0 ml-2">
+                      <SoundOutlined />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="p-3 rounded border border-[#EDE7DB] bg-white flex justify-between items-center text-xs">
-                  <span className="text-stone-700">
-                    <EditOutlined className="mr-1 text-stone-400" />
-                    Ôn từ <strong>Determination</strong> (Đánh giá: Again)
-                  </span>
-                  <span className="text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-medium">
-                    Chờ gửi lên server
-                  </span>
+                {/* Thẻ 2 */}
+                <div className="bg-white rounded-xl border-notebook p-4 space-y-3 shadow-2xs">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-stone-400">2.</span>
+                      <h4 className="text-xl font-bold text-stone-900">一部</h4>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-medium text-stone-600 block">いちぶ</span>
+                      <span className="text-[10px] font-bold text-stone-400 uppercase">NHẤT BỘ</span>
+                      <span className="text-xs font-bold text-stone-800 block">Một phần</span>
+                    </div>
+                    <div className="flex gap-1">
+                      <button className="w-7 h-7 rounded border-notebook flex items-center justify-center hover:bg-stone-100 text-xs">
+                        <FlagOutlined />
+                      </button>
+                      <button className="w-7 h-7 rounded border-notebook flex items-center justify-center hover:bg-stone-100 text-xs">
+                        <SoundOutlined />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-stone-200 pt-3 text-xs text-stone-700 flex justify-between items-center bg-[#FAF6EE] p-2.5 rounded-lg border border-[#E5DEC9]">
+                    <div className="space-y-0.5">
+                      <p className="font-semibold text-stone-900">一部の機能はまだ実装されていません。</p>
+                      <p className="text-stone-500 text-[11px]">→ Một phần chức năng vẫn chưa được implement (cài đặt).</p>
+                    </div>
+                    <button className="w-6 h-6 rounded border-notebook flex items-center justify-center text-stone-700 hover:bg-white text-[11px] shrink-0 ml-2">
+                      <SoundOutlined />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </section>
-        )}
-      </main>
+          )}
 
-      {/* Footer Mộc Mạc */}
-      <footer className="border-t border-[#E8E2D5] bg-[#F4EFE6] py-6 text-center text-xs text-stone-500 space-y-1">
-        <p className="font-serif-title text-stone-700 font-semibold">
-          LinguaNote — Sổ tay học ngoại ngữ & Flashcards
-        </p>
-        <p className="text-[11px] text-stone-400">
-          Đề tài môn Phát triển phần mềm mã nguồn mở • React TypeScript & ASP.NET Core
-        </p>
-      </footer>
+          {/* ============================================================== */}
+          {/* VIEW 2: DANH SÁCH 16 BÀI HỌC (GIỐNG ẢNH 2) */}
+          {/* ============================================================== */}
+          {currentView === 'lessonList' && (
+            <div className="space-y-6">
+              {/* Header Breadcrumb */}
+              <div className="space-y-1">
+                <button
+                  onClick={() => setCurrentView('flashcard')}
+                  className="text-xs text-stone-500 hover:text-stone-800 flex items-center gap-1 font-bold"
+                >
+                  <LeftOutlined className="text-[10px]" /> Trang chủ
+                </button>
+                <span className="text-xs text-stone-400 font-medium">16 bài — 1644 từ vựng</span>
+                <div className="pt-1">
+                  <h2 className="text-3xl font-extrabold tracking-tight text-stone-900 inline">
+                    <span className="marker-highlight px-1">Từ vựng IT</span>
+                  </h2>
+                </div>
+                <p className="text-xs text-stone-600 font-medium pt-1">
+                  語彙 — Thuật ngữ tiếng Nhật thường gặp trong dự án IT
+                </p>
+              </div>
+
+              {/* Khung Tiến độ học */}
+              <div className="bg-white rounded-xl border-notebook-2 p-4 space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold text-stone-700">
+                  <span>Tiến độ học</span>
+                  <span>0/16 bài</span>
+                </div>
+                <div className="w-full h-3 rounded-full border-notebook bg-[#FAF6EE] overflow-hidden p-0.5">
+                  <div className="w-0 h-full rounded-full bg-[#16A34A] transition-all duration-300"></div>
+                </div>
+                <div className="text-right text-[11px] text-stone-400 font-medium">
+                  0% hoàn thành
+                </div>
+              </div>
+
+              {/* Lưới 8 Thẻ Bài Học (2 Cột) */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[
+                  { num: 1, title: '頻出用語一覧', sub: 'Bài 1', count: '109 từ vựng' },
+                  { num: 2, title: 'レッスン1 プロジェクト概要', sub: 'Bài 2', count: '173 từ vựng' },
+                  { num: 3, title: 'レッスン2 見積り', sub: 'Bài 3', count: '125 từ vựng' },
+                  { num: 4, title: 'レッスン3 開発環境', sub: 'Bài 4', count: '108 từ vựng' },
+                  { num: 5, title: 'レッスン4 議事録', sub: 'Bài 5', count: '133 từ vựng' },
+                  { num: 6, title: 'レッスン5 要件定義', sub: 'Bài 6', count: '104 từ vựng' },
+                  { num: 7, title: 'レッスン6 基本設計', sub: 'Bài 7', count: '61 từ vựng' },
+                  { num: 8, title: 'レッスン7 要求変更', sub: 'Bài 8', count: '91 từ vựng' },
+                ].map((item) => (
+                  <div
+                    key={item.num}
+                    onClick={() => setCurrentView('flashcard')}
+                    className="relative bg-white rounded-xl border-notebook-2 p-5 pt-6 cursor-pointer hover:-translate-y-0.5 transition shadow-2xs hover:shadow-sm"
+                  >
+                    {/* Nhãn Tag Vàng ở góc trái */}
+                    <div className="absolute top-0 left-4 -translate-y-1/2 w-8 h-8 rounded-md bg-[#FDE047] border-notebook flex items-center justify-center font-extrabold text-sm text-stone-900 shadow-2xs">
+                      {item.num}
+                    </div>
+
+                    <div className="space-y-1">
+                      <h4 className="font-extrabold text-stone-900 text-sm tracking-tight pt-1">
+                        {item.title}
+                      </h4>
+                      <p className="text-xs text-stone-500 font-medium">{item.sub}</p>
+                      <p className="text-[11px] text-stone-400 flex items-center gap-1 pt-1">
+                        <BookOutlined className="text-[10px]" /> {item.count}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ============================================================== */}
+          {/* VIEW 3: LUYỆN TẬP TRẮC NGHIỆM QUIZ (GIỐNG ẢNH 3) */}
+          {/* ============================================================== */}
+          {currentView === 'quiz' && (
+            <div className="space-y-6">
+              <div className="text-xs font-bold text-stone-500">
+                Lesson 1 — IT Vocabulary
+              </div>
+
+              {/* Khung Câu Hỏi Trắc Nghiệm Kẻ Ô Caro Vàng */}
+              <div className="flashcard-yellow-grid rounded-xl border-notebook-2 p-6 sm:p-8 space-y-6">
+                <div className="flex justify-between items-center text-xs">
+                  <button className="px-3 py-1.5 rounded-lg bg-white border-notebook font-bold flex items-center gap-1.5 hover:bg-stone-50">
+                    <SoundOutlined /> Bí quá thì nghe
+                  </button>
+
+                  <button className="px-3 py-1.5 rounded-lg bg-[#FEF08A] border-notebook font-bold flex items-center gap-1.5 text-stone-900">
+                    <EyeOutlined /> Nghĩa
+                  </button>
+                </div>
+
+                {/* Câu hỏi có Furigana */}
+                <div className="text-center space-y-2 py-4">
+                  <div className="text-xs text-stone-500">たんとうしゃ</div>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
+                    ___さんはインフラの担当者です。
+                  </h3>
+                  <p className="text-stone-500 italic text-xs sm:text-sm pt-1">
+                    Mr. Yamato is in charge of the infrastructure.
+                  </p>
+                </div>
+
+                {/* 4 Đáp án Trắc nghiệm (2 cột x 2 hàng) */}
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { id: 1, text: '判断' },
+                    { id: 2, text: '原因' },
+                    { id: 3, text: '認識' },
+                    { id: 4, text: '大和' },
+                  ].map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => setSelectedQuizOption(option.id)}
+                      className={`p-3.5 rounded-lg border-notebook text-left font-extrabold text-sm flex items-center gap-2.5 transition ${
+                        selectedQuizOption === option.id
+                          ? 'bg-[#16A34A] text-white border-[#15803D]'
+                          : 'bg-white hover:bg-stone-50 text-stone-900'
+                      }`}
+                    >
+                      <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs ${
+                        selectedQuizOption === option.id ? 'border-white text-white' : 'border-stone-800 text-stone-800'
+                      }`}>
+                        {option.id}
+                      </span>
+                      <span>{option.text}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Dưới cùng: Hỗ trợ & Số câu */}
+                <div className="flex justify-between items-center text-xs text-stone-500 pt-2 border-t border-stone-300/60">
+                  <span className="font-bold">1 / 109</span>
+                  <button className="flex items-center gap-1 text-stone-600 hover:text-stone-900 font-medium">
+                    <HeartOutlined /> Câu này bó tay
+                  </button>
+                </div>
+              </div>
+
+              {/* Chế độ học chọn nhanh */}
+              <div className="space-y-3 pt-2">
+                <h4 className="font-bold text-xs text-stone-800">Choose a study mode</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  <button
+                    onClick={() => setCurrentView('flashcard')}
+                    className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-1.5 transition"
+                  >
+                    <div className="text-xs font-bold text-stone-800">Flashcards</div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-medium inline-block">
+                      Not studied yet
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setCurrentView('quiz')}
+                    className="p-3 rounded-lg bg-[#262626] text-white border-notebook text-left space-y-1.5 transition"
+                  >
+                    <div className="text-xs font-bold">Quiz</div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 font-medium inline-block">
+                      Not studied yet
+                    </span>
+                  </button>
+
+                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-1.5 transition">
+                    <div className="text-xs font-bold text-stone-800">Typing</div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-medium inline-block">
+                      Not studied yet
+                    </span>
+                  </button>
+
+                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-1.5 transition">
+                    <div className="text-xs font-bold text-stone-800">Reading</div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-medium inline-block">
+                      Not studied yet
+                    </span>
+                  </button>
+
+                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-1.5 transition">
+                    <div className="text-xs font-bold text-stone-800">Listening</div>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-medium inline-block">
+                      Not studied yet
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </main>
     </div>
   );
 }
