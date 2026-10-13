@@ -1,4 +1,4 @@
-# Build stage
+﻿# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
@@ -8,7 +8,7 @@ COPY ["src/LanguageLearning.Application/LanguageLearning.Application.csproj", "s
 COPY ["src/LanguageLearning.Infrastructure/LanguageLearning.Infrastructure.csproj", "src/LanguageLearning.Infrastructure/"]
 COPY ["src/LanguageLearning.Api/LanguageLearning.Api.csproj", "src/LanguageLearning.Api/"]
 COPY ["tests/LanguageLearning.Tests/LanguageLearning.Tests.csproj", "tests/LanguageLearning.Tests/"]
-COPY ["LanguageLearning.slnx", "./"]
+COPY ["LanguageLearning.sln", "./"]
 
 RUN dotnet restore "src/LanguageLearning.Api/LanguageLearning.Api.csproj"
 
