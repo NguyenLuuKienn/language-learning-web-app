@@ -1,27 +1,24 @@
-## 📌 Tóm tắt Thay đổi (Summary)
+﻿## 📌 Tóm tắt Thay đổi (Summary)
 <!-- Mô tả ngắn gọn mục đích của PR này. Đã làm gì và giải quyết vấn đề gì? -->
 
 ## 🔗 Liên kết Issue (Linked Issue)
-<!-- Đóng issue tự động khi PR được merge: Closes #123 hoặc Fixes #123 -->
+<!-- Gắn issue liên quan để tự động đóng khi merge: Closes #10 hoặc Fixes #10 -->
 Closes #
 
 ## 🛠️ Danh sách việc đã làm (Changes Details)
 - [ ] 
 - [ ] 
 
-## 🧪 Bằng chứng Kiểm thử (Test Evidence)
-<!-- Chèn ảnh chụp màn hình UI, kết quả test chạy pass, hoặc Swagger response -->
-- **Unit / Integration Tests:**
-- **Ảnh chụp UI / Demo:**
+## 🧪 Bằng chứng Kiểm thử Cục bộ (Local Test Evidence)
+<!-- BẮT BUỘC: Điền kết quả test hoặc đính kèm ảnh chụp màn hình UI -->
+- **Backend Build & Test:** `dotnet test` & `dotnet build` (0 Warning, 0 Error)
+- **Frontend Build:** `npm run build` (Passed)
+- **Ảnh chụp UI / Swagger Response:** 
 
-## ⚠️ Đánh giá Tác động (Impact Assessment)
-- [ ] **Database Migration:** Có thay đổi database schema không?
-- [ ] **Offline & Sync:** Có ảnh hưởng tới IndexedDB hoặc cơ chế đồng bộ không?
-- [ ] **Bảo mật:** Có ảnh hưởng đến Auth, Token, hoặc Quyền truy cập không?
-- [ ] **Breaking Changes:** Có làm thay đổi cấu trúc API cũ không?
-
-## ✅ Checklist Kiểm tra Trước khi Merge
-- [ ] Code tuân thủ coding standards và `.editorconfig`.
-- [ ] Đã chạy lint và không có lỗi cảnh báo.
-- [ ] CI/CD chạy thành công tất cả bài kiểm tra (All checks pass).
-- [ ] Đã được ít nhất 1 thành viên review và Approve.
+## 🛡️ Checklist Tuân thủ Quy tắc Dự án & AI (BẮT BUỘC TICK ĐẦY ĐỦ)
+- [ ] **Comment Rules:** Tuyệt đối KHÔNG có icon/emoji trong comment code; comment hoàn toàn bằng Tiếng Anh; không comment dư thừa.
+- [ ] **Architecture:** Không phá hỏng cấu trúc Clean Architecture (Domain không phụ thuộc tầng ngoài, Controller không chứa business logic).
+- [ ] **TypeScript:** Không lạm dụng kiểu `any`; định nghĩa types/interfaces đầy đủ.
+- [ ] **Pre-push Test:** Đã chạy test và build thành công 100% ở local trước khi push.
+- [ ] **Security & Clean:** Không commit secrets, password thật, file `.env` hay tệp rác (`bin/`, `obj/`, `node_modules/`).
+- [ ] **Branch Target:** PR này đang trỏ vào nhánh `develop` (KHÔNG trỏ thẳng vào `main`).
