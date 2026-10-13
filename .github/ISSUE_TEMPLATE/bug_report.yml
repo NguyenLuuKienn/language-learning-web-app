@@ -1,0 +1,42 @@
+name: "🐛 Báo cáo Lỗi (Bug Report)"
+description: "Tạo báo cáo lỗi để đội ngũ phát triển điều tra và xử lý"
+title: "[BUG]: "
+labels: ["type:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Cảm ơn bạn đã báo cáo lỗi! Vui lòng cung cấp đầy đủ thông tin bên dưới để giúp việc tái hiện lỗi nhanh chóng hơn."
+  - type: textarea
+    id: description
+    attributes:
+      label: "Mô tả lỗi"
+      description: "Mô tả rõ ràng và ngắn gọn về lỗi bạn gặp phải."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Các bước tái hiện (Steps to Reproduce)"
+      description: "Liệt kê chi tiết từng bước để gây ra lỗi."
+      placeholder: |
+        1. Đi đến trang '...'
+        2. Nhấn vào nút '....'
+        3. Cuộn xuống và nhập '....'
+        4. Thấy lỗi xuất hiện
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Kết quả mong đợi (Expected Behavior)"
+      description: "Bạn mong muốn điều gì sẽ diễn ra nếu không có lỗi?"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Môi trường (Environment)"
+      description: "Hệ điều hành, trình duyệt, phiên bản API/Node/DB..."
+      placeholder: "Ví dụ: Windows 11, Chrome 120, API v0.1.0"
+    validations:
+      required: false

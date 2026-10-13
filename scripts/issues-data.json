@@ -1,0 +1,599 @@
+{
+  "labels": [
+    { "name": "type:feature", "color": "0E8A16", "description": "Tính năng mới cần phát triển" },
+    { "name": "type:bug", "color": "D93F0B", "description": "Lỗi cần khắc phục" },
+    { "name": "type:task", "color": "1D76DB", "description": "Nhiệm vụ kỹ thuật, cấu hình, hạ tầng" },
+    { "name": "type:docs", "color": "0075CA", "description": "Tài liệu kỹ thuật, hướng dẫn" },
+    { "name": "type:test", "color": "BFDADC", "description": "Bộ kiểm thử unit/integration/e2e" },
+    { "name": "priority:P0", "color": "B60205", "description": "Ưu tiên cao nhất - Khối nền tảng bắt buộc" },
+    { "name": "priority:P1", "color": "E99695", "description": "Ưu tiên cao - Module chức năng cốt lõi" },
+    { "name": "priority:P2", "color": "F9D0C4", "description": "Ưu tiên trung bình - Hoàn thiện nâng cao" },
+    { "name": "area:frontend", "color": "5319E7", "description": "Liên quan đến giao diện React/PWA" },
+    { "name": "area:backend", "color": "0052CC", "description": "Liên quan đến API C# ASP.NET Core" },
+    { "name": "area:database", "color": "C2E0C6", "description": "Liên quan đến MySQL, Migrations, EF Core" },
+    { "name": "area:offline", "color": "BFDAD4", "description": "Liên quan đến Service Worker, IndexedDB, Sync" },
+    { "name": "area:ci", "color": "FBCA04", "description": "GitHub Actions, Docker, Triển khai" }
+  ],
+  "milestones": [
+    {
+      "title": "v0.1.0 Foundation",
+      "description": "Nền tảng hạ tầng monorepo, CI/CD, MySQL, Authentication, Khóa học và Từ vựng",
+      "due_on": "2026-11-02T23:59:59Z"
+    },
+    {
+      "title": "v0.2.0 Learning Engine",
+      "description": "Bộ máy học tập cốt lõi: Bộ thẻ (Decks), Thẻ (Cards), Spaced Repetition (SRS), Quiz, Progress, Media",
+      "due_on": "2026-11-16T23:59:59Z"
+    },
+    {
+      "title": "v0.3.0 Extended Learning",
+      "description": "Học tập nâng cao: CSV, Thống kê, Streak, Chia sẻ bộ thẻ, Ngoại tuyến (PWA Offline) & Đồng bộ (Sync), Admin",
+      "due_on": "2026-11-30T23:59:59Z"
+    },
+    {
+      "title": "v1.0.0 MVP Release",
+      "description": "Kiểm thử toàn diện, Seed dữ liệu A1, Đóng gói Docker, Demo kịch bản, Hoàn thiện tài liệu OSS và Release",
+      "due_on": "2026-12-14T23:59:59Z"
+    }
+  ],
+  "issues": [
+    {
+      "id": 1,
+      "title": "Khởi tạo GitHub Organization/Monorepo, README và LICENSE",
+      "workstream": "Foundation",
+      "owner": "Leader",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:task", "priority:P0", "type:docs"],
+      "body": "### Mục tiêu\nKhởi tạo cấu trúc dự án Monorepo tiêu chuẩn cho ứng dụng web học ngoại ngữ, kèm tài liệu chuẩn Open Source (README, LICENSE MIT).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Repository Git được khởi tạo với nhánh `main` và `develop`.\n- [ ] README.md chứa tóm tắt dự án, stack công nghệ và hướng dẫn cài đặt.\n- [ ] LICENSE mã nguồn mở MIT hợp lệ."
+    },
+    {
+      "id": 2,
+      "title": "Thiết lập GitHub Projects, labels, milestones, issue/PR templates",
+      "workstream": "Foundation",
+      "owner": "Leader",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:task", "priority:P0", "type:docs"],
+      "body": "### Mục tiêu\nThiết lập công cụ quản trị dự án trên GitHub phục vụ cộng tác nhóm 4 người theo chuẩn PTPMMNM.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] GitHub Projects board với các cột: Backlog -> Ready -> In Progress -> In Review -> Done.\n- [ ] Hệ thống nhãn (labels) phân loại theo Type, Priority, Area.\n- [ ] Thiết lập 4 Milestones theo lộ trình.\n- [ ] Issue templates (Bug, Feature, Task) và Pull Request template hoạt động."
+    },
+    {
+      "id": 3,
+      "title": "Cấu hình frontend React/TS/Tailwind/router",
+      "workstream": "Foundation",
+      "owner": "Contributor",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nKhởi tạo bộ khung ứng dụng Frontend sử dụng React, Vite, TypeScript, Tailwind CSS và React Router.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Chạy được `npm run dev` không có lỗi.\n- [ ] Cấu hình xong Tailwind CSS với Dark/Light mode tokens.\n- [ ] Cấu hình xong React Router với layout chính (Header, Sidebar, Content).\n- [ ] Thiết lập alias path và TanStack Query provider."
+    },
+    {
+      "id": 4,
+      "title": "Khởi tạo ASP.NET Core solution và DI layers",
+      "workstream": "Foundation",
+      "owner": "Core Developer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nThiết lập kiến trúc Clean Architecture cho Solution backend C# ASP.NET Core Web API.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Solution chứa 5 projects: `Api`, `Application`, `Domain`, `Infrastructure`, `Tests`.\n- [ ] Thiết lập phụ thuộc đúng chiều: Api -> Application -> Domain; Infrastructure -> Application & Domain.\n- [ ] Đăng ký Dependency Injection thông qua Extension Methods."
+    },
+    {
+      "id": 5,
+      "title": "Cấu hình MySQL, EF Core provider và migrations",
+      "workstream": "Foundation",
+      "owner": "Core Developer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:database", "area:backend"],
+      "body": "### Mục tiêu\nKết nối cơ sở dữ liệu MySQL 8.0 sử dụng Pomelo Entity Framework Core, hỗ trợ GUID string mapping.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] `AppDbContext` được cấu hình kết nối tới MySQL thành công.\n- [ ] GUID mapping được cấu hình đồng nhất `CHAR(36)`.\n- [ ] Tạo và chạy migration ban đầu thành công."
+    },
+    {
+      "id": 6,
+      "title": "Docker Compose + env.example + seed",
+      "workstream": "Foundation",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:task", "priority:P0", "area:ci"],
+      "body": "### Mục tiêu\nCung cấp môi trường chạy nội bộ nhất quán thông qua Docker Compose cho MySQL, API và Frontend.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] File `.env.example` chứa toàn bộ biến môi trường mẫu.\n- [ ] `docker compose up` khởi chạy thành công 3 services (db, api, web).\n- [ ] Healthcheck cho MySQL hoạt động chính xác trước khi API khởi động."
+    },
+    {
+      "id": 7,
+      "title": "Thiết lập CI frontend/backend",
+      "workstream": "Foundation",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:task", "priority:P0", "area:ci"],
+      "body": "### Mục tiêu\nCấu hình GitHub Actions tự động kiểm tra cú pháp, build và test khi mở Pull Request.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Workflow `backend-ci.yml` tự động restore, build và test .NET trên Ubuntu runner có MySQL.\n- [ ] Workflow `frontend-ci.yml` tự động install, type-check và build React.\n- [ ] Cả 2 workflow báo trạng thái xanh (Passed) trên PR."
+    },
+    {
+      "id": 8,
+      "title": "Thiết kế ERD và ADR GUID/UUID",
+      "workstream": "Foundation",
+      "owner": "Core Developer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:docs", "priority:P0", "area:database"],
+      "body": "### Mục tiêu\nXây dựng sơ đồ thực thể quan hệ (ERD) chi tiết 24 bảng và tài liệu kiến trúc quyết định (ADR) về GUID.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Tài liệu `docs/database/database-schema.md` đầy đủ 24 bảng và các mối quan hệ.\n- [ ] Tài liệu `docs/decisions/ADR-001-guid-identity-and-architecture.md` phân tích ưu/nhược điểm."
+    },
+    {
+      "id": 9,
+      "title": "Thiết kế OpenAPI conventions, Problem Details",
+      "workstream": "Foundation",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:docs", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nChuẩn hóa hợp đồng REST API, tích hợp Swagger UI và cơ chế trả lỗi RFC 7807 Problem Details.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Swagger UI khả dụng tại `/swagger`.\n- [ ] Mọi phản hồi lỗi validation hoặc server đều theo format Problem Details.\n- [ ] Tài liệu `docs/api/api-conventions.md` được phê duyệt."
+    },
+    {
+      "id": 10,
+      "title": "API đăng ký, đăng nhập, hash mật khẩu",
+      "workstream": "Auth",
+      "owner": "Leader",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nPhát triển API Đăng ký tài khoản mới và Đăng nhập với cơ chế băm mật khẩu bảo mật (FR-001, FR-002).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] `POST /api/v1/auth/register`: Báo lỗi 400 nếu email trùng (TC-01).\n- [ ] Mật khẩu được băm an toàn, không lưu plaintext.\n- [ ] `POST /api/v1/auth/login`: Trả về Access Token (JWT) và Refresh Token nếu hợp lệ."
+    },
+    {
+      "id": 11,
+      "title": "JWT/refresh/logout và authorization",
+      "workstream": "Auth",
+      "owner": "Leader",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nQuản lý vòng đời token JWT, cơ chế làm mới token (Refresh Token) và đăng xuất/thu hồi token (FR-003, FR-005).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] `POST /api/v1/auth/refresh`: Gia hạn Access Token khi token cũ hết hạn.\n- [ ] `POST /api/v1/auth/logout`: Thu hồi Refresh Token ngay lập tức.\n- [ ] Middleware phân quyền kiểm tra Claim Role (`Learner`, `Admin`) trả về 403 khi không đủ quyền (TC-02)."
+    },
+    {
+      "id": 12,
+      "title": "Frontend auth screens + protected routes",
+      "workstream": "Auth",
+      "owner": "Leader",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nXây dựng màn hình Đăng ký, Đăng nhập, và cơ chế bảo vệ Route trên ứng dụng React.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Form Đăng nhập và Đăng ký có kiểm tra tính hợp lệ dữ liệu (validation).\n- [ ] Protected Routes tự động chuyển hướng về trang Login nếu chưa đăng nhập.\n- [ ] Lưu trạng thái người dùng an toàn."
+    },
+    {
+      "id": 13,
+      "title": "User profile + timezone settings",
+      "workstream": "Auth",
+      "owner": "Leader",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P1", "area:frontend", "area:backend"],
+      "body": "### Mục tiêu\nQuản lý hồ sơ cá nhân và cấu hình múi giờ người dùng (phục vụ tính Streak và mục tiêu học tập).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] `GET /api/v1/me` và `PATCH /api/v1/me`: Cập nhật Display Name và Timezone.\n- [ ] Giao diện hồ sơ hiển thị thông tin và cho phép đổi thông tin cá nhân."
+    },
+    {
+      "id": 14,
+      "title": "CRUD languages/courses/units/lessons admin",
+      "workstream": "Courses",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nXây dựng hệ thống API quản trị cây nội dung học: Ngôn ngữ -> Khóa học -> Chương -> Bài học (FR-010, FR-012, FR-014).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Đầy đủ CRUD endpoints cho Languages, Courses, Units, Lessons.\n- [ ] Chỉ người dùng có quyền `Admin` mới được gọi API này."
+    },
+    {
+      "id": 15,
+      "title": "Publish/unpublish, ordering, validation",
+      "workstream": "Courses",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P1", "area:backend"],
+      "body": "### Mục tiêu\nKiểm soát trạng thái xuất bản (Publish/Unpublish), sắp xếp thứ tự hiển thị và kiểm tra ràng buộc trước khi xóa (FR-014, FR-015).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Learner không nhìn thấy nội dung unpublished (FR-024).\n- [ ] Khi Admin publish course, Learner có thể xem được ngay (TC-04).\n- [ ] Không thể xóa unit nếu còn bài học liên kết mà không có xác nhận."
+    },
+    {
+      "id": 16,
+      "title": "Course catalog và course detail UI",
+      "workstream": "Courses",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện danh mục khóa học (Catalog) theo ngôn ngữ/trình độ và trang chi tiết lộ trình khóa học.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Hiển thị danh sách khóa học có bộ lọc theo ngôn ngữ và trình độ (A1, A2...).\n- [ ] Trang chi tiết khóa học hiển thị cấu trúc Units và danh sách Lessons kèm nút bắt đầu học."
+    },
+    {
+      "id": 17,
+      "title": "Lesson viewer và navigation",
+      "workstream": "Courses",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nMàn hình học bài chi tiết (Lesson Viewer) hỗ trợ điều hướng giữa các bài học.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Hiển thị nội dung bài học, lý thuyết và danh sách từ vựng liên quan.\n- [ ] Các nút điều hướng: Bài trước, Bài tiếp theo, hoặc Chuyển sang làm Quiz."
+    },
+    {
+      "id": 18,
+      "title": "Vocabulary CRUD + search/filter",
+      "workstream": "Vocabulary",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nAPI quản lý từ vựng của bài học, hỗ trợ phiên âm IPA, nghĩa, ví dụ, tìm kiếm và phân trang (FR-020, FR-021, FR-022).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Endpoints lấy danh sách từ vựng theo `lessonId` và tìm kiếm từ khóa.\n- [ ] Lưu đầy đủ: term, phonetic, meaning, example."
+    },
+    {
+      "id": 19,
+      "title": "Vocabulary UI và nội dung mẫu A1",
+      "workstream": "Vocabulary",
+      "owner": "Maintainer",
+      "milestone": "v0.1.0 Foundation",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện hiển thị danh sách từ vựng theo dạng thẻ trực quan và chuẩn bị nội dung mẫu tiếng Anh A1 ban đầu.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Giao diện thẻ từ vựng hiển thị từ gốc, phiên âm, nghĩa và nút nghe phát âm.\n- [ ] Đã có ít nhất 10 từ vựng mẫu hoạt động trong giao diện."
+    },
+    {
+      "id": 20,
+      "title": "Deck CRUD, tags, visibility API",
+      "workstream": "Decks",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nAPI quản lý bộ thẻ cá nhân (Decks), gắn thẻ phân loại (tags) và cấu hình riêng tư/công khai (FR-030 - FR-034).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] `GET/POST /api/v1/decks`, `GET/PATCH/DELETE /api/v1/decks/{id}`.\n- [ ] Kiểm tra chặt chẽ quyền sở hữu: Learner không thể sửa deck người khác (TC-03).\n- [ ] Thống kê số thẻ: tổng số thẻ, thẻ mới, thẻ đến hạn ôn tập."
+    },
+    {
+      "id": 21,
+      "title": "My Decks UI, editor và search",
+      "workstream": "Decks",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện quản lý bộ thẻ của tôi (My Decks), trình tạo/sửa bộ thẻ và tìm kiếm bộ thẻ.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Màn hình danh sách bộ thẻ cá nhân kèm số thẻ cần ôn hôm nay.\n- [ ] Modal tạo mới/chỉnh sửa bộ thẻ với cấu hình tên, mô tả, ngôn ngữ, public/private."
+    },
+    {
+      "id": 22,
+      "title": "Card CRUD API và validations",
+      "workstream": "Flashcards",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nAPI tạo, sửa, xóa thẻ Flashcard hai mặt trong bộ thẻ (FR-040, FR-045).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] CRUD thẻ flashcard liên kết với deckId.\n- [ ] Kiểm tra dữ liệu: mặt trước và mặt sau không được để trống."
+    },
+    {
+      "id": 23,
+      "title": "Flashcard editor, flip animation, shortcuts",
+      "workstream": "Flashcards",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện học lật thẻ Flashcard hai mặt với hiệu ứng 3D lật thẻ mượt mà và phím tắt (FR-041, FR-042).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Thẻ lật trơn tru khi nhấp chuột hoặc bấm phím Space.\n- [ ] Hỗ trợ phím số 1-4 để chọn mức độ ghi nhớ."
+    },
+    {
+      "id": 24,
+      "title": "Đặc tả SRS algorithm, tests và versioning",
+      "workstream": "SRS",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:backend", "type:test"],
+      "body": "### Mục tiêu\nĐặc tả và triển khai thuật toán Spaced Repetition đóng gói qua interface `ISrsScheduler` kèm Unit Tests (FR-050, FR-051).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] 4 mức đánh giá: Again, Hard, Good, Easy tính toán ngày đáo hạn tiếp theo chính xác (TC-06).\n- [ ] Unit tests bao phủ 100% các nhánh tính toán của scheduler."
+    },
+    {
+      "id": 25,
+      "title": "Card schedule, due query, review events",
+      "workstream": "SRS",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nLưu trữ lịch ôn tập của thẻ (`card_schedules`) và nhật ký sự kiện ôn tập (`review_events`) (FR-051, FR-052, FR-053).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Endpoint `GET /api/v1/reviews/due?deckId=...` lọc chính xác các thẻ có `due_at <= now`.\n- [ ] `review_events` được lưu dưới dạng nhật ký bất biến (immutable)."
+    },
+    {
+      "id": 26,
+      "title": "Review session UI và rating buttons",
+      "workstream": "SRS",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện phiên ôn tập thẻ hàng ngày với thanh tiến độ và 4 nút chọn chất lượng ôn tập.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Sau khi lật thẻ, hiển thị 4 nút: Again (Đỏ), Hard (Cam), Good (Xanh lục), Easy (Xanh dương) kèm thời gian dự kiến ôn lại.\n- [ ] Chuyển tiếp thẻ mượt mà không bị giật lag."
+    },
+    {
+      "id": 27,
+      "title": "Idempotent review submission và concurrency tests",
+      "workstream": "SRS",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:backend", "type:test"],
+      "body": "### Mục tiêu\nĐảm bảo tính Idempotent khi ghi nhận kết quả ôn tập thẻ (chống tạo review trùng khi retry hoặc sync) (FR-055, AC-SRS-01).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Request gửi trùng `clientEventId` chỉ được áp dụng đúng 1 lần (TC-07).\n- [ ] Integration test kiểm tra gửi 2 request song song cùng event ID."
+    },
+    {
+      "id": 28,
+      "title": "Question models/API multiple choice",
+      "workstream": "Quiz",
+      "owner": "Contributor",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nThiết kế model câu hỏi và API bài tập trắc nghiệm nhiều lựa chọn (Multiple Choice) (FR-060).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] `GET /api/v1/lessons/{id}/quiz`: Trả về danh sách câu hỏi không chứa đáp án đúng.\n- [ ] Lưu cấu trúc câu hỏi và các options."
+    },
+    {
+      "id": 29,
+      "title": "Fill-in-blank và matching question types",
+      "workstream": "Quiz",
+      "owner": "Contributor",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P1", "area:backend"],
+      "body": "### Mục tiêu\nMở rộng ngân hàng câu hỏi hỗ trợ dạng điền từ vào chỗ trống và ghép cặp từ vựng (FR-061, FR-062).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Hỗ trợ config JSON cho câu hỏi điền từ và ghép cặp.\n- [ ] Logic chấm điểm phía server chính xác cho cả 3 dạng bài (TC-05)."
+    },
+    {
+      "id": 30,
+      "title": "Quiz UI, score, results và history",
+      "workstream": "Quiz",
+      "owner": "Contributor",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện làm bài tập Quiz tương tác sinh động, màn hình kết quả và xem lại lời giải thích (FR-063, FR-064, FR-065).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Trình phát bài tập có âm thanh tương tác đúng/sai, thanh tiến độ làm bài.\n- [ ] Màn hình điểm số hiển thị giải thích chi tiết cho từng câu."
+    },
+    {
+      "id": 31,
+      "title": "Lesson progress + enrollments API",
+      "workstream": "Progress",
+      "owner": "Contributor",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nAPI ghi nhận tiến độ hoàn thành bài học và ghi danh khóa học của người dùng (FR-070, FR-073).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Ghi nhận trạng thái: Chưa học, Đang học, Đã hoàn thành bài học.\n- [ ] Chống ghi nhận hoàn thành lặp khi retry (FR-074)."
+    },
+    {
+      "id": 32,
+      "title": "Resume learning + progress UI",
+      "workstream": "Progress",
+      "owner": "Contributor",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P1", "area:frontend"],
+      "body": "### Mục tiêu\nHiển thị tiến độ học tập trên khóa học và nút 'Tiếp tục bài gần nhất' tại Dashboard (FR-072).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Nút 'Tiếp tục học' dẫn thẳng tới bài học đang dang dở.\n- [ ] Thanh tiến độ % hoàn thành của từng khóa học."
+    },
+    {
+      "id": 33,
+      "title": "CSV template và import preview/validation",
+      "workstream": "CSV",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:backend", "area:frontend"],
+      "body": "### Mục tiêu\nTải mẫu CSV, tải lên kiểm tra lỗi định dạng UTF-8, cột bắt buộc và màn hình xem trước dữ liệu (FR-080, FR-081, FR-082).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Tải được file CSV mẫu chuẩn.\n- [ ] Màn hình xem trước (Preview) hiển thị số dòng hợp lệ và cảnh báo lỗi chính xác ở dòng nào (TC-08)."
+    },
+    {
+      "id": 34,
+      "title": "CSV import commit + export + security tests",
+      "workstream": "CSV",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:backend", "type:test"],
+      "body": "### Mục tiêu\nThực thi import dữ liệu thẻ vào deck qua transaction và chức năng xuất (Export) CSV chống Formula Injection (FR-083, FR-084, FR-085).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Import thẻ an toàn không làm hỏng dữ liệu hiện tại khi có lỗi.\n- [ ] Export CSV escape ký tự đặc biệt (`=`, `+`, `-`, `@`) chống formula injection (TC-09)."
+    },
+    {
+      "id": 35,
+      "title": "Media storage abstraction, upload validation",
+      "workstream": "Media",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P1", "area:backend"],
+      "body": "### Mục tiêu\nModule upload hình ảnh và tệp âm thanh, kiểm tra dung lượng tối đa và định dạng MIME (FR-090, FR-091).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Endpoint `POST /api/v1/media` kiểm tra MIME/size hợp lệ.\n- [ ] Từ chối các tệp tin nguy hiểm không phải ảnh/audio (TC-10)."
+    },
+    {
+      "id": 36,
+      "title": "Image/audio preview và playback UI",
+      "workstream": "Media",
+      "owner": "Core Developer",
+      "milestone": "v0.2.0 Learning Engine",
+      "labels": ["type:feature", "priority:P1", "area:frontend"],
+      "body": "### Mục tiêu\nHiển thị hình ảnh minh họa và trình phát âm thanh trên từ vựng và thẻ Flashcard (FR-092, FR-093).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Nút phát âm thanh phát mượt mà kèm cơ chế fallback khi file lỗi."
+    },
+    {
+      "id": 37,
+      "title": "Review/day, retention, heatmap API",
+      "workstream": "Statistics",
+      "owner": "Leader",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:backend"],
+      "body": "### Mục tiêu\nAPI tổng hợp số liệu thống kê học tập: số lượt ôn mỗi ngày, tỷ lệ nhớ từ, dữ liệu ma trận hoạt động (Heatmap) (FR-100 - FR-104).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Endpoint `GET /api/v1/statistics/overview` trả về tổng số thẻ mới/đã học/đến hạn.\n- [ ] Endpoint `GET /api/v1/statistics/heatmap` trả về ma trận số lần học theo từng ngày."
+    },
+    {
+      "id": 38,
+      "title": "Dashboard charts và filters",
+      "workstream": "Statistics",
+      "owner": "Leader",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện bảng điều khiển thống kê (Dashboard) với biểu đồ trực quan và Heatmap phong cách GitHub (FR-103, FR-105).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Biểu đồ trực quan thể hiện phân bố độ khó Again/Hard/Good/Easy.\n- [ ] Heatmap hiển thị màu xanh theo mức độ chăm chỉ từng ngày."
+    },
+    {
+      "id": 39,
+      "title": "Daily goal/timezone/streak calculation",
+      "workstream": "Streak",
+      "owner": "Leader",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:backend"],
+      "body": "### Mục tiêu\nTính toán chuỗi ngày học liên tục (Streak) dựa theo mục tiêu học hàng ngày và múi giờ riêng của người học (FR-110, FR-111, FR-112).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Tính streak chính xác qua ranh giới ngày và múi giờ người dùng (TC-13).\n- [ ] Chống tăng streak hai lần do sự kiện trùng lặp (FR-113)."
+    },
+    {
+      "id": 40,
+      "title": "Streak UI, calendar, duplicate-event tests",
+      "workstream": "Streak",
+      "owner": "Leader",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:frontend", "type:test"],
+      "body": "### Mục tiêu\nGiao diện hiển thị biểu tượng ngọn lửa Streak trên Header, lịch học tập và bộ test kiểm tra sự kiện trùng.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Huy hiệu ngọn lửa hiển thị số ngày streak liên tiếp.\n- [ ] Widget Daily Goal hiển thị tiến độ hoàn thành mục tiêu ngày."
+    },
+    {
+      "id": 41,
+      "title": "Public deck listing/search/preview API",
+      "workstream": "Sharing",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:backend"],
+      "body": "### Mục tiêu\nAPI danh mục bộ thẻ công khai được cộng đồng chia sẻ, hỗ trợ tìm kiếm và xem trước nội dung thẻ (FR-120, FR-121, FR-122).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Bộ thẻ riêng tư (private) tuyệt đối không lộ trong danh mục công khai (TC-12).\n- [ ] Xem trước một số thẻ mẫu trước khi sao chép."
+    },
+    {
+      "id": 42,
+      "title": "Clone deck API, ownership + moderation",
+      "workstream": "Sharing",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:backend"],
+      "body": "### Mục tiêu\nAPI sao chép (Clone) bộ thẻ công khai về tài khoản cá nhân, lưu vết nguồn gốc (FR-123, FR-124, AC-SHARE-01).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Deck được clone tạo GUID mới, chủ sở hữu mới và độc lập hoàn toàn với deck gốc (TC-11).\n- [ ] Admin có quyền ẩn bộ thẻ công khai nếu có nội dung vi phạm (TC-20)."
+    },
+    {
+      "id": 43,
+      "title": "Public gallery và share UI",
+      "workstream": "Sharing",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện thư viện bộ thẻ cộng đồng, tính năng tìm kiếm, xem trước và nút 1-click clone deck.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Khám phá các bộ thẻ cộng đồng theo ngôn ngữ.\n- [ ] Nút 'Sao chép về bộ thẻ của tôi' hoạt động mượt mà."
+    },
+    {
+      "id": 44,
+      "title": "PWA manifest, service worker, app shell cache",
+      "workstream": "Offline",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P0", "area:offline", "area:frontend"],
+      "body": "### Mục tiêu\nCấu hình Progressive Web App (PWA) với manifest, Service Worker lưu bộ nhớ đệm App Shell (FR-130, FR-132).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Ứng dụng có thể cài đặt (Installable) trên máy tính/điện thoại.\n- [ ] Khi ngắt kết nối mạng, trang web vẫn mở được bình thường từ Service Worker cache."
+    },
+    {
+      "id": 45,
+      "title": "IndexedDB schema và deck predownload",
+      "workstream": "Offline",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P0", "area:offline", "area:frontend"],
+      "body": "### Mục tiêu\nThiết kế cơ sở dữ liệu IndexedDB (sử dụng Dexie.js) để tải trước (Pre-download) bộ thẻ và danh sách thẻ (FR-131, FR-134).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Người dùng có thể nhấn 'Tải về học offline' một bộ thẻ bất kỳ.\n- [ ] Dữ liệu thẻ và lịch ôn tập được lưu trữ an toàn trong IndexedDB."
+    },
+    {
+      "id": 46,
+      "title": "Offline review queue + pending UI",
+      "workstream": "Offline",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P0", "area:offline", "area:frontend"],
+      "body": "### Mục tiêu\nHọc và đánh giá thẻ khi mất mạng, lưu sự kiện vào hàng đợi cục bộ (Review Queue) và hiển thị chỉ báo trạng thái (FR-133, AC-OFFLINE-01).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Khi mất mạng vẫn ôn tập thẻ và chọn mức độ nhớ bình thường (TC-14).\n- [ ] Refresh trình duyệt dữ liệu hàng đợi không bị mất (TC-15).\n- [ ] Thanh trạng thái hiển thị rõ: 'Đang offline - 5 thao tác chờ đồng bộ'."
+    },
+    {
+      "id": 47,
+      "title": "Sync push endpoint + idempotency ledger",
+      "workstream": "Sync",
+      "owner": "Core Developer",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P0", "area:offline", "area:backend"],
+      "body": "### Mục tiêu\nEndpoint `POST /api/v1/sync/push` nhận mảng các thao tác offline kèm sổ cái Idempotency chống xử lý trùng (FR-140, FR-143, AC-SYNC-01).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Trả về kết quả chi tiết từng operation (`accepted`, `duplicate`, `conflict`, `rejected`).\n- [ ] Review offline được đồng bộ đúng một lần dù request bị gửi lại (TC-16)."
+    },
+    {
+      "id": 48,
+      "title": "Sync pull cursor, entity versions, conflicts",
+      "workstream": "Sync",
+      "owner": "Core Developer",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:offline", "area:backend"],
+      "body": "### Mục tiêu\nEndpoint `GET /api/v1/sync/pull` kéo thay đổi mới nhất từ server theo con trỏ cursor và phát hiện phiên bản xung đột (FR-141, FR-144).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Phát hiện xung đột khi hai thiết bị cùng chỉnh sửa một bộ thẻ (TC-17).\n- [ ] Áp dụng chính sách giải quyết xung đột rõ ràng."
+    },
+    {
+      "id": 49,
+      "title": "Client retry/backoff/reconciliation",
+      "workstream": "Sync",
+      "owner": "Contributor",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P0", "area:offline", "area:frontend"],
+      "body": "### Mục tiêu\nBộ máy đồng bộ client tự động phát hiện mạng online, retry có exponential backoff và hòa giải dữ liệu IndexedDB (FR-142, FR-146).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Tự động đồng bộ ngay khi mạng phục hồi.\n- [ ] Hiển thị thông báo khi đồng bộ hoàn tất hoặc gặp lỗi."
+    },
+    {
+      "id": 50,
+      "title": "Offline->online integration test, multi-device conflict",
+      "workstream": "Sync",
+      "owner": "Maintainer",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:test", "priority:P0", "area:offline"],
+      "body": "### Mục tiêu\nBộ kiểm thử tích hợp kịch bản thực tế: Offline -> Học bài -> Khôi phục mạng -> Đồng bộ không mất dữ liệu.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Kịch bản kiểm thử mô phỏng 2 thiết bị cùng chỉnh sửa thẻ.\n- [ ] Kiểm chứng tính nhất quán dữ liệu sau đồng bộ."
+    },
+    {
+      "id": 51,
+      "title": "Admin user management và moderation",
+      "workstream": "Admin",
+      "owner": "Maintainer",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:backend", "area:frontend"],
+      "body": "### Mục tiêu\nCổng quản trị người dùng: Khóa/mở tài khoản, kiểm duyệt bộ thẻ công khai, ghi nhận Audit Log (FR-150, FR-151, FR-154, FR-155).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Admin có thể khóa tài khoản vi phạm chính sách.\n- [ ] Ẩn các bộ thẻ công khai không phù hợp.\n- [ ] Mọi hành động quản trị đều được lưu trong `audit_logs`."
+    },
+    {
+      "id": 52,
+      "title": "Admin course/content editor UI",
+      "workstream": "Admin",
+      "owner": "Maintainer",
+      "milestone": "v0.3.0 Extended Learning",
+      "labels": ["type:feature", "priority:P1", "area:frontend"],
+      "body": "### Mục tiêu\nGiao diện biên tập nội dung dành cho Admin: Quản lý Khóa học, Chương, Bài học và Câu hỏi bài tập (FR-152, FR-153).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Form biên tập dễ sử dụng, hỗ trợ tạo nhanh câu hỏi trắc nghiệm.\n- [ ] Chức năng Publish/Unpublish trực tiếp trên giao diện."
+    },
+    {
+      "id": 53,
+      "title": "Backend unit/integration test suite",
+      "workstream": "Testing",
+      "owner": "Core Developer",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:test", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nHoàn thiện toàn bộ bộ kiểm thử Unit và Integration cho Backend đảm bảo độ tin cậy của API.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Kiểm thử SRS, Quiz scoring, Streak calculation, CSV parser, Auth.\n- [ ] Toàn bộ test suite chạy pass trên môi trường CI."
+    },
+    {
+      "id": 54,
+      "title": "Frontend component/e2e test suite",
+      "workstream": "Testing",
+      "owner": "Contributor",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:test", "priority:P1", "area:frontend"],
+      "body": "### Mục tiêu\nXây dựng kiểm thử thành phần giao diện (Vitest / RTL) và luồng chính người dùng.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Test các trạng thái Loading, Empty, Error của các component quan trọng.\n- [ ] Kiểm thử luồng lật thẻ và submit kết quả."
+    },
+    {
+      "id": 55,
+      "title": "Security and access-control tests",
+      "workstream": "Testing",
+      "owner": "Maintainer",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:test", "priority:P0", "area:backend"],
+      "body": "### Mục tiêu\nKiểm thử bảo mật, kiểm soát phân quyền và xác thực trên toàn bộ hệ thống API.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Đảm bảo Learner không thể gọi API Admin.\n- [ ] Không thể truy cập hoặc chỉnh sửa tài nguyên của user khác.\n- [ ] Không rò rỉ token hay password hash trong API response hay logs."
+    },
+    {
+      "id": 56,
+      "title": "CSV, SRS, streak, offline/sync acceptance test",
+      "workstream": "Testing",
+      "owner": "Leader",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:test", "priority:P0"],
+      "body": "### Mục tiêu\nNghiệm thu toàn bộ 20 Test Cases bắt buộc (TC-01 đến TC-20) theo đặc tả tài liệu môn học.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Chạy và ghi nhận kết quả đạt (Pass) cho đủ 20/20 Test Cases.\n- [ ] Có tài liệu/ảnh chụp minh chứng nghiệm thu."
+    },
+    {
+      "id": 57,
+      "title": "Seed A1: 5 lessons, 50+ words, quiz content",
+      "workstream": "Delivery",
+      "owner": "Leader",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:task", "priority:P0", "area:database"],
+      "body": "### Mục tiêu\nChuẩn bị bộ dữ liệu mẫu Tiếng Anh A1 hoàn chỉnh: 1 Khóa học, 5 Bài học, trên 50 Từ vựng có phát âm, câu hỏi bài tập.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Script nạp dữ liệu chạy trơn tru khi khởi tạo database.\n- [ ] Người dùng mới có thể trải nghiệm ngay từ bài 1 đến bài 5 mà không cần nhập thủ công."
+    },
+    {
+      "id": 58,
+      "title": "Deploy staging, smoke test, health checks",
+      "workstream": "Delivery",
+      "owner": "Maintainer",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:task", "priority:P1", "area:ci"],
+      "body": "### Mục tiêu\nTriển khai ứng dụng lên môi trường Staging/Docker, kiểm tra sức khỏe hệ thống (Health Check).\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Hệ thống khởi động trơn tru qua `docker compose`.\n- [ ] Endpoint `/health` trả về trạng thái khỏe mạnh của API và Database."
+    },
+    {
+      "id": 59,
+      "title": "Production deployment + backups/restore drill",
+      "workstream": "Delivery",
+      "owner": "Maintainer",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:task", "priority:P1", "area:ci"],
+      "body": "### Mục tiêu\nDiễn tập sao lưu (Backup) và phục hồi (Restore) dữ liệu MySQL, đóng gói môi trường phát hành.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Tạo script backup tự động cơ sở dữ liệu.\n- [ ] Thử nghiệm restore từ bản backup thành công không mất dữ liệu."
+    },
+    {
+      "id": 60,
+      "title": "Release notes, screenshots, demo script",
+      "workstream": "Delivery",
+      "owner": "Leader",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:docs", "priority:P0"],
+      "body": "### Mục tiêu\nChuẩn bị kịch bản báo cáo Demo sản phẩm (15-20 phút), chụp ảnh màn hình các tính năng và soạn thảo Release Notes.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Kịch bản demo từng bước rõ ràng cho buổi báo cáo môn học.\n- [ ] Ảnh chụp màn hình đầy đủ các màn hình trong thư mục `docs/screenshots`."
+    },
+    {
+      "id": 61,
+      "title": "Contribution guide, code of conduct, security policy",
+      "workstream": "Delivery",
+      "owner": "Leader",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:docs", "priority:P0"],
+      "body": "### Mục tiêu\nHoàn thiện toàn bộ tài liệu quản trị mã nguồn mở trước khi nghiệm thu môn học.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md, CHANGELOG.md được rà soát và cập nhật hoàn chỉnh."
+    },
+    {
+      "id": 62,
+      "title": "v1.0.0 release, final retrospective",
+      "workstream": "Delivery",
+      "owner": "Leader",
+      "milestone": "v1.0.0 MVP Release",
+      "labels": ["type:task", "priority:P0"],
+      "body": "### Mục tiêu\nPhát hành bản Release chính thức v1.0.0 trên GitHub với Git Tag, đóng toàn bộ Milestones và tổng kết dự án.\n\n### Tiêu chí nghiệm thu (Acceptance Criteria)\n- [ ] Tạo Git tag `v1.0.0` trên nhánh `main`.\n- [ ] Đóng Milestone `v1.0.0 MVP Release`.\n- [ ] Báo cáo tổng kết đóng góp của cả 4 thành viên."
+    }
+  ]
+}

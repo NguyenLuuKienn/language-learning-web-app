@@ -1,0 +1,33 @@
+name: "📋 Nhiệm vụ Kỹ thuật (Engineering Task)"
+description: "Tạo task kỹ thuật, refactor, tài liệu hoặc cấu hình CI/CD"
+title: "[TASK]: "
+labels: ["type:task"]
+body:
+  - type: markdown
+    attributes:
+      value: "Mẫu Issue cho các công việc kỹ thuật, thiết lập hạ tầng, cấu hình công cụ hoặc viết tài liệu."
+  - type: textarea
+    id: description
+    attributes:
+      label: "Mục tiêu công việc"
+      description: "Mục tiêu và lý do thực hiện công việc này."
+    validations:
+      required: true
+  - type: textarea
+    id: checklist
+    attributes:
+      label: "Danh sách công việc (Todo List)"
+      description: "Các bước kỹ thuật cần thực hiện."
+      placeholder: |
+        - [ ] Bước 1: ...
+        - [ ] Bước 2: ...
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: "Điều kiện hoàn thành (DoD)"
+      description: "Tiêu chí để đóng task này."
+      placeholder: "- [ ] CI xanh, có tài liệu cập nhật"
+    validations:
+      required: true

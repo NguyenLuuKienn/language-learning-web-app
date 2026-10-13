@@ -1,0 +1,19 @@
+# Phân công Code Review theo từng khu vực mã nguồn
+
+# Quy định chung cho toàn bộ repository
+* @leader @maintainer
+
+# Backend & Kiến trúc dữ liệu
+/backend/ @core-developer @maintainer
+
+# Frontend & Giao diện PWA
+/frontend/ @contributor @leader
+
+# Offline Engine & IndexedDB
+/frontend/src/offline/ @contributor @core-developer
+
+# GitHub Actions & Cấu hình CI/CD
+/.github/ @maintainer @leader
+
+# Tài liệu dự án
+/docs/ @leader @maintainer

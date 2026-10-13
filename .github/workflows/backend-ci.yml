@@ -1,0 +1,49 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_password_123
+          MYSQL_DATABASE: language_learning_test_db
+          MYSQL_USER: app_user
+          MYSQL_PASSWORD: app_password_123
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore backend/LanguageLearning.sln
+
+      - name: Build solution
+        run: dotnet build backend/LanguageLearning.sln --configuration Release --no-restore
+
+      - name: Run unit & integration tests
+        run: dotnet test backend/LanguageLearning.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test_results.trx"
+        env:
+          ConnectionStrings__DefaultConnection: "Server=localhost;Port=3306;Database=language_learning_test_db;User=app_user;Password=app_password_123;"

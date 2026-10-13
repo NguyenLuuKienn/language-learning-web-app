@@ -1,0 +1,32 @@
+name: "✨ Đề xuất Tính năng (Feature Request)"
+description: "Đề xuất tính năng mới hoặc cải tiến cho ứng dụng"
+title: "[FEAT]: "
+labels: ["type:feature"]
+body:
+  - type: markdown
+    attributes:
+      value: "Đề xuất tính năng mới giúp mở rộng chức năng và hoàn thiện 16 modules MVP của dự án."
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Bối cảnh & Vấn đề cần giải quyết"
+      description: "Tính năng này giải quyết nhu cầu gì của người học hoặc quản trị viên?"
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Giải pháp & Chức năng đề xuất"
+      description: "Mô tả giải pháp cụ thể bạn muốn triển khai."
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Tiêu chí Nghiệm thu (Acceptance Criteria)"
+      description: "Các điều kiện kiểm tra để tính là hoàn thành tính năng."
+      placeholder: |
+        - [ ] Tiêu chí 1: Người dùng có thể...
+        - [ ] Tiêu chí 2: Hệ thống phản hồi...
+    validations:
+      required: true
