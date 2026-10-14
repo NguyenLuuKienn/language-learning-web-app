@@ -1,4 +1,7 @@
-﻿using LanguageLearning.Infrastructure;
+﻿
+using LanguageLearning.Infrastructure;
+using LanguageLearning.Application.Interfaces; 
+using LanguageLearning.Application.Services;   
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,9 @@ builder.Services.AddSwaggerGen();
 
 // Đăng ký tầng Infrastructure (EF Core MySQL DbContext)
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Issue #20: Register Deck service
+builder.Services.AddScoped<IDeckService, DeckService>();
 
 var app = builder.Build();
 
