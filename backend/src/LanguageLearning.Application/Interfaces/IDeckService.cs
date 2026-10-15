@@ -5,8 +5,10 @@ namespace LanguageLearning.Application.Interfaces;
 
 public interface IDeckService
 {
-    Task<List<DeckResponse>> GetDecksAsync(
+    Task<PagedDeckResponse> GetDecksAsync(
         Guid userId,
+        int page = 1,
+        int pageSize = 10,
         CancellationToken cancellationToken = default);
 
     Task<DeckResponse?> GetDeckByIdAsync(

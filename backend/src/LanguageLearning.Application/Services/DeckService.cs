@@ -14,7 +14,6 @@ public class DeckService : IDeckService
         _deckRepository = deckRepository;
     }
 
-    // Create a new deck
     public async Task<DeckResponse> CreateDeckAsync(
         CreateDeckRequest request,
         Guid userId,
@@ -45,7 +44,6 @@ public class DeckService : IDeckService
             Version = 1
         };
 
-        // Add tags
         foreach (var tag in request.Tags ?? new List<string>())
         {
             var normalizedTag = tag?.Trim();
@@ -87,29 +85,52 @@ public class DeckService : IDeckService
         };
     }
 
-    // Get decks accessible to the user
-    public async Task<List<DeckResponse>> GetDecksAsync(
+    public async Task<PagedDeckResponse> GetDecksAsync(
         Guid userId,
+        int page = 1,
+        int pageSize = 10,
         CancellationToken cancellationToken = default)
     {
         if (userId == Guid.Empty)
             throw new UnauthorizedAccessException(
                 "User is not authenticated.");
 
-        var decks = await _deckRepository.GetAccessibleDecksAsync(
-            userId, cancellationToken);
+        if (page < 1)
+            page = 1;
 
-        var result = new List<DeckResponse>();
+        if (pageSize < 1)
+            pageSize = 10;
 
-        foreach (var deck in decks)
-        {
-            // Get statistics for each deck
-            var stats = await _deckRepository.GetDeckStatisticsAsync(
-                deck.Id,
+        if (pageSize > 50)
+            pageSize = 50;
+
+        var (decks, totalItems) =
+            await _deckRepository.GetAccessibleDecksAsync(
+                userId,
+                page,
+                pageSize,
+                cancellationToken);
+
+        var deckIds = decks
+            .Select(deck => deck.Id)
+            .ToArray();
+
+        var statistics =
+            await _deckRepository.GetDeckStatisticsBatchAsync(
+                deckIds,
                 userId,
                 cancellationToken);
 
-            result.Add(new DeckResponse
+        var items = new List<DeckResponse>();
+
+        foreach (var deck in decks)
+        {
+            var stats = statistics.TryGetValue(
+                deck.Id, out var deckStats)
+                ? deckStats
+                : (TotalCards: 0, NewCards: 0, DueCards: 0);
+
+            items.Add(new DeckResponse
             {
                 Id = deck.Id,
                 OwnerId = deck.OwnerId,
@@ -129,10 +150,21 @@ public class DeckService : IDeckService
             });
         }
 
-        return result;
+        var totalPages = (int)Math.Ceiling(
+            (double)totalItems / pageSize);
+
+        return new PagedDeckResponse
+        {
+            Items = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            HasNextPage = page < totalPages,
+            HasPreviousPage = page > 1 && totalPages > 0
+        };
     }
 
-    // Get deck details by ID
     public async Task<DeckResponse?> GetDeckByIdAsync(
         Guid deckId,
         Guid userId,
@@ -148,11 +180,9 @@ public class DeckService : IDeckService
         if (deck == null)
             return null;
 
-        // Check access permission
         if (deck.OwnerId != userId && !deck.IsPublic)
             return null;
 
-        // Get card statistics for the current user
         var stats = await _deckRepository.GetDeckStatisticsAsync(
             deckId,
             userId,
@@ -178,7 +208,6 @@ public class DeckService : IDeckService
         };
     }
 
-    // Update an existing deck
     public async Task<DeckResponse?> UpdateDeckAsync(
         Guid deckId,
         UpdateDeckRequest request,
@@ -192,11 +221,9 @@ public class DeckService : IDeckService
         var deck = await _deckRepository.GetByIdAsync(
             deckId, cancellationToken);
 
-        // Only the owner can update a deck
         if (deck == null || deck.OwnerId != userId)
             return null;
 
-        // Update title
         if (request.Title != null)
         {
             if (string.IsNullOrWhiteSpace(request.Title))
@@ -206,11 +233,9 @@ public class DeckService : IDeckService
             deck.Title = request.Title.Trim();
         }
 
-        // Update description
         if (request.Description != null)
             deck.Description = request.Description.Trim();
 
-        // Update language
         if (request.LanguageId.HasValue)
         {
             if (request.LanguageId.Value == Guid.Empty ||
@@ -225,11 +250,9 @@ public class DeckService : IDeckService
             deck.LanguageId = request.LanguageId.Value;
         }
 
-        // Update visibility
         if (request.IsPublic.HasValue)
             deck.IsPublic = request.IsPublic.Value;
 
-        // Update tags
         if (request.Tags != null)
         {
             var newTags = request.Tags
@@ -238,7 +261,6 @@ public class DeckService : IDeckService
                 .Distinct()
                 .ToList();
 
-            // Remove tags that are no longer needed
             var tagsToRemove = deck.Tags
                 .Where(tag => !newTags.Contains(tag.Tag))
                 .ToList();
@@ -248,7 +270,6 @@ public class DeckService : IDeckService
                 deck.Tags.Remove(tag);
             }
 
-            // Add tags that do not exist
             foreach (var tag in newTags)
             {
                 if (deck.Tags.Any(t => t.Tag == tag))
@@ -262,10 +283,11 @@ public class DeckService : IDeckService
             }
         }
 
+        deck.Version++;
+
         await _deckRepository.SaveChangesAsync(
             cancellationToken);
 
-        // Get updated card statistics
         var stats = await _deckRepository.GetDeckStatisticsAsync(
             deck.Id,
             userId,
@@ -291,7 +313,6 @@ public class DeckService : IDeckService
         };
     }
 
-    // Delete a deck owned by the user
     public async Task<bool> DeleteDeckAsync(
         Guid deckId,
         Guid userId,
@@ -304,7 +325,6 @@ public class DeckService : IDeckService
         var deck = await _deckRepository.GetByIdAsync(
             deckId, cancellationToken);
 
-        // Only the owner can delete a deck
         if (deck == null || deck.OwnerId != userId)
             return false;
 

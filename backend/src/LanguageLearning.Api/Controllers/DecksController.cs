@@ -19,7 +19,6 @@ public class DecksController : ControllerBase
         _deckService = deckService;
     }
 
-    // Get authenticated user ID from claims
     private Guid? GetCurrentUserId()
     {
         var userIdValue = User.FindFirstValue(
@@ -34,23 +33,31 @@ public class DecksController : ControllerBase
             : null;
     }
 
-    // GET: api/v1/decks
     [HttpGet]
     public async Task<IActionResult> GetDecks(
-        CancellationToken cancellationToken)
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
     {
         var userId = GetCurrentUserId();
 
         if (userId == null)
-            return Unauthorized();
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Unauthorized",
+                detail: "A valid user identity is required.");
+        }
 
         var decks = await _deckService.GetDecksAsync(
-            userId.Value, cancellationToken);
+            userId.Value,
+            page,
+            pageSize,
+            cancellationToken);
 
         return Ok(decks);
     }
 
-    // GET: api/v1/decks/{id}
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetDeckById(
         Guid id,
@@ -59,18 +66,27 @@ public class DecksController : ControllerBase
         var userId = GetCurrentUserId();
 
         if (userId == null)
-            return Unauthorized();
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Unauthorized",
+                detail: "A valid user identity is required.");
+        }
 
         var deck = await _deckService.GetDeckByIdAsync(
             id, userId.Value, cancellationToken);
 
         if (deck == null)
-            return NotFound();
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Deck not found",
+                detail: "The requested deck does not exist or is not accessible.");
+        }
 
         return Ok(deck);
     }
 
-    // POST: api/v1/decks
     [HttpPost]
     public async Task<IActionResult> CreateDeck(
         [FromBody] CreateDeckRequest request,
@@ -79,7 +95,12 @@ public class DecksController : ControllerBase
         var userId = GetCurrentUserId();
 
         if (userId == null)
-            return Unauthorized();
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Unauthorized",
+                detail: "A valid user identity is required.");
+        }
 
         try
         {
@@ -93,11 +114,13 @@ public class DecksController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Invalid deck request",
+                detail: ex.Message);
         }
     }
 
-    // PATCH: api/v1/decks/{id}
     [HttpPatch("{id:guid}")]
     public async Task<IActionResult> UpdateDeck(
         Guid id,
@@ -107,7 +130,12 @@ public class DecksController : ControllerBase
         var userId = GetCurrentUserId();
 
         if (userId == null)
-            return Unauthorized();
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Unauthorized",
+                detail: "A valid user identity is required.");
+        }
 
         try
         {
@@ -115,17 +143,24 @@ public class DecksController : ControllerBase
                 id, request, userId.Value, cancellationToken);
 
             if (deck == null)
-                return NotFound();
+            {
+                return Problem(
+                    statusCode: StatusCodes.Status404NotFound,
+                    title: "Deck not found",
+                    detail: "The requested deck does not exist or is not accessible.");
+            }
 
             return Ok(deck);
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Invalid deck request",
+                detail: ex.Message);
         }
     }
 
-    // DELETE: api/v1/decks/{id}
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteDeck(
         Guid id,
@@ -134,13 +169,23 @@ public class DecksController : ControllerBase
         var userId = GetCurrentUserId();
 
         if (userId == null)
-            return Unauthorized();
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Unauthorized",
+                detail: "A valid user identity is required.");
+        }
 
         var deleted = await _deckService.DeleteDeckAsync(
             id, userId.Value, cancellationToken);
 
         if (!deleted)
-            return NotFound();
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Deck not found",
+                detail: "The requested deck does not exist or is not accessible.");
+        }
 
         return NoContent();
     }

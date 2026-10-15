@@ -13,7 +13,6 @@ public class DeckServiceTests
     [Fact]
     public async Task UpdateDeck_OwnerCanUpdate_Success()
     {
-        // Arrange
         var ownerId = Guid.NewGuid();
         var deckId = Guid.NewGuid();
 
@@ -49,14 +48,14 @@ public class DeckServiceTests
             Title = "New Title"
         };
 
-        // Act
         var result = await service.UpdateDeckAsync(
             deckId, request, ownerId);
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal("New Title", result.Title);
         Assert.Equal("New Title", deck.Title);
+        Assert.Equal(2, deck.Version);
+        Assert.Equal(2, result.Version);
 
         repositoryMock.Verify(
             repo => repo.SaveChangesAsync(
@@ -67,7 +66,6 @@ public class DeckServiceTests
     [Fact]
     public async Task UpdateDeck_NonOwnerCannotUpdate_TC03()
     {
-        // Arrange
         var ownerId = Guid.NewGuid();
         var otherUserId = Guid.NewGuid();
         var deckId = Guid.NewGuid();
@@ -97,11 +95,9 @@ public class DeckServiceTests
             Title = "Unauthorized Change"
         };
 
-        // Act
         var result = await service.UpdateDeckAsync(
             deckId, request, otherUserId);
 
-        // Assert
         Assert.Null(result);
         Assert.Equal("Owner Deck", deck.Title);
 
@@ -114,7 +110,6 @@ public class DeckServiceTests
 [Fact]
 public async Task DeleteDeck_OwnerCanDelete_Success()
 {
-    // Arrange
     var ownerId = Guid.NewGuid();
     var deckId = Guid.NewGuid();
 
@@ -135,11 +130,9 @@ public async Task DeleteDeck_OwnerCanDelete_Success()
 
     var service = new DeckService(repositoryMock.Object);
 
-    // Act
     var result = await service.DeleteDeckAsync(
         deckId, ownerId);
 
-    // Assert
     Assert.True(result);
 
     repositoryMock.Verify(
@@ -155,7 +148,6 @@ public async Task DeleteDeck_OwnerCanDelete_Success()
 [Fact]
 public async Task DeleteDeck_NonOwnerCannotDelete_TC03()
 {
-    // Arrange
     var ownerId = Guid.NewGuid();
     var otherUserId = Guid.NewGuid();
     var deckId = Guid.NewGuid();
@@ -177,11 +169,9 @@ public async Task DeleteDeck_NonOwnerCannotDelete_TC03()
 
     var service = new DeckService(repositoryMock.Object);
 
-    // Act
     var result = await service.DeleteDeckAsync(
         deckId, otherUserId);
 
-    // Assert
     Assert.False(result);
 
     repositoryMock.Verify(
@@ -197,7 +187,6 @@ public async Task DeleteDeck_NonOwnerCannotDelete_TC03()
 [Fact]
 public async Task CreateDeck_NormalizesAndRemovesDuplicateTags()
 {
-    // Arrange
     var userId = Guid.NewGuid();
     var languageId = Guid.NewGuid();
     Deck? savedDeck = null;
@@ -233,10 +222,8 @@ public async Task CreateDeck_NormalizesAndRemovesDuplicateTags()
         }
     };
 
-    // Act
     var result = await service.CreateDeckAsync(request, userId);
 
-    // Assert
     Assert.NotNull(savedDeck);
     Assert.Equal(userId, result.OwnerId);
     Assert.True(result.IsPublic);
@@ -253,7 +240,6 @@ public async Task CreateDeck_NormalizesAndRemovesDuplicateTags()
 [Fact]
 public async Task UpdateDeck_ReplacesTagsCorrectly()
 {
-    // Arrange
     var ownerId = Guid.NewGuid();
     var deckId = Guid.NewGuid();
 
@@ -301,11 +287,9 @@ public async Task UpdateDeck_ReplacesTagsCorrectly()
         }
     };
 
-    // Act
     var result = await service.UpdateDeckAsync(
         deckId, request, ownerId);
 
-    // Assert
     Assert.NotNull(result);
     Assert.Equal(2, result.Tags.Count);
     Assert.Contains("English", result.Tags);
@@ -321,7 +305,6 @@ public async Task UpdateDeck_ReplacesTagsCorrectly()
 [Fact]
 public async Task GetDeck_PublicDeckAccessibleToOtherUser()
 {
-    // Arrange
     var ownerId = Guid.NewGuid();
     var otherUserId = Guid.NewGuid();
     var deckId = Guid.NewGuid();
@@ -349,11 +332,9 @@ public async Task GetDeck_PublicDeckAccessibleToOtherUser()
 
     var service = new DeckService(repositoryMock.Object);
 
-    // Act
     var result = await service.GetDeckByIdAsync(
         deckId, otherUserId);
 
-    // Assert
     Assert.NotNull(result);
     Assert.Equal(deckId, result.Id);
     Assert.True(result.IsPublic);
@@ -362,7 +343,6 @@ public async Task GetDeck_PublicDeckAccessibleToOtherUser()
 [Fact]
 public async Task GetDeck_PrivateDeckNotAccessibleToOtherUser()
 {
-    // Arrange
     var ownerId = Guid.NewGuid();
     var otherUserId = Guid.NewGuid();
     var deckId = Guid.NewGuid();
@@ -385,11 +365,9 @@ public async Task GetDeck_PrivateDeckNotAccessibleToOtherUser()
 
     var service = new DeckService(repositoryMock.Object);
 
-    // Act
     var result = await service.GetDeckByIdAsync(
         deckId, otherUserId);
 
-    // Assert
     Assert.Null(result);
 
     repositoryMock.Verify(
@@ -403,7 +381,6 @@ public async Task GetDeck_PrivateDeckNotAccessibleToOtherUser()
 [Fact]
 public async Task GetDeckById_ReturnsCorrectCardStatistics()
 {
-    // Arrange
     var ownerId = Guid.NewGuid();
     var deckId = Guid.NewGuid();
 
@@ -423,8 +400,6 @@ public async Task GetDeckById_ReturnsCorrectCardStatistics()
             deckId, It.IsAny<CancellationToken>()))
         .ReturnsAsync(deck);
 
-    // Giả lập Repository trả về:
-    // 10 thẻ tổng cộng, 4 thẻ mới, 3 thẻ đến hạn
     repositoryMock
         .Setup(repo => repo.GetDeckStatisticsAsync(
             deckId,
@@ -434,11 +409,9 @@ public async Task GetDeckById_ReturnsCorrectCardStatistics()
 
     var service = new DeckService(repositoryMock.Object);
 
-    // Act
     var result = await service.GetDeckByIdAsync(
         deckId, ownerId);
 
-    // Assert
     Assert.NotNull(result);
     Assert.Equal(10, result.TotalCards);
     Assert.Equal(4, result.NewCards);
@@ -450,6 +423,78 @@ public async Task GetDeckById_ReturnsCorrectCardStatistics()
             ownerId,
             It.IsAny<CancellationToken>()),
         Times.Once);
+}
+
+[Fact]
+public async Task GetDecks_ReturnsPaginationAndBatchStatistics()
+{
+    var userId = Guid.NewGuid();
+    var deckId = Guid.NewGuid();
+
+    var deck = new Deck
+    {
+        Id = deckId,
+        OwnerId = userId,
+        LanguageId = Guid.NewGuid(),
+        Title = "English Deck",
+        IsPublic = false
+    };
+
+    var repositoryMock = new Mock<IDeckRepository>();
+
+    repositoryMock
+        .Setup(repo => repo.GetAccessibleDecksAsync(
+            userId,
+            2,
+            10,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync((new List<Deck> { deck }, 25));
+
+    repositoryMock
+        .Setup(repo => repo.GetDeckStatisticsBatchAsync(
+            It.IsAny<IReadOnlyCollection<Guid>>(),
+            userId,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync(
+            new Dictionary<Guid, (int TotalCards, int NewCards, int DueCards)>
+            {
+                [deckId] = (10, 4, 3)
+            });
+
+    var service = new DeckService(repositoryMock.Object);
+
+    var result = await service.GetDecksAsync(
+        userId,
+        page: 2,
+        pageSize: 10);
+
+    Assert.Equal(2, result.Page);
+    Assert.Equal(10, result.PageSize);
+    Assert.Equal(25, result.TotalItems);
+    Assert.Equal(3, result.TotalPages);
+    Assert.True(result.HasNextPage);
+    Assert.True(result.HasPreviousPage);
+
+    Assert.Single(result.Items);
+    Assert.Equal(deckId, result.Items[0].Id);
+    Assert.Equal(10, result.Items[0].TotalCards);
+    Assert.Equal(4, result.Items[0].NewCards);
+    Assert.Equal(3, result.Items[0].DueCards);
+
+    repositoryMock.Verify(
+        repo => repo.GetDeckStatisticsBatchAsync(
+            It.Is<IReadOnlyCollection<Guid>>(
+                ids => ids.Contains(deckId)),
+            userId,
+            It.IsAny<CancellationToken>()),
+        Times.Once);
+
+    repositoryMock.Verify(
+        repo => repo.GetDeckStatisticsAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<Guid>(),
+            It.IsAny<CancellationToken>()),
+        Times.Never);
 }
 
 }
