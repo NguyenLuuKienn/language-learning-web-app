@@ -1,18 +1,28 @@
-﻿using LanguageLearning.Infrastructure;
-
+﻿
+using LanguageLearning.Api.Middleware;
+using LanguageLearning.Application.Interfaces;
+using LanguageLearning.Application.Services;
+using LanguageLearning.Infrastructure;
+using LanguageLearning.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Đăng ký tầng Infrastructure (EF Core MySQL DbContext)
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IDeckService, DeckService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
