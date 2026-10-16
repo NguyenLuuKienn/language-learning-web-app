@@ -2,26 +2,28 @@
 using LanguageLearning.Application.DTOs.Decks;
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Domain.Entities;
-
+using LanguageLearning.Application.Common;
+using LanguageLearning.Application.Common.Exceptions;
 namespace LanguageLearning.Application.Services;
 
 public class DeckService : IDeckService
 {
     private readonly IDeckRepository _deckRepository;
+    private readonly ICurrentUserService _currentUserService;
 
-    public DeckService(IDeckRepository deckRepository)
+    public DeckService(
+        IDeckRepository deckRepository,
+        ICurrentUserService currentUserService)
     {
         _deckRepository = deckRepository;
+        _currentUserService = currentUserService;
     }
 
     public async Task<DeckResponse> CreateDeckAsync(
         CreateDeckRequest request,
-        Guid userId,
         CancellationToken cancellationToken = default)
     {
-        if (userId == Guid.Empty)
-            throw new UnauthorizedAccessException(
-                "User is not authenticated.");
+        var userId = _currentUserService.GetRequiredUserId();
 
         if (request.LanguageId == Guid.Empty ||
             !await _deckRepository.LanguageExistsAsync(
@@ -85,30 +87,19 @@ public class DeckService : IDeckService
         };
     }
 
-    public async Task<PagedDeckResponse> GetDecksAsync(
-        Guid userId,
-        int page = 1,
-        int pageSize = 10,
+    public async Task<PagedResponse<DeckResponse>> GetDecksAsync(
+        PaginationParams pagination,
         CancellationToken cancellationToken = default)
     {
-        if (userId == Guid.Empty)
-            throw new UnauthorizedAccessException(
-                "User is not authenticated.");
+        var userId = _currentUserService.GetRequiredUserId();
 
-        if (page < 1)
-            page = 1;
-
-        if (pageSize < 1)
-            pageSize = 10;
-
-        if (pageSize > 50)
-            pageSize = 50;
+        ArgumentNullException.ThrowIfNull(pagination);
 
         var (decks, totalItems) =
             await _deckRepository.GetAccessibleDecksAsync(
                 userId,
-                page,
-                pageSize,
+                pagination.Page,
+                pagination.PageSize,
                 cancellationToken);
 
         var deckIds = decks
@@ -150,38 +141,27 @@ public class DeckService : IDeckService
             });
         }
 
-        var totalPages = (int)Math.Ceiling(
-            (double)totalItems / pageSize);
-
-        return new PagedDeckResponse
-        {
-            Items = items,
-            Page = page,
-            PageSize = pageSize,
-            TotalItems = totalItems,
-            TotalPages = totalPages,
-            HasNextPage = page < totalPages,
-            HasPreviousPage = page > 1 && totalPages > 0
-        };
+        return new PagedResponse<DeckResponse>(
+            items,
+            pagination.Page,
+            pagination.PageSize,
+            totalItems);
     }
 
-    public async Task<DeckResponse?> GetDeckByIdAsync(
+    public async Task<DeckResponse> GetDeckByIdAsync(
         Guid deckId,
-        Guid userId,
         CancellationToken cancellationToken = default)
     {
-        if (userId == Guid.Empty)
-            throw new UnauthorizedAccessException(
-                "User is not authenticated.");
+        var userId = _currentUserService.GetRequiredUserId();
 
         var deck = await _deckRepository.GetByIdAsync(
             deckId, cancellationToken);
 
-        if (deck == null)
-            return null;
-
-        if (deck.OwnerId != userId && !deck.IsPublic)
-            return null;
+        if (deck == null || (deck.OwnerId != userId && !deck.IsPublic))
+        {
+            throw new NotFoundException(
+                "The requested deck does not exist or is not accessible.");
+        }
 
         var stats = await _deckRepository.GetDeckStatisticsAsync(
             deckId,
@@ -208,21 +188,21 @@ public class DeckService : IDeckService
         };
     }
 
-    public async Task<DeckResponse?> UpdateDeckAsync(
+    public async Task<DeckResponse> UpdateDeckAsync(
         Guid deckId,
         UpdateDeckRequest request,
-        Guid userId,
         CancellationToken cancellationToken = default)
     {
-        if (userId == Guid.Empty)
-            throw new UnauthorizedAccessException(
-                "User is not authenticated.");
+        var userId = _currentUserService.GetRequiredUserId();
 
         var deck = await _deckRepository.GetByIdAsync(
             deckId, cancellationToken);
 
         if (deck == null || deck.OwnerId != userId)
-            return null;
+        {
+            throw new NotFoundException(
+                "The requested deck does not exist or is not accessible.");
+        }
 
         if (request.Title != null)
         {
@@ -313,26 +293,24 @@ public class DeckService : IDeckService
         };
     }
 
-    public async Task<bool> DeleteDeckAsync(
+    public async Task DeleteDeckAsync(
         Guid deckId,
-        Guid userId,
         CancellationToken cancellationToken = default)
     {
-        if (userId == Guid.Empty)
-            throw new UnauthorizedAccessException(
-                "User is not authenticated.");
+        var userId = _currentUserService.GetRequiredUserId();
 
         var deck = await _deckRepository.GetByIdAsync(
             deckId, cancellationToken);
 
         if (deck == null || deck.OwnerId != userId)
-            return false;
+        {
+            throw new NotFoundException(
+                "The requested deck does not exist or is not accessible.");
+        }
 
         _deckRepository.Delete(deck);
 
         await _deckRepository.SaveChangesAsync(
             cancellationToken);
-
-        return true;
     }
 }
