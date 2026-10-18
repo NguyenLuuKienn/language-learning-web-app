@@ -12,6 +12,7 @@ interface MyDecksPageProps {
   onSearchChange: (value: string) => void;
   onCreateDeck: () => void;
   onEditDeck: (deck: DeckResponse) => void;
+  onDeleteDeck: (deck: DeckResponse) => void;
   page: number;
   totalPages: number;
   totalItems: number;
@@ -28,6 +29,7 @@ export function MyDecksPage({
   onSearchChange,
   onCreateDeck,
   onEditDeck,
+  onDeleteDeck,
   page,
   totalPages,
   totalItems,
@@ -136,6 +138,7 @@ export function MyDecksPage({
                   deck={deck}
                   languageName={languageNames[deck.languageId]}
                   onEdit={onEditDeck}
+                  onDelete={onDeleteDeck}
                 />
               ))}
             </div>

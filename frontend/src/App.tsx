@@ -34,9 +34,6 @@ export function App() {
 
   return (
     <div className="min-h-screen flex bg-[#FAF6EE] text-[#1F1F1F] font-sans antialiased">
-      {/* ============================================================== */}
-      {/* 1. SIDEBAR BÊN TRÁI PHONG CÁCH NOTEBOOK */}
-      {/* ============================================================== */}
       <aside className="w-56 bg-[#FAF6EE] border-r-2 border-[#262626] flex flex-col justify-between shrink-0 select-none">
         <div>
           {/* Logo Brand Header */}
@@ -161,15 +158,8 @@ export function App() {
         </div>
       </aside>
 
-      {/* ============================================================== */}
-      {/* 2. KHU VỰC NỘI DUNG CHÍNH (NỀN GIẤY KẺ Ô CARO GRAPH PAPER) */}
-      {/* ============================================================== */}
       <main className="flex-1 graph-paper overflow-y-auto p-6 md:p-8 flex flex-col items-center">
         <div className="w-full max-w-4xl space-y-6">
-
-          {/* ============================================================== */}
-          {/* VIEW 1: FLASHCARD STUDY (GIỐNG ẢNH 1) */}
-          {/* ============================================================== */}
 
           {currentView === 'myDecks' && (
             <MyDecksContainer />
@@ -408,9 +398,6 @@ export function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* VIEW 2: DANH SÁCH 16 BÀI HỌC (GIỐNG ẢNH 2) */}
-          {/* ============================================================== */}
           {currentView === 'lessonList' && (
             <div className="space-y-6">
               {/* Header Breadcrumb */}
@@ -483,9 +470,6 @@ export function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* VIEW 3: LUYỆN TẬP TRẮC NGHIỆM QUIZ (GIỐNG ẢNH 3) */}
-          {/* ============================================================== */}
           {currentView === 'quiz' && (
             <div className="space-y-6">
               <div className="text-xs font-bold text-stone-500">

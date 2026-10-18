@@ -1,15 +1,27 @@
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useDecks } from './hooks/useDecks';
 import { useLanguages } from './hooks/useLanguages';
 import { MyDecksWorkspace } from './MyDecksWorkspace';
 
 const PAGE_SIZE = 10;
+const SEARCH_DEBOUNCE_MS = 300;
 
 export function MyDecksContainer() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [search]);
 
   const {
     data,
@@ -19,7 +31,7 @@ export function MyDecksContainer() {
   } = useDecks({
     page,
     pageSize: PAGE_SIZE,
-    search,
+    search: debouncedSearch,
   });
 
   const { data: languages = [] } = useLanguages();
@@ -43,6 +55,7 @@ export function MyDecksContainer() {
   return (
     <MyDecksWorkspace
       decks={data?.items ?? []}
+      languages={languages}
       search={search}
       onSearchChange={handleSearchChange}
       page={page}

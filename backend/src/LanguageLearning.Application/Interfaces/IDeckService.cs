@@ -27,6 +27,4 @@ public interface IDeckService
     Task DeleteDeckAsync(
         Guid deckId,
         CancellationToken cancellationToken = default);
-    Task<List<LanguageOptionResponse>> GetActiveLanguagesAsync(
-    CancellationToken cancellationToken = default);
 }

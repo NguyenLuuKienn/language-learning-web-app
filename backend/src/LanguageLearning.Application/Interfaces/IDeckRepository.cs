@@ -5,8 +5,6 @@ namespace LanguageLearning.Application.Interfaces;
 
 public interface IDeckRepository
 {
-    Task<List<Language>> GetActiveLanguagesAsync(
-    CancellationToken cancellationToken = default);
 
     Task<(List<Deck> Items, int TotalItems)> GetAccessibleDecksAsync(
         Guid userId,

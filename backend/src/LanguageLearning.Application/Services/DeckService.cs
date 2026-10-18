@@ -19,19 +19,6 @@ public class DeckService : IDeckService
         _currentUserService = currentUserService;
     }
 
-    public async Task<List<LanguageOptionResponse>> GetActiveLanguagesAsync(
-        CancellationToken cancellationToken = default)
-    {
-        var languages = await _deckRepository.GetActiveLanguagesAsync(
-            cancellationToken);
-
-        return languages
-            .Select(language => new LanguageOptionResponse(
-                language.Id,
-                language.Name))
-            .ToList();
-    }
-
     public async Task<DeckResponse> CreateDeckAsync(
         CreateDeckRequest request,
         CancellationToken cancellationToken = default)

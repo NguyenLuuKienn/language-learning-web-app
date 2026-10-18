@@ -49,7 +49,7 @@ export const decksApi = {
     });
   },
 
-  updateDeck: async (
+    updateDeck: async (
     id: string,
     request: UpdateDeckRequest
   ): Promise<DeckResponse> => {
@@ -58,6 +58,15 @@ export const decksApi = {
       {
         method: 'PATCH',
         body: JSON.stringify(request),
+      }
+    );
+  },
+
+  deleteDeck: async (id: string): Promise<void> => {
+    return apiRequest<void>(
+      `${DECKS_ENDPOINT}/${encodeURIComponent(id)}`,
+      {
+        method: 'DELETE',
       }
     );
   },

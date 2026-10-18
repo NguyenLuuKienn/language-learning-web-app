@@ -1,4 +1,5 @@
 
+using LanguageLearning.Application.DTOs.Decks;
 using LanguageLearning.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,19 +11,19 @@ namespace LanguageLearning.Api.Controllers;
 [Authorize]
 public class LanguagesController : ControllerBase
 {
-    private readonly IDeckService _deckService;
+    private readonly ILanguageService _languageService;
 
-    public LanguagesController(IDeckService deckService)
+    public LanguagesController(ILanguageService languageService)
     {
-        _deckService = deckService;
+        _languageService = languageService;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetLanguages(
+    public async Task<ActionResult<List<LanguageOptionResponse>>> GetLanguages(
         CancellationToken cancellationToken)
     {
-        var languages = await _deckService.GetActiveLanguagesAsync(
-            cancellationToken);
+        var languages = await _languageService
+            .GetActiveLanguagesAsync(cancellationToken);
 
         return Ok(languages);
     }

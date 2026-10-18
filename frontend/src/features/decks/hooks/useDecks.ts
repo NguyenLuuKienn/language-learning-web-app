@@ -73,3 +73,15 @@ export function useUpdateDeck() {
       }),
   });
 }
+
+export function useDeleteDeck() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => decksApi.deleteDeck(id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: deckQueryKeys.all,
+      }),
+  });
+}

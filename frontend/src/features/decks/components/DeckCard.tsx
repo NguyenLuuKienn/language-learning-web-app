@@ -6,6 +6,7 @@ import {
   Pencil,
   Globe2,
   LockKeyhole,
+  Trash2,
 } from 'lucide-react';
 
 import type { DeckResponse } from '../types/deck.types';
@@ -14,12 +15,14 @@ interface DeckCardProps {
   deck: DeckResponse;
   languageName?: string;
   onEdit: (deck: DeckResponse) => void;
+  onDelete: (deck: DeckResponse) => void;
 }
 
 export function DeckCard({
   deck,
   languageName,
   onEdit,
+  onDelete,
 }: DeckCardProps) {
   return (
     <article className="rounded-xl border-2 border-stone-800 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
@@ -97,15 +100,28 @@ export function DeckCard({
           {languageName || 'Ngôn ngữ chưa xác định'}
         </span>
 
-        <button
-          type="button"
-          onClick={() => onEdit(deck)}
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-stone-900 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-stone-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
-          aria-label={`Chỉnh sửa bộ thẻ ${deck.title}`}
-        >
-          <Pencil size={14} />
-          Chỉnh sửa
-        </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => onEdit(deck)}
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-stone-900 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-stone-700"
+              aria-label={`Chỉnh sửa bộ thẻ ${deck.title}`}
+            >
+              <Pencil size={14} />
+              Chỉnh sửa
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onDelete(deck)}
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100"
+              aria-label={`Xóa bộ thẻ ${deck.title}`}
+            >
+              <Trash2 size={14} />
+              Xóa
+            </button>
+        </div>
+
       </div>
     </article>
   );
