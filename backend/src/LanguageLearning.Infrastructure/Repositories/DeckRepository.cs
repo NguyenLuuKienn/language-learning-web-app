@@ -15,29 +15,48 @@ public class DeckRepository : IDeckRepository
         _context = context;
     }
 
-    public async Task<(List<Deck> Items, int TotalItems)> GetAccessibleDecksAsync(
-        Guid userId,
-        int page,
-        int pageSize,
-        CancellationToken cancellationToken = default)
+public async Task<(List<Deck> Items, int TotalItems)> GetAccessibleDecksAsync(
+    Guid userId,
+    int page,
+    int pageSize,
+    bool onlyMine = false,
+    CancellationToken cancellationToken = default,
+    string? search = null)
+{
+    var query = _context.Decks
+        .AsNoTracking()
+        .Where(d => !d.IsDeleted);
+
+    if (onlyMine)
     {
-        var query = _context.Decks
-            .AsNoTracking()
-            .Where(d => !d.IsDeleted &&
-                (d.OwnerId == userId || d.IsPublic));
-
-        var totalItems = await query.CountAsync(cancellationToken);
-
-        var items = await query
-            .OrderByDescending(d => d.CreatedAt)
-            .ThenBy(d => d.Id)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Include(d => d.Tags)
-            .ToListAsync(cancellationToken);
-
-        return (items, totalItems);
+        query = query.Where(d => d.OwnerId == userId);
     }
+    else
+    {
+        query = query.Where(d =>
+            d.OwnerId == userId || d.IsPublic);
+    }
+
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        var keyword = search.Trim();
+
+        query = query.Where(d =>
+            d.Title.Contains(keyword));
+    }
+
+    var totalItems = await query.CountAsync(cancellationToken);
+
+    var items = await query
+        .OrderByDescending(d => d.CreatedAt)
+        .ThenBy(d => d.Id)
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .Include(d => d.Tags)
+        .ToListAsync(cancellationToken);
+
+    return (items, totalItems);
+}
 
     public async Task<List<Deck>> GetAllAsync(
         CancellationToken cancellationToken = default)
@@ -62,6 +81,16 @@ public class DeckRepository : IDeckRepository
             .FirstOrDefaultAsync(
                 d => d.Id == deckId && !d.IsDeleted,
                 cancellationToken);
+    }
+
+    public async Task<List<Language>> GetActiveLanguagesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Languages
+            .AsNoTracking()
+            .Where(language => language.IsActive)
+            .OrderBy(language => language.Name)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<bool> LanguageExistsAsync(

@@ -1,4 +1,5 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
+import { MyDecksContainer } from './features/decks/MyDecksContainer';
 import {
   HomeOutlined,
   CodeOutlined,
@@ -24,7 +25,9 @@ import {
 } from '@ant-design/icons';
 
 export function App() {
-  const [currentView, setCurrentView] = useState<'flashcard' | 'lessonList' | 'quiz'>('flashcard');
+  const [currentView, setCurrentView] = useState<
+  'flashcard' | 'lessonList' | 'quiz' | 'myDecks'
+>('flashcard');
   const [activeTabSub, setActiveTabSub] = useState<'vocab' | 'example'>('vocab');
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedQuizOption, setSelectedQuizOption] = useState<number | null>(null);
@@ -100,6 +103,19 @@ export function App() {
               <span>Luyện tập Quiz</span>
             </button>
 
+            <button
+              type="button"
+              onClick={() => setCurrentView('myDecks')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left ${
+                currentView === 'myDecks'
+                  ? 'bg-white border-notebook shadow-2xs text-stone-900'
+                  : 'text-stone-600 hover:bg-stone-200/50'
+              }`}
+            >
+              <BookOutlined />
+              <span>Bộ thẻ của tôi</span>
+            </button>
+
             <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
               <AudioOutlined />
               <span>Shadowing</span>
@@ -154,6 +170,11 @@ export function App() {
           {/* ============================================================== */}
           {/* VIEW 1: FLASHCARD STUDY (GIỐNG ẢNH 1) */}
           {/* ============================================================== */}
+
+          {currentView === 'myDecks' && (
+            <MyDecksContainer />
+          )}
+
           {currentView === 'flashcard' && (
             <div className="space-y-6">
               {/* Thanh Toolbar trên cùng của Flashcard */}

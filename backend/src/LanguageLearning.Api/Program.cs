@@ -1,9 +1,10 @@
 ﻿
 using LanguageLearning.Api.Middleware;
+using LanguageLearning.Api.Services;
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Application.Services;
 using LanguageLearning.Infrastructure;
-using LanguageLearning.Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -12,6 +13,18 @@ builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Allow the local React frontend to call the API.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendDev", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -30,6 +43,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("FrontendDev");
+}
 
 app.UseAuthorization();
 

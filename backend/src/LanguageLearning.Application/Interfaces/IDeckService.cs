@@ -8,8 +8,9 @@ public interface IDeckService
 {
     Task<PagedResponse<DeckResponse>> GetDecksAsync(
         PaginationParams pagination,
-        CancellationToken cancellationToken = default);
-
+        bool onlyMine = false,
+        CancellationToken cancellationToken = default,
+        string? search = null);
     Task<DeckResponse> GetDeckByIdAsync(
         Guid deckId,
         CancellationToken cancellationToken = default);
@@ -26,4 +27,6 @@ public interface IDeckService
     Task DeleteDeckAsync(
         Guid deckId,
         CancellationToken cancellationToken = default);
+    Task<List<LanguageOptionResponse>> GetActiveLanguagesAsync(
+    CancellationToken cancellationToken = default);
 }

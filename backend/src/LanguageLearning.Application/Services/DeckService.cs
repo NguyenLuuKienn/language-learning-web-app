@@ -19,6 +19,19 @@ public class DeckService : IDeckService
         _currentUserService = currentUserService;
     }
 
+    public async Task<List<LanguageOptionResponse>> GetActiveLanguagesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var languages = await _deckRepository.GetActiveLanguagesAsync(
+            cancellationToken);
+
+        return languages
+            .Select(language => new LanguageOptionResponse(
+                language.Id,
+                language.Name))
+            .ToList();
+    }
+
     public async Task<DeckResponse> CreateDeckAsync(
         CreateDeckRequest request,
         CancellationToken cancellationToken = default)
@@ -89,18 +102,22 @@ public class DeckService : IDeckService
 
     public async Task<PagedResponse<DeckResponse>> GetDecksAsync(
         PaginationParams pagination,
-        CancellationToken cancellationToken = default)
+        bool onlyMine = false,
+        CancellationToken cancellationToken = default,
+        string? search = null)
     {
         var userId = _currentUserService.GetRequiredUserId();
 
         ArgumentNullException.ThrowIfNull(pagination);
 
         var (decks, totalItems) =
-            await _deckRepository.GetAccessibleDecksAsync(
-                userId,
-                pagination.Page,
-                pagination.PageSize,
-                cancellationToken);
+        await _deckRepository.GetAccessibleDecksAsync(
+            userId,
+            pagination.Page,
+            pagination.PageSize,
+            onlyMine,
+            cancellationToken,
+            search);
 
         var deckIds = decks
             .Select(deck => deck.Id)
