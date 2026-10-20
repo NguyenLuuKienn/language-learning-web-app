@@ -19,14 +19,20 @@ public class DecksController : ControllerBase
         _deckService = deckService;
     }
 
+
+
     [HttpGet]
     public async Task<IActionResult> GetDecks(
         [FromQuery] PaginationParams pagination,
+        [FromQuery] bool onlyMine,
+        [FromQuery] string? search,
         CancellationToken cancellationToken)
     {
         var decks = await _deckService.GetDecksAsync(
             pagination,
-            cancellationToken);
+            onlyMine,
+            cancellationToken,
+            search);
 
         return Ok(decks);
     }

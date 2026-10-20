@@ -1,4 +1,5 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
+import { MyDecksContainer } from './features/decks/MyDecksContainer';
 import {
   HomeOutlined,
   CodeOutlined,
@@ -24,16 +25,15 @@ import {
 } from '@ant-design/icons';
 
 export function App() {
-  const [currentView, setCurrentView] = useState<'flashcard' | 'lessonList' | 'quiz'>('flashcard');
+  const [currentView, setCurrentView] = useState<
+  'flashcard' | 'lessonList' | 'quiz' | 'myDecks'
+>('flashcard');
   const [activeTabSub, setActiveTabSub] = useState<'vocab' | 'example'>('vocab');
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedQuizOption, setSelectedQuizOption] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen flex bg-[#FAF6EE] text-[#1F1F1F] font-sans antialiased">
-      {/* ============================================================== */}
-      {/* 1. SIDEBAR BÊN TRÁI PHONG CÁCH NOTEBOOK */}
-      {/* ============================================================== */}
       <aside className="w-56 bg-[#FAF6EE] border-r-2 border-[#262626] flex flex-col justify-between shrink-0 select-none">
         <div>
           {/* Logo Brand Header */}
@@ -100,6 +100,19 @@ export function App() {
               <span>Luyện tập Quiz</span>
             </button>
 
+            <button
+              type="button"
+              onClick={() => setCurrentView('myDecks')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left ${
+                currentView === 'myDecks'
+                  ? 'bg-white border-notebook shadow-2xs text-stone-900'
+                  : 'text-stone-600 hover:bg-stone-200/50'
+              }`}
+            >
+              <BookOutlined />
+              <span>Bộ thẻ của tôi</span>
+            </button>
+
             <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
               <AudioOutlined />
               <span>Shadowing</span>
@@ -145,15 +158,13 @@ export function App() {
         </div>
       </aside>
 
-      {/* ============================================================== */}
-      {/* 2. KHU VỰC NỘI DUNG CHÍNH (NỀN GIẤY KẺ Ô CARO GRAPH PAPER) */}
-      {/* ============================================================== */}
       <main className="flex-1 graph-paper overflow-y-auto p-6 md:p-8 flex flex-col items-center">
         <div className="w-full max-w-4xl space-y-6">
 
-          {/* ============================================================== */}
-          {/* VIEW 1: FLASHCARD STUDY (GIỐNG ẢNH 1) */}
-          {/* ============================================================== */}
+          {currentView === 'myDecks' && (
+            <MyDecksContainer />
+          )}
+
           {currentView === 'flashcard' && (
             <div className="space-y-6">
               {/* Thanh Toolbar trên cùng của Flashcard */}
@@ -387,9 +398,6 @@ export function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* VIEW 2: DANH SÁCH 16 BÀI HỌC (GIỐNG ẢNH 2) */}
-          {/* ============================================================== */}
           {currentView === 'lessonList' && (
             <div className="space-y-6">
               {/* Header Breadcrumb */}
@@ -462,9 +470,6 @@ export function App() {
             </div>
           )}
 
-          {/* ============================================================== */}
-          {/* VIEW 3: LUYỆN TẬP TRẮC NGHIỆM QUIZ (GIỐNG ẢNH 3) */}
-          {/* ============================================================== */}
           {currentView === 'quiz' && (
             <div className="space-y-6">
               <div className="text-xs font-bold text-stone-500">
