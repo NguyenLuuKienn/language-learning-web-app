@@ -19,12 +19,32 @@ public class DeckRepository : IDeckRepository
         Guid userId,
         int page,
         int pageSize,
-        CancellationToken cancellationToken = default)
+        bool onlyMine = false,
+        CancellationToken cancellationToken = default,
+        string? search = null)
     {
         var query = _context.Decks
             .AsNoTracking()
-            .Where(d => !d.IsDeleted &&
-                (d.OwnerId == userId || d.IsPublic));
+            .Where(d => !d.IsDeleted);
+
+        if (onlyMine)
+        {
+            query = query.Where(d => d.OwnerId == userId);
+        }
+        else
+        {
+            query = query.Where(d =>
+                d.OwnerId == userId || d.IsPublic);
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var keyword = search.Trim();
+
+            query = query.Where(d =>
+                d.Title.Contains(keyword) ||
+                d.Tags.Any(t => t.Tag.Contains(keyword)));
+        }
 
         var totalItems = await query.CountAsync(cancellationToken);
 

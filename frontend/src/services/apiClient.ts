@@ -38,5 +38,10 @@ export async function apiRequest<T>(
     );
   }
 
-  return response.json();
+  if (response.status === 204)
+    {
+      return undefined as T;
+    }
+
+return response.json();
 }
