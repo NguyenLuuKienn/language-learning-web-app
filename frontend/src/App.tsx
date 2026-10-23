@@ -1,5 +1,6 @@
-import { useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { MyDecksContainer } from './features/decks/MyDecksContainer';
+import { Flashcard } from './features/flashcards/components/Flashcard';
 import {
   HomeOutlined,
   CodeOutlined,
@@ -12,8 +13,6 @@ import {
   SoundOutlined,
   SwapOutlined,
   ThunderboltOutlined,
-  CheckOutlined,
-  CloseOutlined,
   LeftOutlined,
   RightOutlined,
   ReloadOutlined,
@@ -30,7 +29,47 @@ export function App() {
 >('flashcard');
   const [activeTabSub, setActiveTabSub] = useState<'vocab' | 'example'>('vocab');
   const [isFlipped, setIsFlipped] = useState(false);
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [selectedQuizOption, setSelectedQuizOption] = useState<number | null>(null);
+
+useEffect(() => {
+  if (currentView !== 'flashcard') {
+    return;
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.repeat || event.ctrlKey || event.altKey || event.metaKey) {
+      return;
+    }
+
+    const target = event.target;
+
+    if (
+      target instanceof HTMLElement &&
+      (target.closest('button, input, textarea, select') ||
+        target.isContentEditable)
+    ) {
+      return;
+    }
+
+    if (event.code === 'Space') {
+      event.preventDefault();
+      setIsFlipped((previous) => !previous);
+      return;
+    }
+
+    if (['1', '2', '3', '4'].includes(event.key)) {
+      event.preventDefault();
+      setSelectedRating(Number(event.key));
+    }
+  }
+
+  window.addEventListener('keydown', handleKeyDown);
+
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown);
+  };
+}, [currentView]);
 
   return (
     <div className="min-h-screen flex bg-[#FAF6EE] text-[#1F1F1F] font-sans antialiased">
@@ -212,44 +251,12 @@ export function App() {
               </div>
 
               {/* Tấm Thẻ Flashcard Kẻ Ô Vàng To Bự */}
-              <div
-                onClick={() => setIsFlipped(!isFlipped)}
-                className="flashcard-yellow-grid rounded-xl border-notebook-2 p-8 sm:p-12 min-h-[300px] flex flex-col justify-between relative cursor-pointer select-none shadow-sm transition hover:shadow-md"
-              >
-                {/* Nút loa phát âm góc trên */}
-                <div className="flex justify-end">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      alert('Phát âm: 言い回し (いいまわし)');
-                    }}
-                    className="w-8 h-8 rounded-lg bg-white border-notebook flex items-center justify-center text-stone-800 hover:bg-stone-50 shadow-2xs"
-                  >
-                    <SoundOutlined />
-                  </button>
-                </div>
-
-                {/* Nội dung từ vựng chính giữa */}
-                <div className="text-center space-y-2 my-auto">
-                  <h2 className="text-4xl sm:text-5xl font-extrabold text-stone-900 tracking-tight">
-                    言い回し
-                  </h2>
-                  <p className="text-stone-600 font-medium text-sm sm:text-base">
-                    いいまわし
-                  </p>
-                  <span className="text-[11px] font-bold text-stone-400 uppercase tracking-widest block">
-                    NGÔN HỒI
-                  </span>
-                  <p className="text-lg sm:text-xl font-bold text-stone-900 pt-1">
-                    Cách nói, cách diễn đạt
-                  </p>
-                </div>
-
-                {/* Chỉ báo lật thẻ dưới cùng */}
-                <div className="text-center text-xs text-stone-400 flex items-center justify-center gap-1">
-                  <SwapOutlined /> Click để lật
-                </div>
-              </div>
+              <Flashcard
+                front="言い回し"
+                back="Cách nói, cách diễn đạt"
+                isFlipped={isFlipped}
+                onFlip={() => setIsFlipped((previous) => !previous)}
+              />
 
               {/* Hàng Nút Đánh Giá & Điều Hướng (4 Nút) */}
               <div className="flex items-center justify-center gap-3">
@@ -257,13 +264,28 @@ export function App() {
                   <LeftOutlined className="text-[10px]" /> Trước
                 </button>
 
-                <button className="px-6 py-2.5 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] text-white notebook-btn text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-                  <CloseOutlined /> Chưa thuộc
-                </button>
-
-                <button className="px-6 py-2.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white notebook-btn text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-                  <CheckOutlined /> Đã thuộc
-                </button>
+                {[
+                  { value: 1, label: 'Quên', color: 'bg-red-600' },
+                  { value: 2, label: 'Khó', color: 'bg-orange-500' },
+                  { value: 3, label: 'Tốt', color: 'bg-green-600' },
+                  { value: 4, label: 'Dễ', color: 'bg-blue-600' },
+                ].map((rating) => (
+                  <button
+                    key={rating.value}
+                    type="button"
+                    onClick={() => setSelectedRating(rating.value)}
+                    aria-pressed={selectedRating === rating.value}
+                    className={`rounded-lg border-2 border-stone-900 px-4 py-2.5 text-xs font-bold text-white transition ${
+                      rating.color
+                    } ${
+                      selectedRating === rating.value
+                        ? 'ring-2 ring-stone-900 ring-offset-2'
+                        : 'hover:opacity-85'
+                    }`}
+                  >
+                    {rating.value} · {rating.label}
+                  </button>
+                ))}
 
                 <button className="px-5 py-2.5 rounded-lg bg-white notebook-btn text-xs font-bold text-stone-800 flex items-center gap-1.5">
                   Sau <RightOutlined className="text-[10px]" />
