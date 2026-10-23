@@ -1,9 +1,10 @@
 ﻿
 using LanguageLearning.Api.Middleware;
+using LanguageLearning.Api.Services;
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Application.Services;
 using LanguageLearning.Infrastructure;
-using LanguageLearning.Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -13,12 +14,26 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendDev", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 builder.Services.AddScoped<IDeckService, DeckService>();
 builder.Services.AddScoped<ICardService, CardService>();
+builder.Services.AddScoped<ILanguageService, LanguageService>();
+
 
 var app = builder.Build();
 
@@ -31,6 +46,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("FrontendDev");
+}
 
 app.UseAuthorization();
 

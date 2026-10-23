@@ -31,10 +31,9 @@ public static class DependencyInjection
             });
         });
 
-        // Register Deck repository for Issue #20
         services.AddScoped<IDeckRepository, DeckRepository>();
         services.AddScoped<ICardRepository, CardRepository>();
-
+        services.AddScoped<ILanguageRepository, LanguageRepository>();
         return services;
     }
 }
