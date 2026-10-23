@@ -29,8 +29,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 builder.Services.AddScoped<IDeckService, DeckService>();
+builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
+
 
 var app = builder.Build();
 
