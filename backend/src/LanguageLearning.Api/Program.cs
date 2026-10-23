@@ -1,9 +1,15 @@
 ﻿
+using System.Text;
+using LanguageLearning.Api.Authorization;
 using LanguageLearning.Api.Middleware;
 using LanguageLearning.Api.Services;
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Application.Services;
+using LanguageLearning.Domain.Enums;
 using LanguageLearning.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +33,51 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
+var jwtSecretKey = builder.Configuration["Jwt:SecretKey"];
+
+if (string.IsNullOrWhiteSpace(jwtSecretKey) || jwtSecretKey.Length < 32)
+{
+    throw new InvalidOperationException(
+        "Jwt:SecretKey must contain at least 32 characters.");
+}
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSecretKey)),
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"] ??
+                "LanguageLearningApp",
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"] ??
+                "LanguageLearningAppClient",
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+            NameClaimType = "email",
+            RoleClaimType = "role"
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(
+            JwtBearerDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .RequireRole(
+            UserRole.Learner.ToString(),
+            UserRole.Admin.ToString())
+        .Build();
+    options.AddPolicy(
+        AuthorizationPolicies.AdminOnly,
+        policy => policy.RequireRole(UserRole.Admin.ToString()));
+});
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
@@ -47,6 +98,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 if (app.Environment.IsDevelopment())
 {

@@ -80,6 +80,50 @@ public class AuthService : IAuthService
         return response;
     }
 
+    public async Task<AuthResponse> RefreshAsync(
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var refreshToken = await GetActiveRefreshTokenAsync(
+            request.RefreshToken,
+            cancellationToken);
+        var user = refreshToken.User;
+
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        var (response, newRefreshToken) = CreateTokenResponse(user);
+
+        await _userRepository.AddRefreshTokenAsync(
+            newRefreshToken,
+            cancellationToken);
+
+        await _userRepository.SaveChangesAsync(cancellationToken);
+
+        return response;
+    }
+
+    public async Task LogoutAsync(
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            return;
+        }
+
+        var tokenHash = _tokenService.HashRefreshToken(request.RefreshToken);
+        var refreshToken = await _userRepository.GetRefreshTokenByHashAsync(
+            tokenHash,
+            cancellationToken);
+
+        if (refreshToken == null || refreshToken.IsRevoked)
+        {
+            return;
+        }
+
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        await _userRepository.SaveChangesAsync(cancellationToken);
+    }
+
     private (AuthResponse Response, RefreshToken RefreshToken)
         CreateTokenResponse(User user)
     {
@@ -101,6 +145,31 @@ public class AuthService : IAuthService
             RefreshToken = refreshTokenValue,
             AccessTokenExpiresAt = _tokenService.GetAccessTokenExpiration()
         }, refreshToken);
+    }
+
+    private async Task<RefreshToken> GetActiveRefreshTokenAsync(
+        string refreshTokenValue,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshTokenValue))
+        {
+            throw new UnauthorizedAccessException(
+                "A valid refresh token is required.");
+        }
+
+        var tokenHash = _tokenService.HashRefreshToken(refreshTokenValue);
+        var refreshToken = await _userRepository.GetRefreshTokenByHashAsync(
+            tokenHash,
+            cancellationToken);
+
+        if (refreshToken == null || !refreshToken.IsActive ||
+            !refreshToken.User.IsActive)
+        {
+            throw new UnauthorizedAccessException(
+                "A valid refresh token is required.");
+        }
+
+        return refreshToken;
     }
 
     private static string NormalizeEmail(string email)
