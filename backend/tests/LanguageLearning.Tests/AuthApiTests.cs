@@ -1,6 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using LanguageLearning.Application.DTOs.Auth;
+using LanguageLearning.Application.DTOs.Decks;
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Domain.Entities;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Moq;
 using Xunit;
 
 namespace LanguageLearning.Tests;
@@ -73,8 +78,121 @@ public class AuthApiTests
                 .RefreshTokens.Last().TokenHash);
     }
 
+    [Fact]
+    public async Task RefreshThenLogout_ManagesRefreshTokenLifecycle()
+    {
+        var repository = new InMemoryUserRepository();
+        using var factory = CreateFactory(repository);
+        using var client = factory.CreateClient();
+
+        var registerResponse = await client.PostAsJsonAsync(
+            "/api/v1/auth/register",
+            new RegisterRequest
+            {
+                Email = "learner@example.com",
+                Password = "secure-password"
+            });
+        var registered = await registerResponse.Content
+            .ReadFromJsonAsync<AuthResponse>();
+
+        var refreshResponse = await client.PostAsJsonAsync(
+            "/api/v1/auth/refresh",
+            new RefreshTokenRequest
+            {
+                RefreshToken = registered!.RefreshToken
+            });
+        var refreshed = await refreshResponse.Content
+            .ReadFromJsonAsync<AuthResponse>();
+
+        var logoutResponse = await client.PostAsJsonAsync(
+            "/api/v1/auth/logout",
+            new RefreshTokenRequest
+            {
+                RefreshToken = refreshed!.RefreshToken
+            });
+        var revokedRefreshResponse = await client.PostAsJsonAsync(
+            "/api/v1/auth/refresh",
+            new RefreshTokenRequest
+            {
+                RefreshToken = refreshed.RefreshToken
+            });
+
+        Assert.Equal(HttpStatusCode.Created, registerResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, refreshResponse.StatusCode);
+        Assert.NotNull(refreshed);
+        Assert.NotEqual(registered.RefreshToken, refreshed.RefreshToken);
+        Assert.Equal(HttpStatusCode.NoContent, logoutResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized,
+            revokedRefreshResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task ProtectedEndpoint_UnknownRole_ReturnsForbidden()
+    {
+        var repository = new InMemoryUserRepository();
+        var languageService = new Mock<ILanguageService>();
+        languageService
+            .Setup(service => service.GetActiveLanguagesAsync(
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<LanguageOptionResponse>());
+        using var factory = CreateFactory(repository, languageService.Object);
+        using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer",
+                CreateAccessToken("Guest"));
+
+        var response = await client.GetAsync("/api/v1/languages");
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("Learner")]
+    [InlineData("Admin")]
+    public async Task ProtectedEndpoint_AllowedRole_ReturnsSuccess(string role)
+    {
+        var repository = new InMemoryUserRepository();
+        var languageService = new Mock<ILanguageService>();
+        languageService
+            .Setup(service => service.GetActiveLanguagesAsync(
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<LanguageOptionResponse>());
+        using var factory = CreateFactory(repository, languageService.Object);
+        using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer",
+                CreateAccessToken(role));
+
+        var response = await client.GetAsync("/api/v1/languages");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("Learner", HttpStatusCode.Forbidden)]
+    [InlineData("Admin", HttpStatusCode.NoContent)]
+    public async Task AdminEndpoint_RequiresAdminRole(
+        string role,
+        HttpStatusCode expectedStatusCode)
+    {
+        var repository = new InMemoryUserRepository();
+        using var factory = CreateFactory(repository);
+        using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer",
+                CreateAccessToken(role));
+
+        var response = await client.GetAsync("/api/v1/admin/access");
+
+        Assert.Equal(expectedStatusCode, response.StatusCode);
+    }
+
     private static WebApplicationFactory<Program> CreateFactory(
-        InMemoryUserRepository repository)
+        InMemoryUserRepository repository,
+        ILanguageService? languageService = null)
     {
         return new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
@@ -87,6 +205,12 @@ public class AuthApiTests
                 {
                     services.RemoveAll<IUserRepository>();
                     services.AddSingleton<IUserRepository>(repository);
+
+                    if (languageService != null)
+                    {
+                        services.RemoveAll<ILanguageService>();
+                        services.AddSingleton(languageService);
+                    }
                 });
             });
     }
@@ -104,6 +228,17 @@ public class AuthApiTests
             _users.TryGetValue(email, out var user);
 
             return Task.FromResult(user);
+        }
+
+        public Task<RefreshToken?> GetRefreshTokenByHashAsync(
+            string tokenHash,
+            CancellationToken cancellationToken = default)
+        {
+            var refreshToken = _users.Values
+                .SelectMany(user => user.RefreshTokens)
+                .FirstOrDefault(token => token.TokenHash == tokenHash);
+
+            return Task.FromResult(refreshToken);
         }
 
         public Task AddAsync(
@@ -133,5 +268,39 @@ public class AuthApiTests
 
             return user;
         }
+    }
+
+    private static string CreateAccessToken(string role)
+    {
+        var header = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            alg = "HS256",
+            typ = "JWT"
+        }));
+        var payload = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            sub = Guid.NewGuid().ToString(),
+            email = "learner@example.com",
+            role,
+            iss = "LanguageLearningApp",
+            aud = "LanguageLearningAppClient",
+            iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            exp = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds()
+        }));
+        var unsignedToken = $"{header}.{payload}";
+        var signature = HMACSHA256.HashData(
+            Encoding.UTF8.GetBytes(
+                "test-secret-key-that-is-long-enough-for-hmac-sha256"),
+            Encoding.UTF8.GetBytes(unsignedToken));
+
+        return $"{unsignedToken}.{Base64UrlEncode(signature)}";
+    }
+
+    private static string Base64UrlEncode(byte[] value)
+    {
+        return Convert.ToBase64String(value)
+            .TrimEnd('=')
+            .Replace('+', '-')
+            .Replace('/', '_');
     }
 }
