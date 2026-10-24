@@ -1,5 +1,6 @@
-import { useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { MyDecksContainer } from './features/decks/MyDecksContainer';
+import { Flashcard } from './features/flashcards/components/Flashcard';
 import {
   HomeOutlined,
   CodeOutlined,
@@ -12,8 +13,6 @@ import {
   SoundOutlined,
   SwapOutlined,
   ThunderboltOutlined,
-  CheckOutlined,
-  CloseOutlined,
   LeftOutlined,
   RightOutlined,
   ReloadOutlined,
@@ -30,13 +29,52 @@ export function App() {
 >('flashcard');
   const [activeTabSub, setActiveTabSub] = useState<'vocab' | 'example'>('vocab');
   const [isFlipped, setIsFlipped] = useState(false);
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [selectedQuizOption, setSelectedQuizOption] = useState<number | null>(null);
+
+useEffect(() => {
+  if (currentView !== 'flashcard') {
+    return;
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.repeat || event.ctrlKey || event.altKey || event.metaKey) {
+      return;
+    }
+
+    const target = event.target;
+
+    if (
+      target instanceof HTMLElement &&
+      (target.closest('button, input, textarea, select') ||
+        target.isContentEditable)
+    ) {
+      return;
+    }
+
+    if (event.code === 'Space') {
+      event.preventDefault();
+      setIsFlipped((previous) => !previous);
+      return;
+    }
+
+    if (['1', '2', '3', '4'].includes(event.key)) {
+      event.preventDefault();
+      setSelectedRating(Number(event.key));
+    }
+  }
+
+  window.addEventListener('keydown', handleKeyDown);
+
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown);
+  };
+}, [currentView]);
 
   return (
     <div className="min-h-screen flex bg-[#FAF6EE] text-[#1F1F1F] font-sans antialiased">
       <aside className="w-56 bg-[#FAF6EE] border-r-2 border-[#262626] flex flex-col justify-between shrink-0 select-none">
         <div>
-          {/* Logo Brand Header */}
           <div className="p-4 border-b-2 border-[#262626] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="bg-[#E11D48] text-white text-[11px] font-mono font-bold px-1.5 py-0.5 rounded border border-[#9F1239]">
@@ -51,14 +89,12 @@ export function App() {
                 </span>
               </div>
             </div>
-            {/* Energy / Streak */}
             <div className="flex items-center gap-1 text-xs font-bold text-stone-700">
               <ThunderboltOutlined className="text-amber-500 text-sm" />
               <span>0</span>
             </div>
           </div>
 
-          {/* Menu Học Tập */}
           <div className="p-3 space-y-1">
             <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 px-3 py-1 block">
               HỌC TẬP
@@ -140,7 +176,6 @@ export function App() {
           </div>
         </div>
 
-        {/* Sidebar Footer */}
         <div className="p-3 border-t-2 border-[#262626] space-y-2">
           <button className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-stone-600 hover:text-stone-900 transition">
             <SettingOutlined />
@@ -167,9 +202,7 @@ export function App() {
 
           {currentView === 'flashcard' && (
             <div className="space-y-6">
-              {/* Thanh Toolbar trên cùng của Flashcard */}
               <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-                {/* Tab Từ vựng / Ví dụ */}
                 <div className="flex items-center bg-white rounded-lg border-notebook overflow-hidden">
                   <button
                     onClick={() => setActiveTabSub('vocab')}
@@ -189,12 +222,10 @@ export function App() {
                   </button>
                 </div>
 
-                {/* Bộ đếm số thẻ ở giữa */}
                 <div className="px-4 py-1 rounded-lg bg-white border-notebook font-bold text-sm">
                   1 / 109
                 </div>
 
-                {/* Các công cụ bên phải */}
                 <div className="flex items-center gap-1.5">
                   <button className="px-2.5 py-1.5 rounded-lg bg-white notebook-btn text-xs font-bold flex items-center gap-1">
                     <SwapOutlined /> JA → VI
@@ -211,66 +242,46 @@ export function App() {
                 </div>
               </div>
 
-              {/* Tấm Thẻ Flashcard Kẻ Ô Vàng To Bự */}
-              <div
-                onClick={() => setIsFlipped(!isFlipped)}
-                className="flashcard-yellow-grid rounded-xl border-notebook-2 p-8 sm:p-12 min-h-[300px] flex flex-col justify-between relative cursor-pointer select-none shadow-sm transition hover:shadow-md"
-              >
-                {/* Nút loa phát âm góc trên */}
-                <div className="flex justify-end">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      alert('Phát âm: 言い回し (いいまわし)');
-                    }}
-                    className="w-8 h-8 rounded-lg bg-white border-notebook flex items-center justify-center text-stone-800 hover:bg-stone-50 shadow-2xs"
-                  >
-                    <SoundOutlined />
-                  </button>
-                </div>
+              <Flashcard
+                front="言い回し"
+                back="Cách nói, cách diễn đạt"
+                isFlipped={isFlipped}
+                onFlip={() => setIsFlipped((previous) => !previous)}
+              />
 
-                {/* Nội dung từ vựng chính giữa */}
-                <div className="text-center space-y-2 my-auto">
-                  <h2 className="text-4xl sm:text-5xl font-extrabold text-stone-900 tracking-tight">
-                    言い回し
-                  </h2>
-                  <p className="text-stone-600 font-medium text-sm sm:text-base">
-                    いいまわし
-                  </p>
-                  <span className="text-[11px] font-bold text-stone-400 uppercase tracking-widest block">
-                    NGÔN HỒI
-                  </span>
-                  <p className="text-lg sm:text-xl font-bold text-stone-900 pt-1">
-                    Cách nói, cách diễn đạt
-                  </p>
-                </div>
-
-                {/* Chỉ báo lật thẻ dưới cùng */}
-                <div className="text-center text-xs text-stone-400 flex items-center justify-center gap-1">
-                  <SwapOutlined /> Click để lật
-                </div>
-              </div>
-
-              {/* Hàng Nút Đánh Giá & Điều Hướng (4 Nút) */}
               <div className="flex items-center justify-center gap-3">
                 <button className="px-5 py-2.5 rounded-lg bg-white notebook-btn text-xs font-bold text-stone-800 flex items-center gap-1.5">
                   <LeftOutlined className="text-[10px]" /> Trước
                 </button>
 
-                <button className="px-6 py-2.5 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] text-white notebook-btn text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-                  <CloseOutlined /> Chưa thuộc
-                </button>
-
-                <button className="px-6 py-2.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white notebook-btn text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-                  <CheckOutlined /> Đã thuộc
-                </button>
+                {[
+                  { value: 1, label: 'Quên', color: 'bg-red-600' },
+                  { value: 2, label: 'Khó', color: 'bg-orange-500' },
+                  { value: 3, label: 'Tốt', color: 'bg-green-600' },
+                  { value: 4, label: 'Dễ', color: 'bg-blue-600' },
+                ].map((rating) => (
+                  <button
+                    key={rating.value}
+                    type="button"
+                    onClick={() => setSelectedRating(rating.value)}
+                    aria-pressed={selectedRating === rating.value}
+                    className={`rounded-lg border-2 border-stone-900 px-4 py-2.5 text-xs font-bold text-white transition ${
+                      rating.color
+                    } ${
+                      selectedRating === rating.value
+                        ? 'ring-2 ring-stone-900 ring-offset-2'
+                        : 'hover:opacity-85'
+                    }`}
+                  >
+                    {rating.value} · {rating.label}
+                  </button>
+                ))}
 
                 <button className="px-5 py-2.5 rounded-lg bg-white notebook-btn text-xs font-bold text-stone-800 flex items-center gap-1.5">
                   Sau <RightOutlined className="text-[10px]" />
                 </button>
               </div>
 
-              {/* Phần "Chọn chế độ học" */}
               <div className="space-y-3 pt-4">
                 <h3 className="font-bold text-sm text-stone-900">Chọn chế độ học</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -327,9 +338,7 @@ export function App() {
                 </div>
               </div>
 
-              {/* Danh sách 2 Thẻ từ vựng chi tiết bên dưới */}
               <div className="grid sm:grid-cols-2 gap-4 pt-2">
-                {/* Thẻ 1 */}
                 <div className="bg-white rounded-xl border-notebook p-4 space-y-3 shadow-2xs">
                   <div className="flex justify-between items-start">
                     <div className="space-y-0.5">
@@ -362,7 +371,6 @@ export function App() {
                   </div>
                 </div>
 
-                {/* Thẻ 2 */}
                 <div className="bg-white rounded-xl border-notebook p-4 space-y-3 shadow-2xs">
                   <div className="flex justify-between items-start">
                     <div className="space-y-0.5">
@@ -400,7 +408,6 @@ export function App() {
 
           {currentView === 'lessonList' && (
             <div className="space-y-6">
-              {/* Header Breadcrumb */}
               <div className="space-y-1">
                 <button
                   onClick={() => setCurrentView('flashcard')}
@@ -419,7 +426,6 @@ export function App() {
                 </p>
               </div>
 
-              {/* Khung Tiến độ học */}
               <div className="bg-white rounded-xl border-notebook-2 p-4 space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold text-stone-700">
                   <span>Tiến độ học</span>
@@ -433,7 +439,6 @@ export function App() {
                 </div>
               </div>
 
-              {/* Lưới 8 Thẻ Bài Học (2 Cột) */}
               <div className="grid sm:grid-cols-2 gap-4">
                 {[
                   { num: 1, title: '頻出用語一覧', sub: 'Bài 1', count: '109 từ vựng' },
@@ -450,7 +455,6 @@ export function App() {
                     onClick={() => setCurrentView('flashcard')}
                     className="relative bg-white rounded-xl border-notebook-2 p-5 pt-6 cursor-pointer hover:-translate-y-0.5 transition shadow-2xs hover:shadow-sm"
                   >
-                    {/* Nhãn Tag Vàng ở góc trái */}
                     <div className="absolute top-0 left-4 -translate-y-1/2 w-8 h-8 rounded-md bg-[#FDE047] border-notebook flex items-center justify-center font-extrabold text-sm text-stone-900 shadow-2xs">
                       {item.num}
                     </div>
@@ -476,7 +480,6 @@ export function App() {
                 Lesson 1 — IT Vocabulary
               </div>
 
-              {/* Khung Câu Hỏi Trắc Nghiệm Kẻ Ô Caro Vàng */}
               <div className="flashcard-yellow-grid rounded-xl border-notebook-2 p-6 sm:p-8 space-y-6">
                 <div className="flex justify-between items-center text-xs">
                   <button className="px-3 py-1.5 rounded-lg bg-white border-notebook font-bold flex items-center gap-1.5 hover:bg-stone-50">
@@ -488,7 +491,6 @@ export function App() {
                   </button>
                 </div>
 
-                {/* Câu hỏi có Furigana */}
                 <div className="text-center space-y-2 py-4">
                   <div className="text-xs text-stone-500">たんとうしゃ</div>
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
@@ -499,7 +501,6 @@ export function App() {
                   </p>
                 </div>
 
-                {/* 4 Đáp án Trắc nghiệm (2 cột x 2 hàng) */}
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { id: 1, text: '判断' },
@@ -526,7 +527,6 @@ export function App() {
                   ))}
                 </div>
 
-                {/* Dưới cùng: Hỗ trợ & Số câu */}
                 <div className="flex justify-between items-center text-xs text-stone-500 pt-2 border-t border-stone-300/60">
                   <span className="font-bold">1 / 109</span>
                   <button className="flex items-center gap-1 text-stone-600 hover:text-stone-900 font-medium">
@@ -535,7 +535,6 @@ export function App() {
                 </div>
               </div>
 
-              {/* Chế độ học chọn nhanh */}
               <div className="space-y-3 pt-2">
                 <h4 className="font-bold text-xs text-stone-800">Choose a study mode</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
