@@ -75,7 +75,6 @@ useEffect(() => {
     <div className="min-h-screen flex bg-[#FAF6EE] text-[#1F1F1F] font-sans antialiased">
       <aside className="w-56 bg-[#FAF6EE] border-r-2 border-[#262626] flex flex-col justify-between shrink-0 select-none">
         <div>
-          {/* Logo Brand Header */}
           <div className="p-4 border-b-2 border-[#262626] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="bg-[#E11D48] text-white text-[11px] font-mono font-bold px-1.5 py-0.5 rounded border border-[#9F1239]">
@@ -90,14 +89,12 @@ useEffect(() => {
                 </span>
               </div>
             </div>
-            {/* Energy / Streak */}
             <div className="flex items-center gap-1 text-xs font-bold text-stone-700">
               <ThunderboltOutlined className="text-amber-500 text-sm" />
               <span>0</span>
             </div>
           </div>
 
-          {/* Menu Học Tập */}
           <div className="p-3 space-y-1">
             <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 px-3 py-1 block">
               HỌC TẬP
@@ -179,7 +176,6 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Sidebar Footer */}
         <div className="p-3 border-t-2 border-[#262626] space-y-2">
           <button className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-stone-600 hover:text-stone-900 transition">
             <SettingOutlined />
@@ -206,9 +202,7 @@ useEffect(() => {
 
           {currentView === 'flashcard' && (
             <div className="space-y-6">
-              {/* Thanh Toolbar trên cùng của Flashcard */}
               <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-                {/* Tab Từ vựng / Ví dụ */}
                 <div className="flex items-center bg-white rounded-lg border-notebook overflow-hidden">
                   <button
                     onClick={() => setActiveTabSub('vocab')}
@@ -228,12 +222,10 @@ useEffect(() => {
                   </button>
                 </div>
 
-                {/* Bộ đếm số thẻ ở giữa */}
                 <div className="px-4 py-1 rounded-lg bg-white border-notebook font-bold text-sm">
                   1 / 109
                 </div>
 
-                {/* Các công cụ bên phải */}
                 <div className="flex items-center gap-1.5">
                   <button className="px-2.5 py-1.5 rounded-lg bg-white notebook-btn text-xs font-bold flex items-center gap-1">
                     <SwapOutlined /> JA → VI
@@ -250,7 +242,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Tấm Thẻ Flashcard Kẻ Ô Vàng To Bự */}
               <Flashcard
                 front="言い回し"
                 back="Cách nói, cách diễn đạt"
@@ -258,7 +249,6 @@ useEffect(() => {
                 onFlip={() => setIsFlipped((previous) => !previous)}
               />
 
-              {/* Hàng Nút Đánh Giá & Điều Hướng (4 Nút) */}
               <div className="flex items-center justify-center gap-3">
                 <button className="px-5 py-2.5 rounded-lg bg-white notebook-btn text-xs font-bold text-stone-800 flex items-center gap-1.5">
                   <LeftOutlined className="text-[10px]" /> Trước
@@ -292,7 +282,6 @@ useEffect(() => {
                 </button>
               </div>
 
-              {/* Phần "Chọn chế độ học" */}
               <div className="space-y-3 pt-4">
                 <h3 className="font-bold text-sm text-stone-900">Chọn chế độ học</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -349,9 +338,7 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Danh sách 2 Thẻ từ vựng chi tiết bên dưới */}
               <div className="grid sm:grid-cols-2 gap-4 pt-2">
-                {/* Thẻ 1 */}
                 <div className="bg-white rounded-xl border-notebook p-4 space-y-3 shadow-2xs">
                   <div className="flex justify-between items-start">
                     <div className="space-y-0.5">
@@ -384,7 +371,6 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Thẻ 2 */}
                 <div className="bg-white rounded-xl border-notebook p-4 space-y-3 shadow-2xs">
                   <div className="flex justify-between items-start">
                     <div className="space-y-0.5">
@@ -422,7 +408,6 @@ useEffect(() => {
 
           {currentView === 'lessonList' && (
             <div className="space-y-6">
-              {/* Header Breadcrumb */}
               <div className="space-y-1">
                 <button
                   onClick={() => setCurrentView('flashcard')}
@@ -441,7 +426,6 @@ useEffect(() => {
                 </p>
               </div>
 
-              {/* Khung Tiến độ học */}
               <div className="bg-white rounded-xl border-notebook-2 p-4 space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold text-stone-700">
                   <span>Tiến độ học</span>
@@ -455,7 +439,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Lưới 8 Thẻ Bài Học (2 Cột) */}
               <div className="grid sm:grid-cols-2 gap-4">
                 {[
                   { num: 1, title: '頻出用語一覧', sub: 'Bài 1', count: '109 từ vựng' },
@@ -472,7 +455,6 @@ useEffect(() => {
                     onClick={() => setCurrentView('flashcard')}
                     className="relative bg-white rounded-xl border-notebook-2 p-5 pt-6 cursor-pointer hover:-translate-y-0.5 transition shadow-2xs hover:shadow-sm"
                   >
-                    {/* Nhãn Tag Vàng ở góc trái */}
                     <div className="absolute top-0 left-4 -translate-y-1/2 w-8 h-8 rounded-md bg-[#FDE047] border-notebook flex items-center justify-center font-extrabold text-sm text-stone-900 shadow-2xs">
                       {item.num}
                     </div>
@@ -498,7 +480,6 @@ useEffect(() => {
                 Lesson 1 — IT Vocabulary
               </div>
 
-              {/* Khung Câu Hỏi Trắc Nghiệm Kẻ Ô Caro Vàng */}
               <div className="flashcard-yellow-grid rounded-xl border-notebook-2 p-6 sm:p-8 space-y-6">
                 <div className="flex justify-between items-center text-xs">
                   <button className="px-3 py-1.5 rounded-lg bg-white border-notebook font-bold flex items-center gap-1.5 hover:bg-stone-50">
@@ -510,7 +491,6 @@ useEffect(() => {
                   </button>
                 </div>
 
-                {/* Câu hỏi có Furigana */}
                 <div className="text-center space-y-2 py-4">
                   <div className="text-xs text-stone-500">たんとうしゃ</div>
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
@@ -521,7 +501,6 @@ useEffect(() => {
                   </p>
                 </div>
 
-                {/* 4 Đáp án Trắc nghiệm (2 cột x 2 hàng) */}
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { id: 1, text: '判断' },
@@ -548,7 +527,6 @@ useEffect(() => {
                   ))}
                 </div>
 
-                {/* Dưới cùng: Hỗ trợ & Số câu */}
                 <div className="flex justify-between items-center text-xs text-stone-500 pt-2 border-t border-stone-300/60">
                   <span className="font-bold">1 / 109</span>
                   <button className="flex items-center gap-1 text-stone-600 hover:text-stone-900 font-medium">
@@ -557,7 +535,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Chế độ học chọn nhanh */}
               <div className="space-y-3 pt-2">
                 <h4 className="font-bold text-xs text-stone-800">Choose a study mode</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">

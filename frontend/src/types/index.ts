@@ -1,4 +1,3 @@
-// Common Types for Language Learning App
 
 export type UserRole = 'Learner' | 'Admin';
 
@@ -9,7 +8,7 @@ export interface UserProfile {
   role: UserRole;
   timezone: string;
   avatarUrl?: string;
-  dailyGoal: number; // số thẻ mục tiêu
+  dailyGoal: number;
   currentStreak: number;
 }
 
@@ -17,7 +16,7 @@ export interface Course {
   id: string;
   languageId: string;
   title: string;
-  level: string; // A1, A2, B1, etc.
+  level: string;
   description: string;
   status: 'Draft' | 'Published';
   unitsCount: number;
