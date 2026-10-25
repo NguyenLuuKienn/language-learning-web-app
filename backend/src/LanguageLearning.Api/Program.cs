@@ -30,6 +30,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDeckService, DeckService>();
 builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
@@ -57,3 +58,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program
+{
+}

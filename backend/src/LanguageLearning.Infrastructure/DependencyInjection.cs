@@ -2,6 +2,7 @@
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Infrastructure.Data;
 using LanguageLearning.Infrastructure.Repositories;
+using LanguageLearning.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,9 @@ public static class DependencyInjection
         services.AddScoped<IDeckRepository, DeckRepository>();
         services.AddScoped<ICardRepository, CardRepository>();
         services.AddScoped<ILanguageRepository, LanguageRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddSingleton<IPasswordHashService, Pbkdf2PasswordHashService>();
+        services.AddSingleton<ITokenService, JwtTokenService>();
         return services;
     }
 }
