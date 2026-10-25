@@ -27,6 +27,18 @@ public class UserRepository : IUserRepository
                 cancellationToken);
     }
 
+    public Task<RefreshToken?> GetRefreshTokenByHashAsync(
+        string tokenHash,
+        CancellationToken cancellationToken = default)
+    {
+        return _context.RefreshTokens
+            .Include(token => token.User)
+                .ThenInclude(user => user.RefreshTokens)
+            .FirstOrDefaultAsync(
+                token => token.TokenHash == tokenHash,
+                cancellationToken);
+    }
+
     public async Task AddAsync(
         User user,
         CancellationToken cancellationToken = default)

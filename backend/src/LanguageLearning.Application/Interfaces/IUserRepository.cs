@@ -8,6 +8,10 @@ public interface IUserRepository
         string email,
         CancellationToken cancellationToken = default);
 
+    Task<RefreshToken?> GetRefreshTokenByHashAsync(
+        string tokenHash,
+        CancellationToken cancellationToken = default);
+
     Task AddAsync(
         User user,
         CancellationToken cancellationToken = default);
