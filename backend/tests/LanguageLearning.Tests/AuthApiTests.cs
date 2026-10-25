@@ -115,6 +115,13 @@ public class AuthApiTests
             return Task.CompletedTask;
         }
 
+        public Task AddRefreshTokenAsync(
+            RefreshToken refreshToken,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task SaveChangesAsync(
             CancellationToken cancellationToken = default)
         {

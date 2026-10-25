@@ -46,7 +46,7 @@ public class AuthService : IAuthService
             PasswordHash = _passwordHashService.Hash(request.Password)
         };
 
-        var response = CreateTokenResponse(user);
+        var (response, _) = CreateTokenResponse(user);
 
         await _userRepository.AddAsync(user, cancellationToken);
         await _userRepository.SaveChangesAsync(cancellationToken);
@@ -69,30 +69,38 @@ public class AuthService : IAuthService
             throw new ArgumentException("Invalid email or password.");
         }
 
-        var response = CreateTokenResponse(user);
+        var (response, refreshToken) = CreateTokenResponse(user);
+
+        await _userRepository.AddRefreshTokenAsync(
+            refreshToken,
+            cancellationToken);
 
         await _userRepository.SaveChangesAsync(cancellationToken);
 
         return response;
     }
 
-    private AuthResponse CreateTokenResponse(User user)
+    private (AuthResponse Response, RefreshToken RefreshToken)
+        CreateTokenResponse(User user)
     {
-        var refreshToken = _tokenService.CreateRefreshToken();
+        var refreshTokenValue = _tokenService.CreateRefreshToken();
 
-        user.RefreshTokens.Add(new RefreshToken
+        var refreshToken = new RefreshToken
         {
             Id = Guid.NewGuid(),
-            TokenHash = _tokenService.HashRefreshToken(refreshToken),
+            User = user,
+            TokenHash = _tokenService.HashRefreshToken(refreshTokenValue),
             ExpiresAt = _tokenService.GetRefreshTokenExpiration()
-        });
+        };
 
-        return new AuthResponse
+        user.RefreshTokens.Add(refreshToken);
+
+        return (new AuthResponse
         {
             AccessToken = _tokenService.CreateAccessToken(user),
-            RefreshToken = refreshToken,
+            RefreshToken = refreshTokenValue,
             AccessTokenExpiresAt = _tokenService.GetAccessTokenExpiration()
-        };
+        }, refreshToken);
     }
 
     private static string NormalizeEmail(string email)
