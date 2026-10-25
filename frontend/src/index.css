@@ -17,7 +17,6 @@
   }
 }
 
-/* Nền giấy kẻ ô caro (Graph Grid Paper) */
 .graph-paper {
   background-color: #FAF6EE;
   background-image: 
@@ -26,7 +25,6 @@
   background-size: 22px 22px;
 }
 
-/* Nền thẻ Flashcard vàng ô caro */
 .flashcard-yellow-grid {
   background-color: #FFF9E6;
   background-image: 
@@ -35,22 +33,18 @@
   background-size: 22px 22px;
 }
 
-/* Vệt dạ quang highlight vàng */
 .marker-highlight {
   background: linear-gradient(180deg, transparent 50%, #FDE047 50%);
   display: inline;
 }
 
-/* Viền đen sổ tay đặc trưng */
 .border-notebook {
   border: 1.5px solid #262626;
 }
-
 .border-notebook-2 {
   border: 2px solid #262626;
 }
 
-/* Hiệu ứng nút bấm phong cách Notebook */
 .notebook-btn {
   border: 1.5px solid #262626;
   transition: all 0.15s ease;
