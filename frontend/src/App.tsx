@@ -1,4 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
+import { useAuth } from './features/auth/authContext';
 import { MyDecksContainer } from './features/decks/MyDecksContainer';
 import { Flashcard } from './features/flashcards/components/Flashcard';
 import {
@@ -24,6 +27,8 @@ import {
 } from '@ant-design/icons';
 
 export function App() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<
   'flashcard' | 'lessonList' | 'quiz' | 'myDecks'
 >('flashcard');
@@ -183,13 +188,32 @@ useEffect(() => {
           </button>
           <div className="flex items-center gap-2 p-2 rounded-lg bg-white border-notebook">
             <div className="w-7 h-7 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs">
-              S
+              {user?.email.charAt(0).toUpperCase() ?? '?'}
             </div>
-            <div className="text-[11px] leading-tight">
-              <span className="font-bold block text-stone-900">94inu Store</span>
-              <span className="text-stone-400 text-[10px]">Premium</span>
+            <div className="min-w-0 text-[11px] leading-tight">
+              <span className="block truncate font-bold text-stone-900" title={user?.email}>
+                {user?.email}
+              </span>
+              <span className="text-stone-400 text-[10px]">{user?.role}</span>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              void logout().then(({ revoked, offlineCleared }) => {
+                navigate('/login', { replace: true });
+                if (!offlineCleared) {
+                  window.alert('Không thể xóa dữ liệu học ngoại tuyến. Hãy xóa dữ liệu trang web trong trình duyệt trước khi dùng chung thiết bị.');
+                } else if (!revoked) {
+                  window.alert('Đã xóa phiên trên thiết bị, nhưng máy chủ chưa xác nhận đăng xuất.');
+                }
+              });
+            }}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left text-xs font-semibold text-stone-600 transition hover:bg-stone-200/50"
+          >
+            <LogOut size={15} aria-hidden="true" />
+            <span>Đăng xuất</span>
+          </button>
         </div>
       </aside>
 
