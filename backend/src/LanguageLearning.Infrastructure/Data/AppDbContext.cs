@@ -107,6 +107,12 @@ public class AppDbContext : DbContext
             .HasForeignKey(re => re.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<ReviewEvent>()
+            .HasOne(re => re.Card)
+            .WithMany(c => c.ReviewEvents)
+            .HasForeignKey(re => re.CardId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         modelBuilder.Entity<LessonProgress>()
             .HasOne(lp => lp.User)
             .WithMany(u => u.LessonProgresses)
@@ -131,9 +137,20 @@ public class AppDbContext : DbContext
             .HasForeignKey(so => so.UserId)
             .OnDelete(DeleteBehavior.Restrict);
     }
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    private void PrepareForSave()
     {
+        var reviewEvents = ChangeTracker.Entries<ReviewEvent>();
+
+        foreach (var entry in reviewEvents)
+        {
+            if (entry.State == EntityState.Modified ||
+                entry.State == EntityState.Deleted)
+            {
+                throw new InvalidOperationException(
+                    "Review events are append-only and cannot be modified or deleted.");
+            }
+        }
+
         var entries = ChangeTracker.Entries<BaseEntity>();
         var now = DateTime.UtcNow;
 
@@ -148,7 +165,35 @@ public class AppDbContext : DbContext
                 entry.Entity.UpdatedAt = now;
             }
         }
-
-        return base.SaveChangesAsync(cancellationToken);
     }
+
+    public override int SaveChanges()
+    {
+        PrepareForSave();
+        return base.SaveChanges(true);
+    }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        PrepareForSave();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        PrepareForSave();
+        return base.SaveChangesAsync(true, cancellationToken);
+    }
+
+    public override Task<int> SaveChangesAsync(
+        bool acceptAllChangesOnSuccess,
+        CancellationToken cancellationToken = default)
+    {
+        PrepareForSave();
+        return base.SaveChangesAsync(
+            acceptAllChangesOnSuccess,
+            cancellationToken);
+    }
+
 }
