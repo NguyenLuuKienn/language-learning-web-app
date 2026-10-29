@@ -20,6 +20,10 @@ public interface ICardRepository
 
     void Update(Card card);
 
+    Task<bool> HasReviewEventsAsync(
+    Guid cardId,
+    CancellationToken cancellationToken = default);
+
     void Delete(Card card);
 
     Task SaveChangesAsync(
