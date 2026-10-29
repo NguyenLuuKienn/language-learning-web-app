@@ -125,6 +125,15 @@ public class CardService : ICardService
         var card = await GetRequiredCardAsync(
             deckId, cardId, cancellationToken);
 
+        var hasReviewEvents = await _cardRepository.HasReviewEventsAsync(
+            cardId, cancellationToken);
+
+        if (hasReviewEvents)
+        {
+            throw new ConflictException(
+                "Không thể xóa Flashcard đã có lịch sử ôn tập.");
+        }
+
         _cardRepository.Delete(card);
 
         await _cardRepository.SaveChangesAsync(cancellationToken);

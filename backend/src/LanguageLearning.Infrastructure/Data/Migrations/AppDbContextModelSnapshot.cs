@@ -17,7 +17,7 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -1036,7 +1036,7 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.HasOne("LanguageLearning.Domain.Entities.Card", "Card")
                         .WithMany("ReviewEvents")
                         .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LanguageLearning.Domain.Entities.User", "User")

@@ -34,6 +34,7 @@ public static class DependencyInjection
 
         services.AddScoped<IDeckRepository, DeckRepository>();
         services.AddScoped<ICardRepository, CardRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<ILanguageRepository, LanguageRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddSingleton<IPasswordHashService, Pbkdf2PasswordHashService>();

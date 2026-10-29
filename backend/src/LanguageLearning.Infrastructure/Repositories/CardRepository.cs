@@ -1,4 +1,4 @@
-
+using LanguageLearning.Application.Common.Exceptions;
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Domain.Entities;
 using LanguageLearning.Infrastructure.Data;
@@ -52,6 +52,16 @@ public class CardRepository : ICardRepository
         _context.Cards.Update(card);
     }
 
+    public async Task<bool> HasReviewEventsAsync(
+        Guid cardId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.ReviewEvents
+            .AnyAsync(
+                reviewEvent => reviewEvent.CardId == cardId,
+                cancellationToken);
+    }
+
     public void Delete(Card card)
     {
         _context.Cards.Remove(card);
@@ -60,6 +70,20 @@ public class CardRepository : ICardRepository
     public async Task SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (
+            ex.InnerException is MySqlConnector.MySqlException mysqlException &&
+            mysqlException.Number == 1451 &&
+            mysqlException.Message.Contains(
+                "FK_review_events_cards_CardId",
+                StringComparison.Ordinal))
+        {
+            throw new ConflictException(
+                "Không thể xóa Flashcard đã có lịch sử ôn tập.");
+        }
     }
+
 }

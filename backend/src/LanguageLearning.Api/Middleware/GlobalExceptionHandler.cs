@@ -27,6 +27,10 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
                 "Not Found",
                 exception.Message),
 
+            ConflictException => (
+                StatusCodes.Status409Conflict,
+                "Conflict",
+                exception.Message),
             ArgumentException => (
                 StatusCodes.Status400BadRequest,
                 "Bad Request",
