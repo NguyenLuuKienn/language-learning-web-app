@@ -190,4 +190,40 @@ public async Task UnexpectedException_ReturnsProblemDetails500()
         root.ToString());
 }
 
+[Fact]
+public async Task ConflictException_ReturnsProblemDetails409()
+{
+    var logger = new Mock<ILogger<GlobalExceptionHandler>>();
+    var handler = new GlobalExceptionHandler(logger.Object);
+
+    var context = new DefaultHttpContext();
+    context.Response.Body = new MemoryStream();
+
+    var exception = new ConflictException(
+        "Không thể xóa Flashcard đã có lịch sử ôn tập.");
+
+    var handled = await handler.TryHandleAsync(
+        context,
+        exception,
+        CancellationToken.None);
+
+    Assert.True(handled);
+    Assert.Equal(409, context.Response.StatusCode);
+
+    Assert.StartsWith(
+        "application/problem+json",
+        context.Response.ContentType);
+
+    context.Response.Body.Position = 0;
+
+    using var document = await JsonDocument.ParseAsync(
+        context.Response.Body);
+
+    var root = document.RootElement;
+
+    Assert.Equal(409, root.GetProperty("status").GetInt32());
+    Assert.Equal("Conflict", root.GetProperty("title").GetString());
+    Assert.Equal(exception.Message, root.GetProperty("detail").GetString());
+}
+
 }

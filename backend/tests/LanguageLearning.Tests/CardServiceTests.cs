@@ -333,6 +333,68 @@ public async Task DeleteCard_NonOwnerCannotDelete()
 }
 
 [Fact]
+public async Task DeleteCard_HasReviewEvents_ThrowsConflictException()
+{
+    var ownerId = Guid.NewGuid();
+    var deckId = Guid.NewGuid();
+    var cardId = Guid.NewGuid();
+
+    var deck = new Deck
+    {
+        Id = deckId,
+        OwnerId = ownerId,
+        Title = "English Vocabulary"
+    };
+
+    var card = new Card
+    {
+        Id = cardId,
+        DeckId = deckId,
+        Front = "Hello",
+        Back = "Xin chào"
+    };
+
+    var cardRepositoryMock = new Mock<ICardRepository>();
+    var deckRepositoryMock = new Mock<IDeckRepository>();
+
+    deckRepositoryMock
+        .Setup(repo => repo.GetByIdAsync(
+            deckId,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync(deck);
+
+    cardRepositoryMock
+        .Setup(repo => repo.GetByIdAsync(
+            deckId,
+            cardId,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync(card);
+
+    cardRepositoryMock
+        .Setup(repo => repo.HasReviewEventsAsync(
+            cardId,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync(true);
+
+    var service = CreateService(
+        cardRepositoryMock,
+        deckRepositoryMock,
+        ownerId);
+
+    await Assert.ThrowsAsync<ConflictException>(
+        () => service.DeleteCardAsync(deckId, cardId));
+
+    cardRepositoryMock.Verify(
+        repo => repo.Delete(It.IsAny<Card>()),
+        Times.Never);
+
+    cardRepositoryMock.Verify(
+        repo => repo.SaveChangesAsync(
+            It.IsAny<CancellationToken>()),
+        Times.Never);
+}
+
+[Fact]
 public async Task DeleteCard_OwnerCanDeleteSuccessfully()
 {
     var ownerId = Guid.NewGuid();
