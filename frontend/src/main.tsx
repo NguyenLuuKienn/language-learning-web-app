@@ -14,6 +14,7 @@ import App from './App.tsx';
 import { AuthPage } from './features/auth/AuthPage.tsx';
 import { AuthProvider } from './features/auth/AuthProvider.tsx';
 import { ProtectedRoute } from './features/auth/ProtectedRoute.tsx';
+import { ProfilePage } from './features/profile/ProfilePage.tsx';
 import { ReviewSessionPage } from './features/reviews/ReviewSessionPage.tsx';
 import './index.css';
 
@@ -58,6 +59,15 @@ createRoot(document.getElementById('root')!).render(
               element={
                 <ProtectedRoute>
                   <App />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />
