@@ -9,7 +9,7 @@ public static class ReviewIntervalCalculator
 {
     public static ReviewIntervalsResponse Calculate(string stateJson)
     {
-        // Thẻ mới chưa có lịch sử ôn tập
+
         SrsState state;
 
         if (string.IsNullOrWhiteSpace(stateJson) ||
@@ -26,7 +26,7 @@ public static class ReviewIntervalCalculator
                     PropertyNameCaseInsensitive = true
                 }
             ) ?? throw new InvalidOperationException(
-                "Trạng thái SRS không hợp lệ."
+             "Invalid SRS state."
             );
         }
 
