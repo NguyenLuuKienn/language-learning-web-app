@@ -53,9 +53,7 @@ export function AuthProvider({
 
     try {
       window.localStorage.removeItem('access_token');
-    } catch {
-
-    }
+    } catch {}
 
     if (getRefreshToken()) {
       void refreshSession()
@@ -136,6 +134,17 @@ export function AuthProvider({
     revoked: boolean;
     offlineCleared: boolean;
   }> {
+    const unsyncedCount = await db.syncQueue
+      .where('status')
+      .anyOf('Pending', 'Failed')
+      .count();
+
+    if (unsyncedCount > 0) {
+      throw new Error(
+        `Không thể đăng xuất khi còn ${unsyncedCount} thao tác chưa đồng bộ.`
+      );
+    }
+
     const refreshToken = getRefreshToken();
 
     let revoked = true;
@@ -154,15 +163,17 @@ export function AuthProvider({
     queryClient.clear();
 
     try {
-      await Promise.all(
-        db.tables.map((table) => table.clear())
+      await db.transaction(
+        'rw',
+        db.tables,
+        async () => {
+          for (const table of db.tables) {
+            await table.clear();
+          }
+        }
       );
     } catch {
-      try {
-        await db.delete();
-      } catch {
-        offlineCleared = false;
-      }
+      offlineCleared = false;
     }
 
     return {

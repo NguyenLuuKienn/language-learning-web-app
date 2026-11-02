@@ -10,7 +10,8 @@ import type {
 export async function queueOfflineReview(
   deckId: string,
   cardId: string,
-  rating: SrsRating
+  rating: SrsRating,
+  algorithmVersion?: string
 ): Promise<ReviewEvent> {
   if (!deckId || !cardId) {
     throw new Error('Deck ID and Card ID are required.');
@@ -43,15 +44,30 @@ export async function queueOfflineReview(
       const card = await db.cards.get(cardId);
       const schedule = await db.cardSchedules.get(cardId);
 
-      if (
-        !deck ||
-        !card ||
-        !schedule ||
-        card.deckId !== deckId ||
-        schedule.deckId !== deckId
-      ) {
+      const isDownloaded = Boolean(
+        deck &&
+        card &&
+        schedule &&
+        card.deckId === deckId &&
+        schedule.deckId === deckId
+      );
+
+      if (!navigator.onLine && !isDownloaded) {
         throw new Error(
           'Deck or card is not available offline.'
+        );
+      }
+
+      const resolvedAlgorithmVersion = navigator.onLine
+        ? algorithmVersion ??
+          (isDownloaded ? schedule?.algorithmVersion : undefined)
+        : isDownloaded
+          ? schedule?.algorithmVersion
+          : undefined;
+
+      if (!resolvedAlgorithmVersion) {
+        throw new Error(
+          'Review algorithm version is required.'
         );
       }
 
@@ -60,7 +76,7 @@ export async function queueOfflineReview(
         cardId,
         rating,
         reviewedAt,
-        algorithmVersion: schedule.algorithmVersion,
+        algorithmVersion: resolvedAlgorithmVersion,
       };
 
       const syncOperation: SyncOperation = {
@@ -72,7 +88,7 @@ export async function queueOfflineReview(
           cardId,
           rating,
           reviewedAt,
-          algorithmVersion: schedule.algorithmVersion,
+          algorithmVersion: resolvedAlgorithmVersion,
         },
         occurredAt: reviewedAt,
         status: 'Pending',

@@ -47,7 +47,7 @@ export function ReviewSessionPage({
     setSaveError('');
 
     try {
-      await queueOfflineReview(deckId, cardId, rating);
+      await queueOfflineReview(deckId, cardId, rating, currentCard.algorithmVersion);
 
       setRatings((previous) => [...previous, rating]);
       setCurrentIndex((previous) => previous + 1);
