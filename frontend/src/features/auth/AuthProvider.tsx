@@ -1,31 +1,52 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
+
+import {
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+
 import { useQueryClient } from '@tanstack/react-query';
 
 import { db } from '../../offline/db';
 import { refreshSession } from '../../services/apiClient';
 import { authApi } from './api/authApi';
 import { AuthContext } from './authContext';
+
 import {
   clearAuthSession,
   getAuthSnapshot,
+  getOfflineUser,
   getRefreshToken,
   saveAuthSession,
   subscribeToAuth,
 } from './authSession';
 
 import type { ReactNode } from 'react';
-import type { LoginRequest, RegisterRequest } from './types/auth.types';
+import type {
+  AuthUser,
+  LoginRequest,
+  RegisterRequest,
+} from './types/auth.types';
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const queryClient = useQueryClient();
+
   const session = useSyncExternalStore(
     subscribeToAuth,
     getAuthSnapshot,
     getAuthSnapshot
   );
+
   const [isRestoring, setIsRestoring] = useState(
     () => getRefreshToken() !== null
   );
+
+  const [offlineUser, setOfflineUser] =
+    useState<AuthUser | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -33,15 +54,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.removeItem('access_token');
     } catch {
-      // Legacy storage may be unavailable.
+
     }
 
     if (getRefreshToken()) {
-      void refreshSession().finally(() => {
-        if (active) {
-          setIsRestoring(false);
-        }
-      });
+      void refreshSession()
+        .then((restored) => {
+          if (!active) return;
+
+          if (!restored && !navigator.onLine) {
+            setOfflineUser(getOfflineUser());
+          }
+        })
+        .finally(() => {
+          if (active) {
+            setIsRestoring(false);
+          }
+        });
+    } else {
+      setIsRestoring(false);
     }
 
     return () => {
@@ -50,23 +81,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    const handleOffline = () => {
+      if (!session.user && getRefreshToken()) {
+        setOfflineUser(getOfflineUser());
+      }
+    };
+
+    const handleOnline = () => {
+      setOfflineUser(null);
+
+      if (!session.user && getRefreshToken()) {
+        setIsRestoring(true);
+
+        void refreshSession().finally(() => {
+          setIsRestoring(false);
+        });
+      }
+    };
+
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('online', handleOnline);
+
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [session.user]);
+
+  useEffect(() => {
     if (!session.user) {
       queryClient.clear();
+    } else {
+      setOfflineUser(null);
     }
   }, [queryClient, session.user]);
 
   async function login(request: LoginRequest) {
     const response = await authApi.login(request);
+
+    queryClient.clear();
     saveAuthSession(response);
+    setOfflineUser(null);
   }
 
   async function register(request: RegisterRequest) {
     const response = await authApi.register(request);
+
+    queryClient.clear();
     saveAuthSession(response);
+    setOfflineUser(null);
   }
 
-  async function logout(): Promise<{ revoked: boolean; offlineCleared: boolean }> {
+  async function logout(): Promise<{
+    revoked: boolean;
+    offlineCleared: boolean;
+  }> {
     const refreshToken = getRefreshToken();
+
     let revoked = true;
     let offlineCleared = true;
 
@@ -79,10 +150,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     clearAuthSession();
+    setOfflineUser(null);
     queryClient.clear();
 
     try {
-      await Promise.all(db.tables.map((table) => table.clear()));
+      await Promise.all(
+        db.tables.map((table) => table.clear())
+      );
     } catch {
       try {
         await db.delete();
@@ -91,12 +165,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    return { revoked, offlineCleared };
+    return {
+      revoked,
+      offlineCleared,
+    };
   }
 
   return (
     <AuthContext.Provider
-      value={{ ...session, isRestoring, login, register, logout }}
+      value={{
+        ...session,
+        isRestoring,
+        offlineUser,
+        login,
+        register,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
