@@ -19,21 +19,29 @@ public sealed class SyncConcurrencyTests
     [Fact]
     public async Task TC16_ConcurrentPush_SameOperation_AppliedOnce()
     {
+
         var connectionString =
             Environment.GetEnvironmentVariable("ISSUE47_TEST_CONNECTION")
+            ?? Environment.GetEnvironmentVariable("ISSUE27_TEST_CONNECTION")
             ?? throw new InvalidOperationException(
-                "ISSUE47_TEST_CONNECTION is not configured.");
+                "Test database connection is not configured.");
 
         var connectionBuilder =
             new MySqlConnectionStringBuilder(connectionString);
 
-        if (!string.Equals(
-            connectionBuilder.Database,
+        var allowedDatabases = new[]
+        {
             "language_learning_issue47_test",
-            StringComparison.OrdinalIgnoreCase))
+            "language_learning_issue27_test",
+            "language_learning_test_db"
+        };
+
+        if (!allowedDatabases.Contains(
+            connectionBuilder.Database,
+            StringComparer.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException(
-                "TC-16 requires the dedicated Issue 47 test database.");
+                "TC-16 requires a dedicated test database.");
         }
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
