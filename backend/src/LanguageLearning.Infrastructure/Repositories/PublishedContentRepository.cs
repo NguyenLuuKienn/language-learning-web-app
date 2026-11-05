@@ -1,5 +1,6 @@
 using LanguageLearning.Application.Common;
 using LanguageLearning.Application.Interfaces;
+using LanguageLearning.Application.DTOs.AdminContent;
 using LanguageLearning.Domain.Entities;
 using LanguageLearning.Domain.Enums;
 using LanguageLearning.Infrastructure.Data;
@@ -63,4 +64,37 @@ public class PublishedContentRepository : IPublishedContentRepository
         _context.Lessons.AsNoTracking().FirstOrDefaultAsync(lesson => lesson.Id == id &&
             lesson.Status == ContentStatus.Published &&
             lesson.Unit.Course.Status == ContentStatus.Published && lesson.Unit.Course.Language.IsActive, ct);
+
+    public async Task<LessonViewerResponse?> GetLessonViewerAsync(Guid id, CancellationToken ct)
+    {
+        var lesson = await _context.Lessons.AsNoTracking()
+            .Include(value => value.Unit).ThenInclude(unit => unit.Course)
+            .Include(value => value.Vocabularies)
+            .FirstOrDefaultAsync(value => value.Id == id && value.Status == ContentStatus.Published &&
+                value.Unit.Course.Status == ContentStatus.Published && value.Unit.Course.Language.IsActive, ct);
+        if (lesson is null) return null;
+
+        var orderedIds = await _context.Lessons.AsNoTracking()
+            .Where(value => value.Unit.CourseId == lesson.Unit.CourseId &&
+                value.Status == ContentStatus.Published &&
+                value.Unit.Course.Status == ContentStatus.Published && value.Unit.Course.Language.IsActive)
+            .OrderBy(value => value.Unit.SortOrder).ThenBy(value => value.Unit.Id)
+            .ThenBy(value => value.SortOrder).ThenBy(value => value.Id)
+            .Select(value => value.Id).ToListAsync(ct);
+        var index = orderedIds.IndexOf(id);
+
+        return new LessonViewerResponse(
+            lesson.Id,
+            lesson.UnitId,
+            lesson.Unit.CourseId,
+            lesson.Unit.Course.Title,
+            lesson.Unit.Title,
+            lesson.Title,
+            lesson.Content,
+            index > 0 ? orderedIds[index - 1] : null,
+            index >= 0 && index + 1 < orderedIds.Count ? orderedIds[index + 1] : null,
+            lesson.Vocabularies.OrderBy(value => value.Term).ThenBy(value => value.Id)
+                .Select(value => new LessonVocabularyResponse(value.Id, value.Term, value.Phonetic,
+                    value.Meaning, value.Example, value.AudioUrl, value.ImageUrl)).ToList());
+    }
 }

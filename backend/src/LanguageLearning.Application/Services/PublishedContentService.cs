@@ -47,6 +47,9 @@ public class PublishedContentService
         return MapLesson(lesson);
     }
 
+    public async Task<LessonViewerResponse> GetLessonViewerAsync(Guid id, CancellationToken ct) =>
+        await _repository.GetLessonViewerAsync(id, ct) ?? throw new NotFoundException("Lesson not found.");
+
     private static LessonResponse MapLesson(LanguageLearning.Domain.Entities.Lesson lesson) =>
         new(lesson.Id, lesson.UnitId, lesson.Title, lesson.Content, lesson.SortOrder, lesson.Status);
 }

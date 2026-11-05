@@ -51,4 +51,43 @@ public class PublishedContentRepositoryTests
         await context.SaveChangesAsync();
         Assert.Empty((await repository.ListLessonsAsync(firstUnit.Id, pagination, default)).Items);
     }
+
+    [Fact]
+    public async Task ViewerReturnsVocabularyAndNavigatesAcrossUnitsWithoutDraftLessons()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+        var options = new DbContextOptionsBuilder<AppDbContext>().UseSqlite(connection).Options;
+        await using var context = new AppDbContext(options);
+        await context.Database.EnsureCreatedAsync();
+
+        var language = new Language { Code = "ja", Name = "Japanese" };
+        var course = new Course { Language = language, Title = "Basics", Status = ContentStatus.Published };
+        var firstUnit = new Unit { Course = course, Title = "First unit", SortOrder = 1 };
+        var secondUnit = new Unit { Course = course, Title = "Second unit", SortOrder = 2 };
+        var first = new Lesson { Unit = firstUnit, Title = "First lesson", Content = "Theory", SortOrder = 1 };
+        var draft = new Lesson { Unit = firstUnit, Title = "Draft", SortOrder = 2, Status = ContentStatus.Draft };
+        var next = new Lesson { Unit = secondUnit, Title = "Next lesson", SortOrder = 1 };
+        first.Vocabularies.Add(new Vocabulary
+        {
+            Language = language,
+            Term = "こんにちは",
+            Phonetic = "konnichiwa",
+            Meaning = "Hello",
+            Example = "こんにちは。"
+        });
+        context.Lessons.AddRange(first, draft, next);
+        await context.SaveChangesAsync();
+
+        var repository = new PublishedContentRepository(context);
+        var viewer = await repository.GetLessonViewerAsync(first.Id, default);
+
+        Assert.NotNull(viewer);
+        Assert.Equal("Theory", viewer.Content);
+        Assert.Equal("Hello", Assert.Single(viewer.Vocabulary).Meaning);
+        Assert.Null(viewer.PreviousLessonId);
+        Assert.Equal(next.Id, viewer.NextLessonId);
+        Assert.Null(await repository.GetLessonViewerAsync(draft.Id, default));
+        Assert.Equal(first.Id, (await repository.GetLessonViewerAsync(next.Id, default))!.PreviousLessonId);
+    }
 }
