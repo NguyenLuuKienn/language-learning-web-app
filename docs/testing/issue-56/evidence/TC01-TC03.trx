@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="b66ecc4d-acea-4a22-a739-1463338c3d3c" name="Acer@DESKTOP-85D3S91 2026-11-06 14:13:13" runUser="DESKTOP-85D3S91\Acer" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-11-06T14:13:13.7497347+07:00" queuing="2026-11-06T14:13:13.7497350+07:00" start="2026-11-06T14:13:12.6221604+07:00" finish="2026-11-06T14:13:13.7537858+07:00" />
+  <TestSettings name="default" id="cb807191-8cb7-4d5c-a2a2-261fb40fb2c5">
+    <Deployment runDeploymentRoot="Acer_DESKTOP-85D3S91_2026-11-06_14_13_13" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="0ed2a619-0a35-4a18-b730-211af3e22cca" testId="3eedd80e-284a-c9e0-4cce-e1621bc8b314" testName="LanguageLearning.Tests.AuthApiTests.AdminEndpoint_RequiresAdminRole(role: &quot;Learner&quot;, expectedStatusCode: Forbidden)" computerName="DESKTOP-85D3S91" duration="00:00:00.2417580" startTime="2026-11-06T14:13:13.2739285+07:00" endTime="2026-11-06T14:13:13.2739286+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0ed2a619-0a35-4a18-b730-211af3e22cca" />
+    <UnitTestResult executionId="155e0d96-be96-4e1f-81fc-67da6350af89" testId="c18f1891-a0d9-b468-f1f9-d5b20752e132" testName="LanguageLearning.Tests.AuthApiTests.AdminEndpoint_RequiresAdminRole(role: &quot;Admin&quot;, expectedStatusCode: NoContent)" computerName="DESKTOP-85D3S91" duration="00:00:00.0438551" startTime="2026-11-06T14:13:13.3181194+07:00" endTime="2026-11-06T14:13:13.3181195+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="155e0d96-be96-4e1f-81fc-67da6350af89" />
+    <UnitTestResult executionId="4bd9fe4b-eb84-49e0-86b1-62108b2f531e" testId="45d9f87f-d354-1bd5-9bc5-8b6a7d571639" testName="LanguageLearning.Tests.AuthApiTests.Register_DuplicateEmail_ReturnsBadRequestProblemDetails" computerName="DESKTOP-85D3S91" duration="00:00:00.3530797" startTime="2026-11-06T14:13:13.6720658+07:00" endTime="2026-11-06T14:13:13.6720659+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4bd9fe4b-eb84-49e0-86b1-62108b2f531e" />
+    <UnitTestResult executionId="5cc1cdcd-001e-469e-bf0e-ecaebb5422ae" testId="b75c08af-bb23-c528-bbbd-8c71c7243e0d" testName="LanguageLearning.Tests.DeckServiceTests.UpdateDeck_NonOwnerCannotUpdate_TC03" computerName="DESKTOP-85D3S91" duration="00:00:00.0537717" startTime="2026-11-06T14:13:13.0866816+07:00" endTime="2026-11-06T14:13:13.0866972+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5cc1cdcd-001e-469e-bf0e-ecaebb5422ae" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="LanguageLearning.Tests.DeckServiceTests.UpdateDeck_NonOwnerCannotUpdate_TC03" storage="d:\pmmnm\language-learning-web-app\backend\tests\languagelearning.tests\bin\debug\net8.0\languagelearning.tests.dll" id="b75c08af-bb23-c528-bbbd-8c71c7243e0d">
+      <Execution id="5cc1cdcd-001e-469e-bf0e-ecaebb5422ae" />
+      <TestMethod codeBase="D:\PMMNM\language-learning-web-app\backend\tests\LanguageLearning.Tests\bin\Debug\net8.0\LanguageLearning.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="LanguageLearning.Tests.DeckServiceTests" name="UpdateDeck_NonOwnerCannotUpdate_TC03" />
+    </UnitTest>
+    <UnitTest name="LanguageLearning.Tests.AuthApiTests.AdminEndpoint_RequiresAdminRole(role: &quot;Admin&quot;, expectedStatusCode: NoContent)" storage="d:\pmmnm\language-learning-web-app\backend\tests\languagelearning.tests\bin\debug\net8.0\languagelearning.tests.dll" id="c18f1891-a0d9-b468-f1f9-d5b20752e132">
+      <Execution id="155e0d96-be96-4e1f-81fc-67da6350af89" />
+      <TestMethod codeBase="D:\PMMNM\language-learning-web-app\backend\tests\LanguageLearning.Tests\bin\Debug\net8.0\LanguageLearning.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="LanguageLearning.Tests.AuthApiTests" name="AdminEndpoint_RequiresAdminRole" />
+    </UnitTest>
+    <UnitTest name="LanguageLearning.Tests.AuthApiTests.Register_DuplicateEmail_ReturnsBadRequestProblemDetails" storage="d:\pmmnm\language-learning-web-app\backend\tests\languagelearning.tests\bin\debug\net8.0\languagelearning.tests.dll" id="45d9f87f-d354-1bd5-9bc5-8b6a7d571639">
+      <Execution id="4bd9fe4b-eb84-49e0-86b1-62108b2f531e" />
+      <TestMethod codeBase="D:\PMMNM\language-learning-web-app\backend\tests\LanguageLearning.Tests\bin\Debug\net8.0\LanguageLearning.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="LanguageLearning.Tests.AuthApiTests" name="Register_DuplicateEmail_ReturnsBadRequestProblemDetails" />
+    </UnitTest>
+    <UnitTest name="LanguageLearning.Tests.AuthApiTests.AdminEndpoint_RequiresAdminRole(role: &quot;Learner&quot;, expectedStatusCode: Forbidden)" storage="d:\pmmnm\language-learning-web-app\backend\tests\languagelearning.tests\bin\debug\net8.0\languagelearning.tests.dll" id="3eedd80e-284a-c9e0-4cce-e1621bc8b314">
+      <Execution id="0ed2a619-0a35-4a18-b730-211af3e22cca" />
+      <TestMethod codeBase="D:\PMMNM\language-learning-web-app\backend\tests\LanguageLearning.Tests\bin\Debug\net8.0\LanguageLearning.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="LanguageLearning.Tests.AuthApiTests" name="AdminEndpoint_RequiresAdminRole" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="3eedd80e-284a-c9e0-4cce-e1621bc8b314" executionId="0ed2a619-0a35-4a18-b730-211af3e22cca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c18f1891-a0d9-b468-f1f9-d5b20752e132" executionId="155e0d96-be96-4e1f-81fc-67da6350af89" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="45d9f87f-d354-1bd5-9bc5-8b6a7d571639" executionId="4bd9fe4b-eb84-49e0-86b1-62108b2f531e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b75c08af-bb23-c528-bbbd-8c71c7243e0d" executionId="5cc1cdcd-001e-469e-bf0e-ecaebb5422ae" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="4" executed="4" passed="4" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.11)&#xD;
+[xUnit.net 00:00:00.06]   Discovering: LanguageLearning.Tests&#xD;
+[xUnit.net 00:00:00.09]   Discovered:  LanguageLearning.Tests&#xD;
+[xUnit.net 00:00:00.10]   Starting:    LanguageLearning.Tests&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+fail: Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware[1]&#xD;
+      An unhandled exception has occurred while executing the request.&#xD;
+      LanguageLearning.Application.Common.Exceptions.DuplicateEmailException: An account with the email 'learner@example.com' already exists.&#xD;
+         at LanguageLearning.Application.Services.AuthService.RegisterAsync(RegisterRequest request, CancellationToken cancellationToken) in D:\PMMNM\language-learning-web-app\backend\src\LanguageLearning.Application\Services\AuthService.cs:line 38&#xD;
+         at LanguageLearning.Api.Controllers.AuthController.Register(RegisterRequest request, CancellationToken cancellationToken) in D:\PMMNM\language-learning-web-app\backend\src\LanguageLearning.Api\Controllers\AuthController.cs:line 25&#xD;
+         at lambda_method70(Closure, Object)&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.&lt;InvokeActionMethodAsync&gt;g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.&lt;InvokeNextActionFilterAsync&gt;g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State&amp; next, Scope&amp; scope, Object&amp; state, Boolean&amp; isCompleted)&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()&#xD;
+      --- End of stack trace from previous location ---&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.&lt;InvokeFilterPipelineAsync&gt;g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.&lt;InvokeAsync&gt;g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)&#xD;
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.&lt;InvokeAsync&gt;g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)&#xD;
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)&#xD;
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)&#xD;
+         at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)&#xD;
+         at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)&#xD;
+         at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.&lt;Invoke&gt;g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)&#xD;
+[xUnit.net 00:00:00.77]   Finished:    LanguageLearning.Tests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
