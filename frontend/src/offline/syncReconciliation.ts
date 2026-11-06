@@ -3,6 +3,13 @@ import { db } from './db';
 import { pullSyncChanges } from './syncApi';
 import { getAuthSnapshot } from '../features/auth/authSession';
 
+export class SyncBlockedByPendingReviewsError extends Error {
+  constructor() {
+    super('Cannot delete an offline deck with unsynced reviews.');
+    this.name = 'SyncBlockedByPendingReviewsError';
+  }
+}
+
 export interface SyncPullSummary {
   updatedCount: number;
   deletedCount: number;
@@ -92,9 +99,7 @@ async function processSyncPull(): Promise<SyncPullSummary> {
               .count();
 
             if (unsyncedReviews > 0) {
-              throw new Error(
-                'Cannot delete an offline deck with unsynced reviews.'
-              );
+              throw new SyncBlockedByPendingReviewsError();
             }
 
             await db.cards

@@ -14,6 +14,7 @@ import { getBackoffDelay } from './syncEngine';
 import { runSyncWorkflow } from './syncWorkflow';
 import { getAuthSnapshot } from '../features/auth/authSession';
 import { ApiError } from '../services/apiClient';
+import { SyncBlockedByPendingReviewsError } from './syncReconciliation';
 
 type SyncStatus =
   | 'idle'
@@ -117,6 +118,7 @@ export function OfflineStatusBar() {
 
         if (result.unresolvedCount > 0) {
           setStatus('error');
+
           setMessage(
             `Còn ${result.unresolvedCount} thao tác chưa đồng bộ hoặc cần xử lý.`
           );
@@ -151,19 +153,33 @@ export function OfflineStatusBar() {
           return;
         }
 
+        const blockedByReviews =
+          error instanceof SyncBlockedByPendingReviewsError;
+
         const permanentError =
-          error instanceof ApiError &&
-          error.status >= 400 &&
-          error.status < 500 &&
-          error.status !== 408 &&
-          error.status !== 429;
+          blockedByReviews ||
+          (
+            error instanceof ApiError &&
+            error.status >= 400 &&
+            error.status < 500 &&
+            error.status !== 408 &&
+            error.status !== 429
+          );
 
         setStatus('error');
 
         if (permanentError) {
-          setMessage(
-            'Máy chủ từ chối đồng bộ. Vui lòng kiểm tra phiên đăng nhập hoặc dữ liệu.'
-          );
+          retryAttempt = 0;
+
+          if (blockedByReviews) {
+            setMessage(
+              'Bộ thẻ còn kết quả ôn tập chưa đồng bộ. Dữ liệu đã được giữ lại. Vui lòng hoàn tất đồng bộ các lượt ôn tập trước khi thử lại.'
+            );
+          } else {
+            setMessage(
+              'Máy chủ từ chối đồng bộ. Vui lòng kiểm tra phiên đăng nhập hoặc dữ liệu.'
+            );
+          }
         } else {
           retryDelay = getBackoffDelay(retryAttempt);
           retryAttempt++;
@@ -253,6 +269,7 @@ export function OfflineStatusBar() {
         if (!disposed) {
           setPendingCount(null);
           setStatus('error');
+
           setMessage(
             'Không thể đọc hàng đợi IndexedDB.'
           );
