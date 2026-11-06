@@ -30,7 +30,7 @@ LANGUAGE_LEARNING_PROJECT_DOCUMENTATION.md.
 | TC-01 | Pass | evidence/TC01-TC03.trx | Duplicate email rejected with HTTP 400 |
 | TC-02 | Pass | evidence/TC01-TC03.trx | Learner denied HTTP 403; Admin allowed |
 | TC-03 | Pass | evidence/TC03-API.trx | Unauthorized Deck update returns HTTP 404; no changes saved |
-| TC-04 | Pass | PublishedContentRepositoryTests | Admin publishes draft course; published course becomes visible to learner queries |
+| TC-04 | Pass | evidence/TC04-PublishCourse.trx | Admin publishes draft course; published course becomes visible to learner queries |
 | TC-05 | Blocked | - | Quiz grading and submission functionality is not yet available on develop; depends on #28 and #29 |
 | TC-06 | Pass | evidence/TC06-SRS.txt | SRS v1: all four ratings verified for new and reviewed cards |
 | TC-07 | Pass | evidence/TC07-ReviewIdempotency.txt | Duplicate review applied only once |
@@ -45,7 +45,6 @@ LANGUAGE_LEARNING_PROJECT_DOCUMENTATION.md.
 | TC-16 | Partial | evidence/TC16-BackendSync.txt | Backend concurrent sync is idempotent; frontend reconnect/retry verification pending PR #95 |
 | TC-17 | Blocked | - | Deck version conflict handling not merged into develop; depends on PR #94 |
 | TC-18 | Partial | evidence/TC18-Logout.txt | Logout and refresh token revocation passed; password change functionality not available for acceptance testing |
-
 | TC-19 | Blocked | - | Offline media fallback not implemented on develop; depends on #36 |
 | TC-20 | Blocked | - | Admin public deck moderation not available on develop; depends on #42 |
 
