@@ -67,6 +67,7 @@ public class PublishedContentRepositoryTests
         var secondUnit = new Unit { Course = course, Title = "Second unit", SortOrder = 2 };
         var first = new Lesson { Unit = firstUnit, Title = "First lesson", Content = "Theory", SortOrder = 1 };
         var draft = new Lesson { Unit = firstUnit, Title = "Draft", SortOrder = 2, Status = ContentStatus.Draft };
+        var middle = new Lesson { Unit = firstUnit, Title = "Middle lesson", SortOrder = 3 };
         var next = new Lesson { Unit = secondUnit, Title = "Next lesson", SortOrder = 1 };
         first.Vocabularies.Add(new Vocabulary
         {
@@ -76,7 +77,7 @@ public class PublishedContentRepositoryTests
             Meaning = "Hello",
             Example = "こんにちは。"
         });
-        context.Lessons.AddRange(first, draft, next);
+        context.Lessons.AddRange(first, draft, middle, next);
         await context.SaveChangesAsync();
 
         var repository = new PublishedContentRepository(context);
@@ -86,8 +87,11 @@ public class PublishedContentRepositoryTests
         Assert.Equal("Theory", viewer.Content);
         Assert.Equal("Hello", Assert.Single(viewer.Vocabulary).Meaning);
         Assert.Null(viewer.PreviousLessonId);
-        Assert.Equal(next.Id, viewer.NextLessonId);
+        Assert.Equal(middle.Id, viewer.NextLessonId);
         Assert.Null(await repository.GetLessonViewerAsync(draft.Id, default));
-        Assert.Equal(first.Id, (await repository.GetLessonViewerAsync(next.Id, default))!.PreviousLessonId);
+        var middleViewer = await repository.GetLessonViewerAsync(middle.Id, default);
+        Assert.Equal(first.Id, middleViewer!.PreviousLessonId);
+        Assert.Equal(next.Id, middleViewer.NextLessonId);
+        Assert.Equal(middle.Id, (await repository.GetLessonViewerAsync(next.Id, default))!.PreviousLessonId);
     }
 }

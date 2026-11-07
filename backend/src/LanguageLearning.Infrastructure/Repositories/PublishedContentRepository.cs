@@ -74,14 +74,30 @@ public class PublishedContentRepository : IPublishedContentRepository
                 value.Unit.Course.Status == ContentStatus.Published && value.Unit.Course.Language.IsActive, ct);
         if (lesson is null) return null;
 
-        var orderedIds = await _context.Lessons.AsNoTracking()
+        var courseLessons = _context.Lessons.AsNoTracking()
             .Where(value => value.Unit.CourseId == lesson.Unit.CourseId &&
                 value.Status == ContentStatus.Published &&
-                value.Unit.Course.Status == ContentStatus.Published && value.Unit.Course.Language.IsActive)
+                value.Unit.Course.Status == ContentStatus.Published && value.Unit.Course.Language.IsActive);
+        var previousLessonId = await courseLessons
+            .Where(value => value.Unit.SortOrder < lesson.Unit.SortOrder ||
+                (value.Unit.SortOrder == lesson.Unit.SortOrder &&
+                    (value.Unit.Id.CompareTo(lesson.UnitId) < 0 ||
+                        (value.UnitId == lesson.UnitId &&
+                            (value.SortOrder < lesson.SortOrder ||
+                                (value.SortOrder == lesson.SortOrder && value.Id.CompareTo(id) < 0))))))
+            .OrderByDescending(value => value.Unit.SortOrder).ThenByDescending(value => value.Unit.Id)
+            .ThenByDescending(value => value.SortOrder).ThenByDescending(value => value.Id)
+            .Select(value => (Guid?)value.Id).FirstOrDefaultAsync(ct);
+        var nextLessonId = await courseLessons
+            .Where(value => value.Unit.SortOrder > lesson.Unit.SortOrder ||
+                (value.Unit.SortOrder == lesson.Unit.SortOrder &&
+                    (value.Unit.Id.CompareTo(lesson.UnitId) > 0 ||
+                        (value.UnitId == lesson.UnitId &&
+                            (value.SortOrder > lesson.SortOrder ||
+                                (value.SortOrder == lesson.SortOrder && value.Id.CompareTo(id) > 0))))))
             .OrderBy(value => value.Unit.SortOrder).ThenBy(value => value.Unit.Id)
             .ThenBy(value => value.SortOrder).ThenBy(value => value.Id)
-            .Select(value => value.Id).ToListAsync(ct);
-        var index = orderedIds.IndexOf(id);
+            .Select(value => (Guid?)value.Id).FirstOrDefaultAsync(ct);
 
         return new LessonViewerResponse(
             lesson.Id,
@@ -91,8 +107,8 @@ public class PublishedContentRepository : IPublishedContentRepository
             lesson.Unit.Title,
             lesson.Title,
             lesson.Content,
-            index > 0 ? orderedIds[index - 1] : null,
-            index >= 0 && index + 1 < orderedIds.Count ? orderedIds[index + 1] : null,
+            previousLessonId,
+            nextLessonId,
             lesson.Vocabularies.OrderBy(value => value.Term).ThenBy(value => value.Id)
                 .Select(value => new LessonVocabularyResponse(value.Id, value.Term, value.Phonetic,
                     value.Meaning, value.Example, value.AudioUrl, value.ImageUrl)).ToList());
