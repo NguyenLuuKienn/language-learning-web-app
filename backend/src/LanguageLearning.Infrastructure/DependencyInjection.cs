@@ -49,6 +49,8 @@ public static class DependencyInjection
         services.AddScoped<StatisticsService>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IAdminContentRepository, AdminContentRepository>();
+        services.AddScoped<ISharingReadRepository, SharingReadRepository>();
+        services.AddScoped<SharingService>();
         services.AddScoped<IPublishedContentRepository, PublishedContentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IStreakRepository, StreakRepository>();
