@@ -40,6 +40,8 @@ public static class DependencyInjection
         services.AddScoped<IQuizRepository, QuizRepository>();
         services.AddScoped<QuizService>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IProgressRepository, ProgressRepository>();
+        services.AddScoped<ProgressService>();
         services.AddScoped<ISyncRepository, SyncRepository>();
         services.AddScoped<ISyncPullRepository, SyncPullRepository>();
         services.AddScoped<ILanguageRepository, LanguageRepository>();
