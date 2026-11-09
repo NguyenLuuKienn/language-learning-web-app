@@ -1,5 +1,6 @@
 using LanguageLearning.Application.Common;
 using LanguageLearning.Application.Interfaces;
+using LanguageLearning.Application.DTOs.AdminContent;
 using LanguageLearning.Domain.Entities;
 using LanguageLearning.Domain.Enums;
 using LanguageLearning.Infrastructure.Data;
@@ -63,4 +64,53 @@ public class PublishedContentRepository : IPublishedContentRepository
         _context.Lessons.AsNoTracking().FirstOrDefaultAsync(lesson => lesson.Id == id &&
             lesson.Status == ContentStatus.Published &&
             lesson.Unit.Course.Status == ContentStatus.Published && lesson.Unit.Course.Language.IsActive, ct);
+
+    public async Task<LessonViewerResponse?> GetLessonViewerAsync(Guid id, CancellationToken ct)
+    {
+        var lesson = await _context.Lessons.AsNoTracking()
+            .Include(value => value.Unit).ThenInclude(unit => unit.Course)
+            .Include(value => value.Vocabularies)
+            .FirstOrDefaultAsync(value => value.Id == id && value.Status == ContentStatus.Published &&
+                value.Unit.Course.Status == ContentStatus.Published && value.Unit.Course.Language.IsActive, ct);
+        if (lesson is null) return null;
+
+        var courseLessons = _context.Lessons.AsNoTracking()
+            .Where(value => value.Unit.CourseId == lesson.Unit.CourseId &&
+                value.Status == ContentStatus.Published &&
+                value.Unit.Course.Status == ContentStatus.Published && value.Unit.Course.Language.IsActive);
+        var previousLessonId = await courseLessons
+            .Where(value => value.Unit.SortOrder < lesson.Unit.SortOrder ||
+                (value.Unit.SortOrder == lesson.Unit.SortOrder &&
+                    (value.Unit.Id.CompareTo(lesson.UnitId) < 0 ||
+                        (value.UnitId == lesson.UnitId &&
+                            (value.SortOrder < lesson.SortOrder ||
+                                (value.SortOrder == lesson.SortOrder && value.Id.CompareTo(id) < 0))))))
+            .OrderByDescending(value => value.Unit.SortOrder).ThenByDescending(value => value.Unit.Id)
+            .ThenByDescending(value => value.SortOrder).ThenByDescending(value => value.Id)
+            .Select(value => (Guid?)value.Id).FirstOrDefaultAsync(ct);
+        var nextLessonId = await courseLessons
+            .Where(value => value.Unit.SortOrder > lesson.Unit.SortOrder ||
+                (value.Unit.SortOrder == lesson.Unit.SortOrder &&
+                    (value.Unit.Id.CompareTo(lesson.UnitId) > 0 ||
+                        (value.UnitId == lesson.UnitId &&
+                            (value.SortOrder > lesson.SortOrder ||
+                                (value.SortOrder == lesson.SortOrder && value.Id.CompareTo(id) > 0))))))
+            .OrderBy(value => value.Unit.SortOrder).ThenBy(value => value.Unit.Id)
+            .ThenBy(value => value.SortOrder).ThenBy(value => value.Id)
+            .Select(value => (Guid?)value.Id).FirstOrDefaultAsync(ct);
+
+        return new LessonViewerResponse(
+            lesson.Id,
+            lesson.UnitId,
+            lesson.Unit.CourseId,
+            lesson.Unit.Course.Title,
+            lesson.Unit.Title,
+            lesson.Title,
+            lesson.Content,
+            previousLessonId,
+            nextLessonId,
+            lesson.Vocabularies.OrderBy(value => value.Term).ThenBy(value => value.Id)
+                .Select(value => new LessonVocabularyResponse(value.Id, value.Term, value.Phonetic,
+                    value.Meaning, value.Example, value.AudioUrl, value.ImageUrl)).ToList());
+    }
 }

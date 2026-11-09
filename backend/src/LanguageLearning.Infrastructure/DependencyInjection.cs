@@ -1,5 +1,6 @@
 ﻿
 using LanguageLearning.Application.Interfaces;
+using LanguageLearning.Application.Services;
 using LanguageLearning.Infrastructure.Data;
 using LanguageLearning.Infrastructure.Repositories;
 using LanguageLearning.Infrastructure.Security;
@@ -33,14 +34,30 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IDeckRepository, DeckRepository>();
+        services.AddScoped<IQuizReadRepository, QuizReadRepository>();
+        services.AddScoped<QuizReadService>();
         services.AddScoped<ICardRepository, CardRepository>();
+        services.AddScoped<IQuizRepository, QuizRepository>();
+        services.AddScoped<QuizService>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IProgressRepository, ProgressRepository>();
+        services.AddScoped<ProgressService>();
         services.AddScoped<ISyncRepository, SyncRepository>();
         services.AddScoped<ISyncPullRepository, SyncPullRepository>();
         services.AddScoped<ILanguageRepository, LanguageRepository>();
+        services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+        services.AddScoped<StatisticsService>();
+        services.AddSingleton(TimeProvider.System);
         services.AddScoped<IAdminContentRepository, AdminContentRepository>();
+        services.AddScoped<ISharingReadRepository, SharingReadRepository>();
+        services.AddScoped<SharingService>();
         services.AddScoped<IPublishedContentRepository, PublishedContentRepository>();
+        services.AddScoped<ISharingWriteRepository, SharingWriteRepository>();
+        services.AddScoped<SharingWriteService>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IStreakRepository, StreakRepository>();
+        services.AddScoped<StreakService>();
+        services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IPasswordHashService, Pbkdf2PasswordHashService>();
         services.AddSingleton<ITokenService, JwtTokenService>();
         return services;

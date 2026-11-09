@@ -1,5 +1,6 @@
 using LanguageLearning.Application.Common;
 using LanguageLearning.Domain.Entities;
+using LanguageLearning.Application.DTOs.AdminContent;
 
 namespace LanguageLearning.Application.Interfaces;
 
@@ -11,4 +12,5 @@ public interface IPublishedContentRepository
     Task<Unit?> GetUnitAsync(Guid id, CancellationToken ct);
     Task<PagedResponse<Lesson>> ListLessonsAsync(Guid unitId, PaginationParams pagination, CancellationToken ct);
     Task<Lesson?> GetLessonAsync(Guid id, CancellationToken ct);
+    Task<LessonViewerResponse?> GetLessonViewerAsync(Guid id, CancellationToken ct);
 }
