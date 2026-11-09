@@ -37,6 +37,8 @@ public static class DependencyInjection
         services.AddScoped<IQuizReadRepository, QuizReadRepository>();
         services.AddScoped<QuizReadService>();
         services.AddScoped<ICardRepository, CardRepository>();
+        services.AddScoped<IQuizRepository, QuizRepository>();
+        services.AddScoped<QuizService>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<ISyncRepository, SyncRepository>();
         services.AddScoped<ISyncPullRepository, SyncPullRepository>();
