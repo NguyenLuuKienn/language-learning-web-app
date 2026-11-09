@@ -52,6 +52,8 @@ public static class DependencyInjection
         services.AddScoped<ISharingReadRepository, SharingReadRepository>();
         services.AddScoped<SharingService>();
         services.AddScoped<IPublishedContentRepository, PublishedContentRepository>();
+        services.AddScoped<ISharingWriteRepository, SharingWriteRepository>();
+        services.AddScoped<SharingWriteService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IStreakRepository, StreakRepository>();
         services.AddScoped<StreakService>();
