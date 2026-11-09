@@ -33,4 +33,8 @@ public class PublishedContentController : ControllerBase
     [HttpGet("lessons/{id:guid}")]
     public async Task<IActionResult> GetLesson(Guid id, CancellationToken ct) =>
         Ok(await _content.GetLessonAsync(id, ct));
+
+    [HttpGet("lessons/{id:guid}/viewer")]
+    public async Task<IActionResult> GetLessonViewer(Guid id, CancellationToken ct) =>
+        Ok(await _content.GetLessonViewerAsync(id, ct));
 }

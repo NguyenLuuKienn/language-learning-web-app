@@ -36,3 +36,26 @@ export interface Lesson {
 export interface CourseUnit extends Unit {
   lessons: Lesson[];
 }
+
+export interface LessonVocabulary {
+  id: string;
+  term: string;
+  phonetic: string;
+  meaning: string;
+  example: string;
+  audioUrl: string | null;
+  imageUrl: string | null;
+}
+
+export interface LessonViewer {
+  id: string;
+  unitId: string;
+  courseId: string;
+  courseTitle: string;
+  unitTitle: string;
+  title: string;
+  content: string;
+  previousLessonId: string | null;
+  nextLessonId: string | null;
+  vocabulary: LessonVocabulary[];
+}

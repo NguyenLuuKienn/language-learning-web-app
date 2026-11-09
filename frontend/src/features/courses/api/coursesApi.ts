@@ -1,6 +1,6 @@
 import { apiRequest } from '../../../services/apiClient';
 
-import type { Course, CourseUnit, Lesson, PagedResponse, Unit } from '../types/course.types';
+import type { Course, CourseUnit, Lesson, LessonViewer, PagedResponse, Unit } from '../types/course.types';
 
 async function allPages<T>(endpoint: string): Promise<T[]> {
   const items: T[] = [];
@@ -33,5 +33,8 @@ export const coursesApi = {
   },
   lesson(id: string): Promise<Lesson> {
     return apiRequest<Lesson>(`/lessons/${encodeURIComponent(id)}`);
+  },
+  lessonViewer(id: string): Promise<LessonViewer> {
+    return apiRequest<LessonViewer>(`/lessons/${encodeURIComponent(id)}/viewer`);
   },
 };
