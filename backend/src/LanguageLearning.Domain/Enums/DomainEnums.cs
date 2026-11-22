@@ -1,11 +1,15 @@
-﻿namespace LanguageLearning.Domain.Enums;
+using System.Text.Json.Serialization;
 
+namespace LanguageLearning.Domain.Enums;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum UserRole
 {
     Learner = 1,
     Admin = 2
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ContentStatus
 {
     Draft = 1,
@@ -13,6 +17,7 @@ public enum ContentStatus
     Archived = 3
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SrsRating
 {
     Again = 1,
@@ -21,6 +26,7 @@ public enum SrsRating
     Easy = 4
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum QuestionType
 {
     MultipleChoice = 1,

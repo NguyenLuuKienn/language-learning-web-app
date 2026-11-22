@@ -1,0 +1,47 @@
+[
+  {
+    "id": "76a638ce-dca1-4cab-a886-afc087c1369d",
+    "front": "apply",
+    "back": "nộp đơn",
+    "meanings": ["nộp đơn", "áp dụng"],
+    "partOfSpeech": "verb",
+    "phonetic": "/əˈplaɪ/",
+    "example": "I want to apply for this job.",
+    "exampleTranslation": "Tôi muốn nộp đơn cho công việc này.",
+    "clozeSentence": "I want to ___ for this job.",
+    "acceptedAnswers": ["apply"],
+    "audioUrl": "",
+    "imageUrl": "",
+    "tags": ["career", "interview"]
+  },
+  {
+    "id": "7c3ed953-1168-4f1c-b6cc-f8bbefbd160f",
+    "front": "experience",
+    "back": "kinh nghiệm",
+    "meanings": ["kinh nghiệm", "trải nghiệm"],
+    "partOfSpeech": "noun",
+    "phonetic": "/ɪkˈspɪəriəns/",
+    "example": "She has experience in customer service.",
+    "exampleTranslation": "Cô ấy có kinh nghiệm trong lĩnh vực chăm sóc khách hàng.",
+    "clozeSentence": "She has ___ in customer service.",
+    "acceptedAnswers": ["experience"],
+    "audioUrl": "",
+    "imageUrl": "",
+    "tags": ["career", "interview"]
+  },
+  {
+    "id": "39c6e386-50bd-4a6d-bd44-eab4f32f70c6",
+    "front": "skill",
+    "back": "kỹ năng",
+    "meanings": ["kỹ năng"],
+    "partOfSpeech": "noun",
+    "phonetic": "/skɪl/",
+    "example": "Communication is an important skill.",
+    "exampleTranslation": "Giao tiếp là một kỹ năng quan trọng.",
+    "clozeSentence": "Communication is an important ___.",
+    "acceptedAnswers": ["skill"],
+    "audioUrl": "",
+    "imageUrl": "",
+    "tags": ["career", "interview"]
+  }
+]

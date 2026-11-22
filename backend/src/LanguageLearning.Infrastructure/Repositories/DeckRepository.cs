@@ -1,6 +1,8 @@
 
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Domain.Entities;
+using LanguageLearning.Domain.Enums;
+using LanguageLearning.Application.DTOs.Sharing;
 using LanguageLearning.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,12 +21,22 @@ public class DeckRepository : IDeckRepository
         Guid userId,
         int page,
         int pageSize,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        Guid? languageId = null,
+        string? level = null)
     {
         var query = _context.Decks
             .AsNoTracking()
-            .Where(d => !d.IsDeleted &&
-                (d.OwnerId == userId || d.IsPublic));
+            .Where(d => !d.IsDeleted && d.OwnerId == userId &&
+                (d.Owner.Role == UserRole.Learner || !d.Tags.Any(tag => tag.Tag.StartsWith("course-level:")) ||
+                    d.Tags.Any(tag => tag.Tag.StartsWith("vocab-lesson:"))));
+        if (languageId.HasValue)
+            query = query.Where(d => d.LanguageId == languageId.Value);
+        if (!string.IsNullOrWhiteSpace(level))
+        {
+            var levelTag = "course-level:" + level.ToLower();
+            query = query.Where(d => !d.Tags.Any(tag => tag.Tag.StartsWith("course-level:") && tag.Tag.ToLower() != levelTag));
+        }
 
         var totalItems = await query.CountAsync(cancellationToken);
 
@@ -33,21 +45,74 @@ public class DeckRepository : IDeckRepository
             .ThenBy(d => d.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            .Include(d => d.Language)
             .Include(d => d.Tags)
             .ToListAsync(cancellationToken);
 
         return (items, totalItems);
     }
 
-    public async Task<List<Deck>> GetAllAsync(
-        CancellationToken cancellationToken = default)
+    public Task<List<PublicDeckResponse>> GetDeckSummariesAsync(Guid? languageId, string? search, bool includePrivate, CancellationToken cancellationToken = default, string? level = null)
     {
-        return await _context.Decks
-            .AsNoTracking()
-            .Where(d => !d.IsDeleted)
-            .Include(d => d.Tags)
-            .Include(d => d.Cards)
-                .ThenInclude(c => c.Schedules)
+        var query = _context.Decks.AsNoTracking().Where(deck => !deck.IsDeleted);
+        if (!includePrivate) query = query.Where(deck => deck.IsPublic &&
+            (deck.Owner.Role == UserRole.Learner || !deck.Tags.Any(tag => tag.Tag.StartsWith("course-level:")) ||
+                deck.Tags.Any(tag => tag.Tag.StartsWith("vocab-lesson:"))));
+        if (languageId.HasValue && languageId.Value != Guid.Empty)
+            query = query.Where(deck => deck.LanguageId == languageId.Value);
+        if (!string.IsNullOrWhiteSpace(level))
+        {
+            var levelTag = "course-level:" + level.ToLower();
+            query = query.Where(deck => deck.Tags.Any(tag => tag.Tag.ToLower() == levelTag));
+        }
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            query = query.Where(deck => deck.Title.ToLower().Contains(term) || deck.Description.ToLower().Contains(term));
+        }
+
+        return query.OrderByDescending(deck => deck.CreatedAt)
+            .Select(deck => new PublicDeckResponse
+            {
+                Id = deck.Id,
+                Title = deck.Title,
+                Description = deck.Description,
+                LanguageId = deck.LanguageId,
+                LanguageName = deck.Language.Name,
+                OwnerDisplayName = deck.Owner.DisplayName,
+                CardsCount = deck.Cards.Count,
+                CloneCount = _context.Decks.Count(copy => copy.SourceDeckId == deck.Id && !copy.IsDeleted),
+                Tags = deck.Tags.Select(tag => tag.Tag).ToList(),
+                CreatedAt = deck.CreatedAt
+            }).ToListAsync(cancellationToken);
+    }
+
+    public Task<List<Deck>> GetChangedUserDecksAsync(Guid userId, DateTime sinceUtc, CancellationToken cancellationToken = default, Guid? languageId = null, string? level = null)
+    {
+        var query = _context.Decks.AsNoTracking()
+            .Where(deck => deck.OwnerId == userId && !deck.IsDeleted && (deck.UpdatedAt ?? deck.CreatedAt) > sinceUtc);
+        if (languageId.HasValue) query = query.Where(deck => deck.LanguageId == languageId.Value);
+        if (!string.IsNullOrWhiteSpace(level))
+        {
+            var levelTag = "course-level:" + level.ToLower();
+            query = query.Where(deck => !deck.Tags.Any(tag => tag.Tag.StartsWith("course-level:") && tag.Tag.ToLower() != levelTag));
+        }
+        return query
+            .Include(deck => deck.Tags)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<Card>> GetChangedUserCardsAsync(Guid userId, DateTime sinceUtc, CancellationToken cancellationToken = default, Guid? languageId = null, string? level = null)
+    {
+        var query = _context.Cards.AsNoTracking()
+            .Where(card => card.Deck.OwnerId == userId && !card.Deck.IsDeleted && (card.UpdatedAt ?? card.CreatedAt) > sinceUtc);
+        if (languageId.HasValue) query = query.Where(card => card.Deck.LanguageId == languageId.Value);
+        if (!string.IsNullOrWhiteSpace(level))
+        {
+            var levelTag = "course-level:" + level.ToLower();
+            query = query.Where(card => !card.Deck.Tags.Any(tag => tag.Tag.StartsWith("course-level:") && tag.Tag.ToLower() != levelTag));
+        }
+        return query
             .ToListAsync(cancellationToken);
     }
 
@@ -56,9 +121,9 @@ public class DeckRepository : IDeckRepository
         CancellationToken cancellationToken = default)
     {
         return await _context.Decks
+            .Include(d => d.Language)
+            .Include(d => d.Owner)
             .Include(d => d.Tags)
-            .Include(d => d.Cards)
-                .ThenInclude(c => c.Schedules)
             .FirstOrDefaultAsync(
                 d => d.Id == deckId && !d.IsDeleted,
                 cancellationToken);

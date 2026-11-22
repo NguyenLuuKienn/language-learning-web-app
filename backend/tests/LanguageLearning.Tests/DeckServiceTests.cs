@@ -21,10 +21,12 @@ public class DeckServiceTests
         currentUserMock
             .Setup(service => service.GetRequiredUserId())
             .Returns(currentUserId);
+        currentUserMock.Setup(service => service.IsAdmin()).Returns(true);
 
         return new DeckService(
             repositoryMock.Object,
-            currentUserMock.Object);
+            currentUserMock.Object,
+            new Mock<IStudyAccessService>().Object);
     }
 
     [Fact]
@@ -503,7 +505,9 @@ public class DeckServiceTests
                 userId,
                 2,
                 10,
-                It.IsAny<CancellationToken>()))
+                It.IsAny<CancellationToken>(),
+                null,
+                null))
             .ReturnsAsync((
                 new List<Deck> { deck },
                 25));

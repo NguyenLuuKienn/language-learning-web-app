@@ -1,587 +1,1050 @@
-﻿import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { message, ConfigProvider, App as AntdApp } from 'antd';
+import { LanguageProvider, useTranslation } from './i18n';
+import { AuthProvider, useAuth } from './features/auth';
+import { AuthModal } from './features/auth/AuthModal';
+import { SettingsModal } from './features/settings/SettingsModal';
+import { CsvWizardModal } from './features/csv/CsvWizardModal';
+import { StudyTargetModal } from './features/onboarding/StudyTargetModal';
+import { HomeView } from './features/home/HomeView';
+const CourseCatalogView = React.lazy(() => import('./features/courses/CourseCatalogView').then((module) => ({ default: module.CourseCatalogView })));
+const TopicWritingView = React.lazy(() => import('./features/practice/TopicWritingView').then((module) => ({ default: module.TopicWritingView })));
+const SpeakingReadingView = React.lazy(() => import('./features/practice/SpeakingReadingView').then((module) => ({ default: module.SpeakingReadingView })));
+import { MyDecksView } from './features/decks/MyDecksView';
+import { SrsReviewView } from './features/reviews/SrsReviewView';
+import { VocabularyHubView } from './features/vocabulary/VocabularyHubView';
+import { QuizPlayerView } from './features/quiz/QuizPlayerView';
+import { QuizHubView } from './features/quiz/QuizHubView';
+import { StatisticsView } from './features/statistics/StatisticsView';
+import { PublicDecksView } from './features/sharing/PublicDecksView';
+import { SyncView } from './features/sync/SyncView';
+import { clearOfflineStudyData } from './offline/db';
+const AdminView = React.lazy(() => import('./features/admin/AdminView').then((module) => ({ default: module.AdminView })));
+import { LandingPage } from './features/landing/LandingPage';
+import { LearningRoadmapView } from './features/roadmap/LearningRoadmapView';
+const ListeningView = React.lazy(() => import('./features/practice/ListeningView').then((module) => ({ default: module.ListeningView })));
+const AiConversationView = React.lazy(() => import('./features/practice/AiConversationView').then((module) => ({ default: module.AiConversationView })));
+const SpecialPracticeView = React.lazy(() => import('./features/specialPractice/SpecialPracticeView').then((module) => ({ default: module.SpecialPracticeView })));
+const GrammarView = React.lazy(() => import('./features/practice/GrammarView').then((module) => ({ default: module.GrammarView })));
+const ReadingView = React.lazy(() => import('./features/practice/ReadingView').then((module) => ({ default: module.ReadingView })));
+const LessonPlayerView = React.lazy(() => import('./features/journey/LessonPlayerView').then((module) => ({ default: module.LessonPlayerView })));
+const CharacterLabView = React.lazy(() => import('./features/character/CharacterLabView').then((module) => ({ default: module.CharacterLabView })));
+const LibraryView = React.lazy(() => import('./features/library/LibraryView').then((module) => ({ default: module.LibraryView })));
+import { LeaderboardView } from './features/gamification/LeaderboardView';
+import { QuickDictionaryModal } from './components/dictionary/QuickDictionaryModal';
+import { NotebookWidget } from './components/notebook/NotebookWidget';
+import { StudyGoalRequired } from './components/ui/StudyGoalRequired';
+import { isAdminUser, type StudyTarget, type UserProfile } from './types';
+import { coursesApi, studyTargetApi, getErrorMessage } from './services/apiClient';
+import { curriculumStore, type CurriculumCourse } from './services/curriculumStore';
 import {
   HomeOutlined,
-  CodeOutlined,
-  AudioOutlined,
-  MessageOutlined,
-  TrophyOutlined,
-  TeamOutlined,
-  RiseOutlined,
-  SettingOutlined,
-  SoundOutlined,
-  SwapOutlined,
-  ThunderboltOutlined,
-  CheckOutlined,
-  CloseOutlined,
-  LeftOutlined,
-  RightOutlined,
-  ReloadOutlined,
-  CustomerServiceOutlined,
   BookOutlined,
-  FlagOutlined,
-  EyeOutlined,
-  HeartOutlined
+  EditOutlined,
+  SoundOutlined,
+  CopyOutlined,
+  BarChartOutlined,
+  GlobalOutlined,
+  CloudSyncOutlined,
+  SafetyCertificateOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+  FireOutlined,
+  UserOutlined,
+  CompassOutlined,
+  CustomerServiceOutlined,
+  MessageOutlined,
+  ReadOutlined,
+  FileTextOutlined,
+  ApartmentOutlined,
+  CheckSquareOutlined,
+  SyncOutlined,
+  HighlightOutlined,
+  TrophyOutlined
 } from '@ant-design/icons';
 
-export function App() {
-  const [currentView, setCurrentView] = useState<'flashcard' | 'lessonList' | 'quiz'>('flashcard');
-  const [activeTabSub, setActiveTabSub] = useState<'vocab' | 'example'>('vocab');
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [selectedQuizOption, setSelectedQuizOption] = useState<number | null>(null);
+type ActiveView =
+  | 'landing'
+  | 'home'
+  | 'roadmap'
+  | 'courses'
+  | 'curriculum'
+  | 'learn'
+  | 'listening'
+  | 'speaking'
+  | 'reading'
+  | 'writing'
+  | 'grammar'
+  | 'characterLab'
+  | 'library'
+  | 'leaderboard'
+  | 'aiChat'
+  | 'certificatePractice'
+  | 'interviewPractice'
+  | 'decks'
+  | 'srsReview'
+  | 'quiz'
+  | 'statistics'
+  | 'sharing'
+  | 'sync'
+  | 'admin';
+
+const VIEW_TO_PATH: Record<ActiveView, string> = {
+  landing: '/',
+  home: '/home',
+  roadmap: '/roadmap',
+  courses: '/courses',
+  curriculum: '/curriculum',
+  learn: '/learn',
+  listening: '/listening',
+  speaking: '/speaking',
+  reading: '/reading',
+  writing: '/writing',
+  grammar: '/grammar',
+  characterLab: '/character-lab',
+  library: '/library',
+  leaderboard: '/leaderboard',
+  aiChat: '/ai-chat',
+  certificatePractice: '/certificate-practice',
+  interviewPractice: '/interview-practice',
+  decks: '/decks',
+  srsReview: '/review',
+  quiz: '/quiz',
+  statistics: '/stats',
+  sharing: '/community',
+  sync: '/sync',
+  admin: '/admin'
+};
+
+const PATH_TO_VIEW: Record<string, ActiveView> = {
+  '/': 'landing',
+  '/home': 'home',
+  '/roadmap': 'roadmap',
+  '/courses': 'courses',
+  '/vocabulary': 'courses',
+  '/curriculum': 'curriculum',
+  '/listening': 'listening',
+  '/practice-listening': 'listening',
+  '/speaking': 'speaking',
+  '/practice-speaking': 'speaking',
+  '/reading': 'reading',
+  '/practice-reading': 'reading',
+  '/writing': 'writing',
+  '/practice-writing': 'writing',
+  '/grammar': 'grammar',
+  '/practice-grammar': 'grammar',
+  '/character-lab': 'characterLab',
+  '/alphabet': 'characterLab',
+  '/library': 'library',
+  '/leaderboard': 'leaderboard',
+  '/ranking': 'leaderboard',
+  '/ai-chat': 'aiChat',
+  '/certificate-practice': 'certificatePractice',
+  '/interview-practice': 'interviewPractice',
+  '/decks': 'decks',
+  '/review': 'srsReview',
+  '/srs-review': 'srsReview',
+  '/quiz': 'quiz',
+  '/stats': 'statistics',
+  '/statistics': 'statistics',
+  '/community': 'sharing',
+  '/sharing': 'sharing',
+  '/sync': 'sync',
+  '/admin': 'admin'
+};
+
+const MainShell: React.FC = () => {
+  const { t, language, toggleLanguage } = useTranslation();
+  const { user, isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Đồng bộ view dựa trên URL pathname
+  const currentPath = location.pathname.toLowerCase() || '/';
+  const currentView: ActiveView = currentPath.startsWith('/learn/') ? 'learn' :
+    currentPath === '/courses' && new URLSearchParams(location.search).has('courseId')
+    ? 'curriculum' : PATH_TO_VIEW[currentPath] || 'landing';
+  const requiresMaterials = ['roadmap', 'listening', 'speaking', 'reading', 'writing', 'grammar', 'aiChat', 'library'].includes(currentView);
+  const requiresStudyGoal = ['roadmap', 'learn', 'courses', 'curriculum', 'listening', 'speaking', 'reading',
+    'writing', 'grammar', 'characterLab', 'library', 'aiChat', 'certificatePractice', 'interviewPractice',
+    'decks', 'srsReview', 'quiz', 'sharing'].includes(currentView);
+
+  const [activeQuizLesson, setActiveQuizLesson] = useState<{ id: string; title: string } | null>(
+    null
+  );
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [csvDeckId, setCsvDeckId] = useState<string | null>(null);
+  const [selectedStudyDeckId, setSelectedStudyDeckId] = useState<string | undefined>(undefined);
+  const [isDictionaryOpen, setIsDictionaryOpen] = useState(false);
+  const [materialsReady, setMaterialsReady] = useState(false);
+  const [materialsError, setMaterialsError] = useState(false);
+  const [materialsReloadKey, setMaterialsReloadKey] = useState(0);
+  const [materialsVersion, setMaterialsVersion] = useState(0);
+  const [dictionaryLookupWord, setDictionaryLookupWord] = useState('');
+  const [studyTarget, setStudyTarget] = useState<StudyTarget | null>(null);
+  const [restoredTargetUserId, setRestoredTargetUserId] = useState<string | null>(null);
+  const materialCache = useRef<{ key: string; loadedAt: number } | null>(null);
+
+  useEffect(() => {
+    const invalidate = () => { materialCache.current = null; };
+    window.addEventListener('curriculum:updated', invalidate);
+    return () => window.removeEventListener('curriculum:updated', invalidate);
+  }, []);
+
+  useEffect(() => {
+    if (restoredTargetUserId !== (user?.id ?? 'guest')) return;
+    if (!requiresMaterials) return;
+    setMaterialsError(false);
+    const cacheKey = `${user?.id ?? 'guest'}:${JSON.stringify(studyTarget)}`;
+    if (materialCache.current?.key === cacheKey && Date.now() - materialCache.current.loadedAt < 60_000) {
+      setMaterialsReady(true);
+      return;
+    }
+    let active = true;
+    const controller = new AbortController();
+    setMaterialsReady(false);
+    setMaterialsError(false);
+    if (!studyTarget) {
+      materialCache.current = null;
+      curriculumStore.replaceFromServer([]);
+      setMaterialsReady(true);
+      setMaterialsVersion((version) => version + 1);
+      return;
+    }
+    coursesApi.getCourses(studyTarget.languageId, studyTarget.level, undefined, controller.signal)
+      .then((courses) => {
+        const relevant = courses.filter((course) =>
+          course.hasMaterial &&
+          (studyTarget.domains?.length ? studyTarget.domains : [studyTarget.domain])
+            .some((domain) => domain.toLowerCase() === (course.domain ?? 'general').toLowerCase())
+        );
+        return Promise.allSettled(relevant.map((course) => coursesApi.getCourseMaterial(course.id, controller.signal)));
+      })
+      .then((results) => {
+        if (!active) return;
+        if (results.some((result) => result.status === 'rejected')) {
+          materialCache.current = null;
+          setMaterialsError(true);
+          return;
+        }
+        const materials = results.flatMap((result) => result.status === 'fulfilled' ? [result.value] : []);
+        const valid = materials.filter((item): item is CurriculumCourse =>
+          typeof item === 'object' && item !== null && 'units' in item && Array.isArray(item.units)
+        );
+        curriculumStore.replaceFromServer(valid);
+        materialCache.current = { key: cacheKey, loadedAt: Date.now() };
+      })
+      .catch(() => {
+        if (active) {
+          materialCache.current = null;
+          setMaterialsError(true);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setMaterialsReady(true);
+          setMaterialsVersion((version) => version + 1);
+        }
+      });
+    return () => { active = false; controller.abort(); };
+  }, [studyTarget, restoredTargetUserId, user?.id, requiresMaterials, materialsReloadKey]);
+
+  useEffect(() => {
+    let active = true;
+    if (!user?.id) {
+      setStudyTarget(null);
+      setRestoredTargetUserId('guest');
+      return () => { active = false; };
+    }
+    const userId = user.id;
+    studyTargetApi.get()
+      .then(async (saved) => {
+        if (saved) return saved;
+        const legacy = localStorage.getItem(`study_target_${userId}`);
+        if (!legacy) return null;
+        const migrated = await studyTargetApi.save(JSON.parse(legacy) as StudyTarget);
+        localStorage.removeItem(`study_target_${userId}`);
+        localStorage.removeItem(`onboarding_completed_${userId}`);
+        return migrated;
+      })
+      .then((saved) => { if (active) setStudyTarget(saved); })
+      .catch((error) => {
+        if (active) { setStudyTarget(null); message.error(getErrorMessage(error, t('common.error'))); }
+      })
+      .finally(() => { if (active) setRestoredTargetUserId(userId); });
+    return () => { active = false; };
+  }, [user?.id]);
+
+  const [isTargetModalOpen, setIsTargetModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if ((currentView === 'courses' || currentView === 'home') && user?.id && restoredTargetUserId === user.id && !studyTarget && !isAdminUser(user)) {
+      setIsTargetModalOpen(true);
+    }
+  }, [currentView, user, restoredTargetUserId, studyTarget]);
+
+  // Điều hướng có lưu lịch sử trình duyệt để Back/Forward hoạt động chuẩn
+  const handleNavigate = (viewOrPath: ActiveView | string) => {
+    if (viewOrPath in VIEW_TO_PATH) {
+      navigate(VIEW_TO_PATH[viewOrPath as ActiveView]);
+    } else if (viewOrPath.startsWith('/')) {
+      navigate(viewOrPath);
+    } else {
+      navigate(`/${viewOrPath}`);
+    }
+  };
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/home');
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuthLoading && currentView === 'admin' && (!isAuthenticated || !isAdminUser(user))) {
+      navigate('/');
+    }
+  }, [currentView, isAuthLoading, isAuthenticated, user, navigate]);
+
+  const handleLoginSuccess = (loggedUser: UserProfile) => {
+    if (isAdminUser(loggedUser)) {
+      handleNavigate('admin');
+    } else {
+      handleNavigate('home');
+    }
+  };
+
+  const handleSaveStudyTarget = async (target: StudyTarget) => {
+    try {
+      const saved = await studyTargetApi.save(target);
+      const changed = studyTarget?.languageId !== saved.languageId || studyTarget?.level !== saved.level ||
+          JSON.stringify(studyTarget?.domains ?? []) !== JSON.stringify(saved.domains ?? []);
+      setStudyTarget(saved);
+      setIsTargetModalOpen(false);
+      if (changed) {
+        try { await clearOfflineStudyData(); }
+        catch { message.warning(language === 'vi' ? 'Đã lưu mục tiêu học, nhưng chưa xóa được dữ liệu offline cũ.' : 'Study goal saved, but old offline data could not be cleared.'); }
+      }
+      return true;
+    } catch (error) {
+      message.error(getErrorMessage(error, t('common.error')));
+      return false;
+    }
+  };
+
+
+  const handleStartQuiz = (lessonId: string, lessonTitle: string) => {
+    setActiveQuizLesson({ id: lessonId, title: lessonTitle });
+    handleNavigate('quiz');
+  };
+
+  const handleStudyDeck = (deckId?: string) => {
+    setSelectedStudyDeckId(deckId);
+    handleNavigate('srsReview');
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    try { await clearOfflineStudyData(); }
+    catch { message.warning(language === 'vi' ? 'Không xóa được dữ liệu offline trên thiết bị.' : 'Offline data could not be cleared from this device.'); }
+    handleNavigate('landing');
+    message.success(t('auth.logoutSuccess'));
+  };
+
+  if (currentView !== 'landing' && isAuthLoading) {
+    return <div className="min-h-screen flex items-center justify-center" role="status">{t('common.loading')}</div>;
+  }
+
+  if (currentView !== 'landing' && !isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  // If on standalone Landing Page, render full width without sidebar
+  if (currentView === 'landing') {
+    return (
+      <div className="min-h-screen bg-[#FAF6EE]">
+        <LandingPage
+          onEnterApp={(target) => isAuthenticated ? handleNavigate(target || 'home') : setIsAuthModalOpen(true)}
+          onOpenAuth={() => setIsAuthModalOpen(true)}
+          onOpenTargetModal={() => isAuthenticated ? setIsTargetModalOpen(true) : setIsAuthModalOpen(true)}
+        />
+
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+
+        <StudyTargetModal
+          isOpen={isTargetModalOpen}
+          isAdmin={isAdminUser(user)}
+          currentTarget={studyTarget}
+          allowClose={true}
+          onClose={() => setIsTargetModalOpen(false)}
+          onSave={handleSaveStudyTarget}
+        />
+        <NotebookWidget
+          isAuthenticated={isAuthenticated}
+          onRequestLogin={() => setIsAuthModalOpen(true)}
+          languageCode={studyTarget?.languageCode}
+          sourcePath={currentPath}
+          onDictionary={(word) => { setDictionaryLookupWord(word); setIsDictionaryOpen(true); }}
+        />
+        <QuickDictionaryModal
+          isOpen={isDictionaryOpen}
+          onClose={() => setIsDictionaryOpen(false)}
+          initialWord={dictionaryLookupWord}
+          target={studyTarget}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-[#FAF6EE] text-[#1F1F1F] font-sans antialiased">
-      {/* ============================================================== */}
-      {/* 1. SIDEBAR BÊN TRÁI PHONG CÁCH NOTEBOOK */}
-      {/* ============================================================== */}
-      <aside className="w-56 bg-[#FAF6EE] border-r-2 border-[#262626] flex flex-col justify-between shrink-0 select-none">
+      <aside className="w-[285px] bg-[#FAF6EE] border-r-2 border-[#262626] flex flex-col justify-between shrink-0 select-none">
         <div>
-          {/* Logo Brand Header */}
-          <div className="p-4 border-b-2 border-[#262626] flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="p-3 border-b-2 border-[#262626] flex items-center justify-between gap-2">
+            <button
+              onClick={() => handleNavigate('landing')}
+              className="flex items-center gap-2 cursor-pointer text-left shrink-0"
+              title={language === 'vi' ? 'Về Trang chủ giới thiệu' : 'Back to Landing Page'}
+            >
               <span className="bg-[#E11D48] text-white text-[11px] font-mono font-bold px-1.5 py-0.5 rounded border border-[#9F1239]">
-                &lt;iT/&gt;
+                SRS
               </span>
               <div className="leading-tight">
                 <span className="font-bold text-sm block tracking-tight text-stone-900">
-                  日本語
+                  LinguaFlow
                 </span>
-                <span className="text-[10px] uppercase font-bold text-stone-500 block -mt-1 tracking-wider">
-                  KOTOBA
+                <span className="text-[9px] uppercase font-bold text-stone-500 block -mt-0.5 tracking-wider font-mono">
+                  LEARNING
                 </span>
               </div>
-            </div>
-            {/* Energy / Streak */}
-            <div className="flex items-center gap-1 text-xs font-bold text-stone-700">
-              <ThunderboltOutlined className="text-amber-500 text-sm" />
-              <span>0</span>
+            </button>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <div
+                className="flex items-center gap-1 text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-300"
+                title={`${user?.currentStreak || 0} ${t('stats.days')}`}
+              >
+                <FireOutlined className="text-sm text-amber-500" />
+                <span>{user?.currentStreak || 0}</span>
+              </div>
+
+              <button
+                onClick={toggleLanguage}
+                className="px-2 py-0.5 text-xs font-mono font-bold rounded border-notebook bg-white hover:bg-stone-100 transition cursor-pointer"
+                title="Switch Language (EN / VI)"
+              >
+                {language.toUpperCase()}
+              </button>
             </div>
           </div>
 
-          {/* Menu Học Tập */}
-          <div className="p-3 space-y-1">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 px-3 py-1 block">
-              HỌC TẬP
-            </span>
+          {/* Khối Mục Tiêu Ngôn Ngữ Duy Nhất (Không Trùng Lặp) */}
+          {studyTarget ? (
+            <div className="px-3 pt-3 pb-1">
+              <div className="p-2.5 rounded-xl bg-white border-notebook shadow-2xs">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
+                    {language === 'vi' ? 'Ngôn ngữ đang học' : 'Learning Language'}
+                  </span>
+                  <button
+                    onClick={() => setIsTargetModalOpen(true)}
+                    className="text-[10px] font-bold text-amber-800 hover:text-amber-950 hover:underline cursor-pointer flex items-center gap-0.5"
+                    title={language === 'vi' ? 'Chuyển đổi ngôn ngữ hoặc nâng cấp trình độ' : 'Change language or level'}
+                  >
+                    <span>{language === 'vi' ? 'Đổi' : 'Change'}</span>
+                    <CompassOutlined className="text-[9px]" />
+                  </button>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-2xl">{studyTarget.flagEmoji || '🌐'}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-bold text-stone-900 block truncate">
+                      {studyTarget.languageName}
+                    </span>
+                    <span className="text-[10px] text-stone-600 font-mono block">
+                      {studyTarget.level} • {studyTarget.domain.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="px-3 pt-3 pb-1">
+              <button
+                onClick={() => setIsTargetModalOpen(true)}
+                className="w-full py-2 px-3 rounded-xl border border-dashed border-stone-300 bg-white/70 hover:bg-white text-xs font-bold text-stone-700 transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <CompassOutlined className="text-amber-600" />
+                <span>{language === 'vi' ? 'Chọn ngôn ngữ & Mục tiêu' : 'Set Study Target'}</span>
+              </button>
+            </div>
+          )}
 
-            <button
-              onClick={() => setCurrentView('lessonList')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left ${
-                currentView === 'lessonList'
-                  ? 'bg-white border-notebook shadow-2xs text-stone-900'
-                  : 'text-stone-600 hover:bg-stone-200/50'
-              }`}
-            >
-              <HomeOutlined />
-              <span>Trang chủ</span>
-            </button>
+          <nav className="p-3 space-y-4">
+            {/* NHÓM 1: TỔNG QUAN */}
+            <div>
+              <span className="px-3 text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                {t('nav.groupOverview')}
+              </span>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => handleNavigate('home')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'home'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <HomeOutlined />
+                  <span>{t('nav.home')}</span>
+                </button>
 
-            <button
-              onClick={() => setCurrentView('flashcard')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left ${
-                currentView === 'flashcard'
-                  ? 'bg-white border-notebook shadow-2xs text-stone-900'
-                  : 'text-stone-600 hover:bg-stone-200/50'
-              }`}
-            >
-              <CodeOutlined />
-              <span>Từ vựng IT</span>
-            </button>
+                <button
+                  onClick={() => handleNavigate('roadmap')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'roadmap'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <ApartmentOutlined />
+                  <span>{t('nav.roadmap')}</span>
+                </button>
 
-            <button
-              onClick={() => setCurrentView('quiz')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left ${
-                currentView === 'quiz'
-                  ? 'bg-white border-notebook shadow-2xs text-stone-900'
-                  : 'text-stone-600 hover:bg-stone-200/50'
-              }`}
-            >
-              <ThunderboltOutlined />
-              <span>Luyện tập Quiz</span>
-            </button>
+              </div>
+            </div>
 
-            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
-              <AudioOutlined />
-              <span>Shadowing</span>
-            </button>
+            {/* NHÓM 2: RÈN LUYỆN KỸ NĂNG */}
+            <div>
+              <span className="px-3 text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                {t('nav.groupSkills')}
+              </span>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => handleNavigate('listening')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'listening'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <CustomerServiceOutlined />
+                  <span>{t('nav.listening')}</span>
+                </button>
 
-            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
-              <MessageOutlined />
-              <span>Hội thoại</span>
-            </button>
+                <button
+                  onClick={() => handleNavigate('speaking')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'speaking'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <SoundOutlined />
+                  <span>{t('nav.speaking')}</span>
+                </button>
 
-            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
-              <TrophyOutlined />
-              <span>Luyện thi chứng chỉ</span>
-            </button>
+                <button
+                  onClick={() => handleNavigate('reading')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'reading'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <ReadOutlined />
+                  <span>{t('nav.reading')}</span>
+                </button>
 
-            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
-              <TeamOutlined />
-              <span>Luyện phỏng vấn</span>
-            </button>
+                <button
+                  onClick={() => handleNavigate('writing')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'writing'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <EditOutlined />
+                  <span>{t('nav.writing')}</span>
+                </button>
 
-            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200/50 transition text-left">
-              <RiseOutlined />
-              <span>Bảng xếp hạng</span>
-            </button>
-          </div>
+                <button
+                  onClick={() => handleNavigate('grammar')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'grammar'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <FileTextOutlined />
+                  <span>{t('nav.grammar')}</span>
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('characterLab')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'characterLab'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <HighlightOutlined className="text-rose-600" />
+                  <span>
+                    {studyTarget?.languageCode === 'en'
+                      ? (language === 'vi' ? 'Bảng phát âm IPA' : 'IPA Chart')
+                      : (language === 'vi' ? 'Phòng luyện chữ' : 'Character Lab')}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('library')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'library'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <ReadOutlined className="text-emerald-600" />
+                  <span>{language === 'vi' ? 'Thư viện & Podcast' : 'Library & Media'}</span>
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('aiChat')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'aiChat'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <MessageOutlined />
+                  <span>{t('nav.aiChat')}</span>
+                </button>
+                <button onClick={() => handleNavigate('certificatePractice')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-left ${currentView === 'certificatePractice' ? 'bg-white border-notebook font-bold' : 'text-stone-600 hover:bg-stone-200/50'}`}>
+                  <SafetyCertificateOutlined /><span>{language === 'vi' ? 'Luyện thi chứng chỉ' : 'Certificate practice'}</span>
+                </button>
+                <button onClick={() => handleNavigate('interviewPractice')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-left ${currentView === 'interviewPractice' ? 'bg-white border-notebook font-bold' : 'text-stone-600 hover:bg-stone-200/50'}`}>
+                  <MessageOutlined /><span>{language === 'vi' ? 'Luyện phỏng vấn' : 'Interview practice'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* NHÓM 3: TỪ VỰNG & ÔN TẬP */}
+            <div>
+              <span className="px-3 text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                {t('nav.groupVocab')}
+              </span>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => handleNavigate('courses')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'courses'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <BookOutlined />
+                  <span>{t('nav.courses')}</span>
+                </button>
+                <button
+                  onClick={() => handleNavigate('srsReview')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'srsReview'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <SyncOutlined className="text-emerald-600" />
+                  <span>{language === 'vi' ? 'Ôn tập' : 'Review'}</span>
+                </button>
+                <button
+                  onClick={() => handleNavigate('decks')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'decks'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <CopyOutlined />
+                  <span>{t('nav.myDecks')}</span>
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('sharing')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'sharing'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <GlobalOutlined />
+                  <span>{t('nav.publicDecks')}</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setActiveQuizLesson(null);
+                    handleNavigate('quiz');
+                  }}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'quiz'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <CheckSquareOutlined />
+                  <span>{t('nav.quiz')}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* NHÓM 4: TIẾN ĐỘ & HỆ THỐNG */}
+            <div>
+              <span className="px-3 text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                {t('nav.groupSystem')}
+              </span>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => handleNavigate('statistics')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'statistics'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <BarChartOutlined />
+                  <span>{t('nav.statistics')}</span>
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('leaderboard')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'leaderboard'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <TrophyOutlined className="text-amber-500" />
+                  <span>{language === 'vi' ? 'Bảng xếp hạng' : 'Leaderboard'}</span>
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('sync')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                    currentView === 'sync'
+                      ? 'bg-white border-notebook shadow-2xs text-stone-900 font-bold'
+                      : 'text-stone-600 hover:bg-stone-200/50'
+                  }`}
+                >
+                  <CloudSyncOutlined />
+                  <span>{t('nav.sync')}</span>
+                </button>
+
+                {isAuthenticated && isAdminUser(user) && (
+                  <button
+                    onClick={() => handleNavigate('admin')}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition text-left cursor-pointer ${
+                      currentView === 'admin'
+                        ? 'bg-rose-50 border-notebook shadow-2xs text-rose-900 font-bold'
+                        : 'text-stone-500 hover:bg-stone-200/50'
+                    }`}
+                  >
+                    <SafetyCertificateOutlined className="text-rose-600" />
+                    <span>{t('nav.admin')}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </nav>
         </div>
 
-        {/* Sidebar Footer */}
         <div className="p-3 border-t-2 border-[#262626] space-y-2">
-          <button className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-stone-600 hover:text-stone-900 transition">
-            <SettingOutlined />
-            <span>Cài đặt</span>
-          </button>
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-white border-notebook">
-            <div className="w-7 h-7 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs">
-              S
+          {isAuthenticated && user ? (
+            <div className="p-2 bg-white border-notebook rounded-lg flex items-center justify-between">
+              <div className="flex items-center gap-2 truncate">
+                <div className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center text-xs font-bold">
+                  {user.displayName.charAt(0).toUpperCase()}
+                </div>
+                <div className="truncate">
+                  <span className="text-xs font-bold text-stone-900 block truncate">
+                    {user.displayName}
+                  </span>
+                  <span className="text-[10px] text-stone-500 font-mono block">
+                    {user.role}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsSettingsModalOpen(true)}
+                className="text-stone-500 hover:text-stone-900 p-1"
+                title={t('nav.settings')}
+              >
+                <SettingOutlined />
+              </button>
             </div>
-            <div className="text-[11px] leading-tight">
-              <span className="font-bold block text-stone-900">94inu Store</span>
-              <span className="text-stone-400 text-[10px]">Premium</span>
-            </div>
-          </div>
+          ) : (
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="w-full py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-bold notebook-btn flex items-center justify-center gap-2 transition cursor-pointer"
+            >
+              <UserOutlined />
+              <span>{t('nav.login')}</span>
+            </button>
+          )}
+
+          {isAuthenticated && (
+            <button
+              onClick={handleLogout}
+              className="w-full py-1.5 rounded-lg border-notebook bg-white hover:bg-stone-100 text-stone-700 text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer"
+            >
+              <LogoutOutlined />
+              <span>{t('nav.logout')}</span>
+            </button>
+          )}
         </div>
       </aside>
 
-      {/* ============================================================== */}
-      {/* 2. KHU VỰC NỘI DUNG CHÍNH (NỀN GIẤY KẺ Ô CARO GRAPH PAPER) */}
-      {/* ============================================================== */}
-      <main className="flex-1 graph-paper overflow-y-auto p-6 md:p-8 flex flex-col items-center">
-        <div className="w-full max-w-4xl space-y-6">
-
-          {/* ============================================================== */}
-          {/* VIEW 1: FLASHCARD STUDY (GIỐNG ẢNH 1) */}
-          {/* ============================================================== */}
-          {currentView === 'flashcard' && (
-            <div className="space-y-6">
-              {/* Thanh Toolbar trên cùng của Flashcard */}
-              <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-                {/* Tab Từ vựng / Ví dụ */}
-                <div className="flex items-center bg-white rounded-lg border-notebook overflow-hidden">
-                  <button
-                    onClick={() => setActiveTabSub('vocab')}
-                    className={`px-3 py-1.5 flex items-center gap-1.5 font-bold transition ${
-                      activeTabSub === 'vocab' ? 'bg-[#262626] text-white' : 'text-stone-700 hover:bg-stone-100'
-                    }`}
-                  >
-                    <BookOutlined /> Từ vựng
-                  </button>
-                  <button
-                    onClick={() => setActiveTabSub('example')}
-                    className={`px-3 py-1.5 flex items-center gap-1.5 font-bold transition ${
-                      activeTabSub === 'example' ? 'bg-[#262626] text-white' : 'text-stone-700 hover:bg-stone-100'
-                    }`}
-                  >
-                    <BookOutlined /> Ví dụ
-                  </button>
-                </div>
-
-                {/* Bộ đếm số thẻ ở giữa */}
-                <div className="px-4 py-1 rounded-lg bg-white border-notebook font-bold text-sm">
-                  1 / 109
-                </div>
-
-                {/* Các công cụ bên phải */}
-                <div className="flex items-center gap-1.5">
-                  <button className="px-2.5 py-1.5 rounded-lg bg-white notebook-btn text-xs font-bold flex items-center gap-1">
-                    <SwapOutlined /> JA → VI
-                  </button>
-                  <button className="px-2.5 py-1.5 rounded-lg bg-white notebook-btn text-xs font-bold flex items-center gap-1">
-                    <RightOutlined className="text-[10px]" /> Tự động
-                  </button>
-                  <button className="px-2.5 py-1.5 rounded-lg bg-white notebook-btn text-xs font-bold flex items-center gap-1">
-                    <ReloadOutlined /> Xáo trộn
-                  </button>
-                  <button className="p-1.5 rounded-lg bg-white notebook-btn text-xs">
-                    <SettingOutlined />
-                  </button>
-                </div>
-              </div>
-
-              {/* Tấm Thẻ Flashcard Kẻ Ô Vàng To Bự */}
-              <div
-                onClick={() => setIsFlipped(!isFlipped)}
-                className="flashcard-yellow-grid rounded-xl border-notebook-2 p-8 sm:p-12 min-h-[300px] flex flex-col justify-between relative cursor-pointer select-none shadow-sm transition hover:shadow-md"
-              >
-                {/* Nút loa phát âm góc trên */}
-                <div className="flex justify-end">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      alert('Phát âm: 言い回し (いいまわし)');
-                    }}
-                    className="w-8 h-8 rounded-lg bg-white border-notebook flex items-center justify-center text-stone-800 hover:bg-stone-50 shadow-2xs"
-                  >
-                    <SoundOutlined />
-                  </button>
-                </div>
-
-                {/* Nội dung từ vựng chính giữa */}
-                <div className="text-center space-y-2 my-auto">
-                  <h2 className="text-4xl sm:text-5xl font-extrabold text-stone-900 tracking-tight">
-                    言い回し
-                  </h2>
-                  <p className="text-stone-600 font-medium text-sm sm:text-base">
-                    いいまわし
-                  </p>
-                  <span className="text-[11px] font-bold text-stone-400 uppercase tracking-widest block">
-                    NGÔN HỒI
-                  </span>
-                  <p className="text-lg sm:text-xl font-bold text-stone-900 pt-1">
-                    Cách nói, cách diễn đạt
-                  </p>
-                </div>
-
-                {/* Chỉ báo lật thẻ dưới cùng */}
-                <div className="text-center text-xs text-stone-400 flex items-center justify-center gap-1">
-                  <SwapOutlined /> Click để lật
-                </div>
-              </div>
-
-              {/* Hàng Nút Đánh Giá & Điều Hướng (4 Nút) */}
-              <div className="flex items-center justify-center gap-3">
-                <button className="px-5 py-2.5 rounded-lg bg-white notebook-btn text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                  <LeftOutlined className="text-[10px]" /> Trước
-                </button>
-
-                <button className="px-6 py-2.5 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] text-white notebook-btn text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-                  <CloseOutlined /> Chưa thuộc
-                </button>
-
-                <button className="px-6 py-2.5 rounded-lg bg-[#16A34A] hover:bg-[#15803D] text-white notebook-btn text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-                  <CheckOutlined /> Đã thuộc
-                </button>
-
-                <button className="px-5 py-2.5 rounded-lg bg-white notebook-btn text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                  Sau <RightOutlined className="text-[10px]" />
-                </button>
-              </div>
-
-              {/* Phần "Chọn chế độ học" */}
-              <div className="space-y-3 pt-4">
-                <h3 className="font-bold text-sm text-stone-900">Chọn chế độ học</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                  <button
-                    onClick={() => setCurrentView('flashcard')}
-                    className="p-3 rounded-lg bg-[#262626] text-white border-notebook text-left space-y-2 transition"
-                  >
-                    <div className="flex items-center gap-1.5 text-xs font-bold">
-                      <BookOutlined /> Flashcard
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 font-medium inline-block">
-                      Chưa học
-                    </span>
-                  </button>
-
-                  <button
-                    onClick={() => setCurrentView('quiz')}
-                    className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-2 transition"
-                  >
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-                      <CodeOutlined /> Trắc nghiệm
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-600 font-medium inline-block">
-                      Chưa học
-                    </span>
-                  </button>
-
-                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-2 transition">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-                      <ThunderboltOutlined /> Gõ từ
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-600 font-medium inline-block">
-                      Chưa học
-                    </span>
-                  </button>
-
-                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-2 transition">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-                      <BookOutlined /> Đọc hiểu
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-600 font-medium inline-block">
-                      Chưa học
-                    </span>
-                  </button>
-
-                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-2 transition">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-                      <CustomerServiceOutlined /> Nghe ghép câu
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-600 font-medium inline-block">
-                      Chưa học
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Danh sách 2 Thẻ từ vựng chi tiết bên dưới */}
-              <div className="grid sm:grid-cols-2 gap-4 pt-2">
-                {/* Thẻ 1 */}
-                <div className="bg-white rounded-xl border-notebook p-4 space-y-3 shadow-2xs">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-0.5">
-                      <span className="text-xs font-bold text-stone-400">1.</span>
-                      <h4 className="text-xl font-bold text-stone-900">言い回し</h4>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-medium text-stone-600 block">いいまわし</span>
-                      <span className="text-[10px] font-bold text-stone-400 uppercase">NGÔN HỒI</span>
-                      <span className="text-xs font-bold text-stone-800 block">Cách nói, cách diễn đạt</span>
-                    </div>
-                    <div className="flex gap-1">
-                      <button className="w-7 h-7 rounded border-notebook flex items-center justify-center hover:bg-stone-100 text-xs">
-                        <FlagOutlined />
-                      </button>
-                      <button className="w-7 h-7 rounded border-notebook flex items-center justify-center hover:bg-stone-100 text-xs">
-                        <SoundOutlined />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-stone-200 pt-3 text-xs text-stone-700 flex justify-between items-center bg-[#FAF6EE] p-2.5 rounded-lg border border-[#E5DEC9]">
-                    <div className="space-y-0.5">
-                      <p className="font-semibold text-stone-900">仕様書の言い回しが曖昧なので、修正してください。</p>
-                      <p className="text-stone-500 text-[11px]">→ Cách diễn đạt trong tài liệu đặc tả còn mơ hồ, hãy chỉnh sửa lại.</p>
-                    </div>
-                    <button className="w-6 h-6 rounded border-notebook flex items-center justify-center text-stone-700 hover:bg-white text-[11px] shrink-0 ml-2">
-                      <SoundOutlined />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Thẻ 2 */}
-                <div className="bg-white rounded-xl border-notebook p-4 space-y-3 shadow-2xs">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-0.5">
-                      <span className="text-xs font-bold text-stone-400">2.</span>
-                      <h4 className="text-xl font-bold text-stone-900">一部</h4>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-medium text-stone-600 block">いちぶ</span>
-                      <span className="text-[10px] font-bold text-stone-400 uppercase">NHẤT BỘ</span>
-                      <span className="text-xs font-bold text-stone-800 block">Một phần</span>
-                    </div>
-                    <div className="flex gap-1">
-                      <button className="w-7 h-7 rounded border-notebook flex items-center justify-center hover:bg-stone-100 text-xs">
-                        <FlagOutlined />
-                      </button>
-                      <button className="w-7 h-7 rounded border-notebook flex items-center justify-center hover:bg-stone-100 text-xs">
-                        <SoundOutlined />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-stone-200 pt-3 text-xs text-stone-700 flex justify-between items-center bg-[#FAF6EE] p-2.5 rounded-lg border border-[#E5DEC9]">
-                    <div className="space-y-0.5">
-                      <p className="font-semibold text-stone-900">一部の機能はまだ実装されていません。</p>
-                      <p className="text-stone-500 text-[11px]">→ Một phần chức năng vẫn chưa được implement (cài đặt).</p>
-                    </div>
-                    <button className="w-6 h-6 rounded border-notebook flex items-center justify-center text-stone-700 hover:bg-white text-[11px] shrink-0 ml-2">
-                      <SoundOutlined />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <main className="flex-1 p-4 md:p-6 overflow-y-auto graph-paper">
+        <div className="w-[90%] max-w-[95%] mx-auto">
+          {restoredTargetUserId !== user?.id && <p className="p-5 text-stone-600">{t('common.loading')}</p>}
+          {restoredTargetUserId === user?.id && requiresStudyGoal && !studyTarget &&
+            <StudyGoalRequired onChooseGoal={() => setIsTargetModalOpen(true)} />}
+          {restoredTargetUserId === user?.id && (!requiresStudyGoal || !!studyTarget) && <>
+          {!materialsReady && requiresMaterials && <p className="p-5 text-stone-600">{language === 'vi' ? 'Đang tải giáo trình...' : 'Loading curriculum...'}</p>}
+          {materialsReady && requiresMaterials && materialsError && <div role="alert" className="rounded-xl border border-rose-300 bg-white p-5 text-sm">
+            <p>{language === 'vi' ? 'Không tải được nội dung học. Vui lòng thử lại.' : 'Could not load learning content. Please try again.'}</p>
+            <button type="button" onClick={() => { materialCache.current = null; setMaterialsReloadKey((value) => value + 1); }} className="mt-3 rounded-lg bg-amber-300 px-4 py-2 font-bold">{language === 'vi' ? 'Thử lại' : 'Retry'}</button>
+          </div>}
+          {(materialsReady || !requiresMaterials) && (!requiresMaterials || !materialsError) && <React.Fragment key={requiresMaterials ? materialsVersion : undefined}>
+          <React.Suspense fallback={<p className="p-5 text-stone-600">{t('common.loading')}</p>}>
+          {currentView === 'home' && (
+            <HomeView
+              target={studyTarget}
+              user={user}
+              onOpenTargetModal={() => setIsTargetModalOpen(true)}
+              onNavigate={(v) => handleNavigate(v)}
+              onResume={(courseId, lessonId, stepId) => navigate(`/learn/${encodeURIComponent(courseId)}/${encodeURIComponent(lessonId)}${stepId ? `?step=${encodeURIComponent(stepId)}` : ''}`)}
+            />
           )}
 
-          {/* ============================================================== */}
-          {/* VIEW 2: DANH SÁCH 16 BÀI HỌC (GIỐNG ẢNH 2) */}
-          {/* ============================================================== */}
-          {currentView === 'lessonList' && (
-            <div className="space-y-6">
-              {/* Header Breadcrumb */}
-              <div className="space-y-1">
-                <button
-                  onClick={() => setCurrentView('flashcard')}
-                  className="text-xs text-stone-500 hover:text-stone-800 flex items-center gap-1 font-bold"
-                >
-                  <LeftOutlined className="text-[10px]" /> Trang chủ
-                </button>
-                <span className="text-xs text-stone-400 font-medium">16 bài — 1644 từ vựng</span>
-                <div className="pt-1">
-                  <h2 className="text-3xl font-extrabold tracking-tight text-stone-900 inline">
-                    <span className="marker-highlight px-1">Từ vựng IT</span>
-                  </h2>
-                </div>
-                <p className="text-xs text-stone-600 font-medium pt-1">
-                  語彙 — Thuật ngữ tiếng Nhật thường gặp trong dự án IT
-                </p>
-              </div>
-
-              {/* Khung Tiến độ học */}
-              <div className="bg-white rounded-xl border-notebook-2 p-4 space-y-2">
-                <div className="flex justify-between items-center text-xs font-bold text-stone-700">
-                  <span>Tiến độ học</span>
-                  <span>0/16 bài</span>
-                </div>
-                <div className="w-full h-3 rounded-full border-notebook bg-[#FAF6EE] overflow-hidden p-0.5">
-                  <div className="w-0 h-full rounded-full bg-[#16A34A] transition-all duration-300"></div>
-                </div>
-                <div className="text-right text-[11px] text-stone-400 font-medium">
-                  0% hoàn thành
-                </div>
-              </div>
-
-              {/* Lưới 8 Thẻ Bài Học (2 Cột) */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  { num: 1, title: '頻出用語一覧', sub: 'Bài 1', count: '109 từ vựng' },
-                  { num: 2, title: 'レッスン1 プロジェクト概要', sub: 'Bài 2', count: '173 từ vựng' },
-                  { num: 3, title: 'レッスン2 見積り', sub: 'Bài 3', count: '125 từ vựng' },
-                  { num: 4, title: 'レッスン3 開発環境', sub: 'Bài 4', count: '108 từ vựng' },
-                  { num: 5, title: 'レッスン4 議事録', sub: 'Bài 5', count: '133 từ vựng' },
-                  { num: 6, title: 'レッスン5 要件定義', sub: 'Bài 6', count: '104 từ vựng' },
-                  { num: 7, title: 'レッスン6 基本設計', sub: 'Bài 7', count: '61 từ vựng' },
-                  { num: 8, title: 'レッスン7 要求変更', sub: 'Bài 8', count: '91 từ vựng' },
-                ].map((item) => (
-                  <div
-                    key={item.num}
-                    onClick={() => setCurrentView('flashcard')}
-                    className="relative bg-white rounded-xl border-notebook-2 p-5 pt-6 cursor-pointer hover:-translate-y-0.5 transition shadow-2xs hover:shadow-sm"
-                  >
-                    {/* Nhãn Tag Vàng ở góc trái */}
-                    <div className="absolute top-0 left-4 -translate-y-1/2 w-8 h-8 rounded-md bg-[#FDE047] border-notebook flex items-center justify-center font-extrabold text-sm text-stone-900 shadow-2xs">
-                      {item.num}
-                    </div>
-
-                    <div className="space-y-1">
-                      <h4 className="font-extrabold text-stone-900 text-sm tracking-tight pt-1">
-                        {item.title}
-                      </h4>
-                      <p className="text-xs text-stone-500 font-medium">{item.sub}</p>
-                      <p className="text-[11px] text-stone-400 flex items-center gap-1 pt-1">
-                        <BookOutlined className="text-[10px]" /> {item.count}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {currentView === 'roadmap' && (
+            <LearningRoadmapView
+              target={studyTarget}
+              onNavigate={(v) => handleNavigate(v)}
+              onOpenTargetModal={() => setIsTargetModalOpen(true)}
+              onResume={(courseId, lessonId) => navigate(`/learn/${encodeURIComponent(courseId)}/${encodeURIComponent(lessonId)}`)}
+            />
           )}
 
-          {/* ============================================================== */}
-          {/* VIEW 3: LUYỆN TẬP TRẮC NGHIỆM QUIZ (GIỐNG ẢNH 3) */}
-          {/* ============================================================== */}
+          {currentView === 'learn' && (() => {
+            const [, , courseId, lessonId] = location.pathname.split('/');
+            return <LessonPlayerView courseId={courseId} lessonId={lessonId} target={studyTarget}
+              requestedStep={new URLSearchParams(location.search).get('step')} />;
+          })()}
+
+          {currentView === 'courses' && (
+            <VocabularyHubView target={studyTarget} onReview={() => handleNavigate('srsReview')} />
+          )}
+
+          {currentView === 'curriculum' && (
+            <CourseCatalogView target={studyTarget} isAdmin={isAdminUser(user)} onStartQuiz={handleStartQuiz} />
+          )}
+
+          {currentView === 'characterLab' && (
+            <CharacterLabView
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'library' && (
+            <LibraryView
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'leaderboard' && (
+            <LeaderboardView
+              user={user}
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'listening' && (
+            <ListeningView
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'speaking' && (
+            <SpeakingReadingView
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'reading' && (
+            <ReadingView
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'writing' && (
+            <TopicWritingView
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'grammar' && (
+            <GrammarView
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'aiChat' && (
+            <AiConversationView
+              target={studyTarget}
+              onBack={handleBack}
+            />
+          )}
+
+          {currentView === 'certificatePractice' && <SpecialPracticeView kind="certificate" target={studyTarget} onBack={handleBack} />}
+          {currentView === 'interviewPractice' && <SpecialPracticeView kind="interview" target={studyTarget} onBack={handleBack} />}
+
+          {currentView === 'decks' && (
+            <MyDecksView
+              target={studyTarget}
+              onStudyDeck={handleStudyDeck}
+              onOpenCsvImport={(deckId) => setCsvDeckId(deckId)}
+            />
+          )}
+
+          {currentView === 'srsReview' && (
+            <SrsReviewView
+              target={studyTarget}
+              activeDeckId={selectedStudyDeckId}
+              onLearnNew={() => handleNavigate('courses')}
+            />
+          )}
+
           {currentView === 'quiz' && (
-            <div className="space-y-6">
-              <div className="text-xs font-bold text-stone-500">
-                Lesson 1 — IT Vocabulary
-              </div>
-
-              {/* Khung Câu Hỏi Trắc Nghiệm Kẻ Ô Caro Vàng */}
-              <div className="flashcard-yellow-grid rounded-xl border-notebook-2 p-6 sm:p-8 space-y-6">
-                <div className="flex justify-between items-center text-xs">
-                  <button className="px-3 py-1.5 rounded-lg bg-white border-notebook font-bold flex items-center gap-1.5 hover:bg-stone-50">
-                    <SoundOutlined /> Bí quá thì nghe
-                  </button>
-
-                  <button className="px-3 py-1.5 rounded-lg bg-[#FEF08A] border-notebook font-bold flex items-center gap-1.5 text-stone-900">
-                    <EyeOutlined /> Nghĩa
-                  </button>
-                </div>
-
-                {/* Câu hỏi có Furigana */}
-                <div className="text-center space-y-2 py-4">
-                  <div className="text-xs text-stone-500">たんとうしゃ</div>
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
-                    ___さんはインフラの担当者です。
-                  </h3>
-                  <p className="text-stone-500 italic text-xs sm:text-sm pt-1">
-                    Mr. Yamato is in charge of the infrastructure.
-                  </p>
-                </div>
-
-                {/* 4 Đáp án Trắc nghiệm (2 cột x 2 hàng) */}
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { id: 1, text: '判断' },
-                    { id: 2, text: '原因' },
-                    { id: 3, text: '認識' },
-                    { id: 4, text: '大和' },
-                  ].map((option) => (
-                    <button
-                      key={option.id}
-                      onClick={() => setSelectedQuizOption(option.id)}
-                      className={`p-3.5 rounded-lg border-notebook text-left font-extrabold text-sm flex items-center gap-2.5 transition ${
-                        selectedQuizOption === option.id
-                          ? 'bg-[#16A34A] text-white border-[#15803D]'
-                          : 'bg-white hover:bg-stone-50 text-stone-900'
-                      }`}
-                    >
-                      <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs ${
-                        selectedQuizOption === option.id ? 'border-white text-white' : 'border-stone-800 text-stone-800'
-                      }`}>
-                        {option.id}
-                      </span>
-                      <span>{option.text}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Dưới cùng: Hỗ trợ & Số câu */}
-                <div className="flex justify-between items-center text-xs text-stone-500 pt-2 border-t border-stone-300/60">
-                  <span className="font-bold">1 / 109</span>
-                  <button className="flex items-center gap-1 text-stone-600 hover:text-stone-900 font-medium">
-                    <HeartOutlined /> Câu này bó tay
-                  </button>
-                </div>
-              </div>
-
-              {/* Chế độ học chọn nhanh */}
-              <div className="space-y-3 pt-2">
-                <h4 className="font-bold text-xs text-stone-800">Choose a study mode</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                  <button
-                    onClick={() => setCurrentView('flashcard')}
-                    className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-1.5 transition"
-                  >
-                    <div className="text-xs font-bold text-stone-800">Flashcards</div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-medium inline-block">
-                      Not studied yet
-                    </span>
-                  </button>
-
-                  <button
-                    onClick={() => setCurrentView('quiz')}
-                    className="p-3 rounded-lg bg-[#262626] text-white border-notebook text-left space-y-1.5 transition"
-                  >
-                    <div className="text-xs font-bold">Quiz</div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 font-medium inline-block">
-                      Not studied yet
-                    </span>
-                  </button>
-
-                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-1.5 transition">
-                    <div className="text-xs font-bold text-stone-800">Typing</div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-medium inline-block">
-                      Not studied yet
-                    </span>
-                  </button>
-
-                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-1.5 transition">
-                    <div className="text-xs font-bold text-stone-800">Reading</div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-medium inline-block">
-                      Not studied yet
-                    </span>
-                  </button>
-
-                  <button className="p-3 rounded-lg bg-white hover:bg-stone-50 border-notebook text-left space-y-1.5 transition">
-                    <div className="text-xs font-bold text-stone-800">Listening</div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-medium inline-block">
-                      Not studied yet
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
+            activeQuizLesson ? (
+              <QuizPlayerView
+                lessonId={activeQuizLesson.id}
+                lessonTitle={activeQuizLesson.title}
+                onBack={() => setActiveQuizLesson(null)}
+              />
+            ) : (
+              <QuizHubView
+                target={studyTarget}
+                onStartQuiz={(id, title) => handleStartQuiz(id, title)}
+                onNavigateToCourses={() => handleNavigate('curriculum')}
+                onStartPlacement={() => setIsTargetModalOpen(true)}
+              />
+            )
           )}
 
+          {currentView === 'statistics' && <StatisticsView />}
+
+          {currentView === 'sharing' && (
+            <PublicDecksView target={studyTarget} onDeckCloned={() => handleNavigate('decks')} />
+          )}
+
+          {currentView === 'sync' && <SyncView />}
+
+          {currentView === 'admin' && isAuthenticated && isAdminUser(user) && (
+            <AdminView key={studyTarget?.languageId || 'all'} target={studyTarget} />
+          )}
+          </React.Suspense>
+          </React.Fragment>}
+          </>}
         </div>
       </main>
+
+      <StudyTargetModal
+        isOpen={isTargetModalOpen}
+        isAdmin={isAdminUser(user)}
+        currentTarget={studyTarget}
+        allowClose={true}
+        onClose={() => setIsTargetModalOpen(false)}
+        onSave={handleSaveStudyTarget}
+      />
+
+      <QuickDictionaryModal
+        isOpen={isDictionaryOpen}
+        onClose={() => setIsDictionaryOpen(false)}
+        initialWord={dictionaryLookupWord}
+        target={studyTarget}
+      />
+      <NotebookWidget
+        isAuthenticated={isAuthenticated}
+        onRequestLogin={() => setIsAuthModalOpen(true)}
+        languageCode={studyTarget?.languageCode}
+        sourcePath={currentPath}
+        onDictionary={(word) => { setDictionaryLookupWord(word); setIsDictionaryOpen(true); }}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+      />
+      {csvDeckId && (
+        <CsvWizardModal
+          isOpen={!!csvDeckId}
+          deckId={csvDeckId}
+          onClose={() => setCsvDeckId(null)}
+          onSuccess={() => {
+            setCsvDeckId(null);
+            handleNavigate('decks');
+          }}
+        />
+      )}
     </div>
   );
-}
+};
+
+export const App: React.FC = () => {
+  return (
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#1c1917',
+          borderRadius: 8,
+          fontFamily: 'inherit'
+        }
+      }}
+    >
+      <AntdApp>
+        <LanguageProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <MainShell />
+            </BrowserRouter>
+          </AuthProvider>
+        </LanguageProvider>
+      </AntdApp>
+    </ConfigProvider>
+  );
+};
+
 export default App;

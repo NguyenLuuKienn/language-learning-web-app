@@ -1,4 +1,4 @@
-﻿using LanguageLearning.Domain.Common;
+using LanguageLearning.Domain.Common;
 using LanguageLearning.Domain.Enums;
 
 namespace LanguageLearning.Domain.Entities;
@@ -10,8 +10,7 @@ public class Question : BaseEntity
     public QuestionType Type { get; set; } = QuestionType.MultipleChoice;
     public string Prompt { get; set; } = string.Empty;
     public string Explanation { get; set; } = string.Empty;
-    public string ConfigJson { get; set; } = "{}"; // Dùng cho matching hoặc fill-in-blank
-
+    public string ConfigJson { get; set; } = "{}";
     public ICollection<QuestionOption> Options { get; set; } = new List<QuestionOption>();
     public ICollection<QuizAnswer> QuizAnswers { get; set; } = new List<QuizAnswer>();
 }
@@ -30,6 +29,7 @@ public class QuizAttempt : BaseEntity
     public Guid UserId { get; set; }
     public User User { get; set; } = null!;
     public Guid LessonId { get; set; }
+    public Guid? ClientAttemptId { get; set; }
     public Lesson Lesson { get; set; } = null!;
     public int Score { get; set; }
     public int MaxScore { get; set; }
@@ -57,6 +57,7 @@ public class LessonProgress : BaseEntity
     public string Status { get; set; } = "InProgress"; // NotStarted, InProgress, Completed
     public DateTime? CompletedAt { get; set; }
     public DateTime LastAccessedAt { get; set; } = DateTime.UtcNow;
+    public string? CurrentStepId { get; set; }
 }
 
 public class CourseEnrollment : BaseEntity

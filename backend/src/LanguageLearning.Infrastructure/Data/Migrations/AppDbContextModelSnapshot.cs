@@ -17,7 +17,7 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -76,11 +76,28 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Property<Guid>("DeckId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("Example")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Front")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ImageUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MeaningsJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PartOfSpeech")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)");
+
+                    b.Property<string>("Phonetic")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -94,6 +111,37 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.HasIndex("DeckId");
 
                     b.ToTable("cards", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.CardLessonSource", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CardId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("LessonId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CardId");
+
+                    b.HasIndex("UserId", "LessonId", "CardId")
+                        .IsUnique();
+
+                    b.ToTable("card_lesson_sources", (string)null);
                 });
 
             modelBuilder.Entity("LanguageLearning.Domain.Entities.CardSchedule", b =>
@@ -151,11 +199,19 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Domain")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
                     b.Property<Guid>("LanguageId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Level")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MaterialJson")
                         .HasColumnType("longtext");
 
                     b.Property<int>("Status")
@@ -173,6 +229,64 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.HasIndex("LanguageId");
 
                     b.ToTable("courses", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.CourseCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DescriptionEn")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("DescriptionVi")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Framework")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("TitleVi")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Kind", "Framework", "Code")
+                        .IsUnique();
+
+                    b.ToTable("course_categories", (string)null);
                 });
 
             modelBuilder.Entity("LanguageLearning.Domain.Entities.CourseEnrollment", b =>
@@ -335,10 +449,18 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("FlagEmoji")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NativeName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -348,6 +470,95 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("languages", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.LearningEvidence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ContentVersion")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("LessonId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ObservedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Outcome")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("varchar(24)");
+
+                    b.Property<string>("StepId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("StepType")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("varchar(24)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "LessonId", "StepId")
+                        .IsUnique();
+
+                    b.ToTable("learning_evidences", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.LearningSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ContentVersion")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("LastActiveAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("LessonId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "LessonId")
+                        .IsUnique();
+
+                    b.ToTable("learning_sessions", (string)null);
                 });
 
             modelBuilder.Entity("LanguageLearning.Domain.Entities.Lesson", b =>
@@ -362,6 +573,10 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LessonType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
@@ -398,6 +613,10 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("CurrentStepId")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<DateTime>("LastAccessedAt")
                         .HasColumnType("datetime(6)");
 
@@ -422,6 +641,201 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("lesson_progresses", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.LessonStepProgress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ActivityId")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Cursor")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DraftJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("LastAccessedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("LessonId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Revision")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("varchar(24)");
+
+                    b.Property<string>("StepId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "LessonId", "StepId")
+                        .IsUnique();
+
+                    b.ToTable("lesson_step_progresses", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.NotebookEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Context")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("varchar(12)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("varchar(5000)");
+
+                    b.Property<string>("SourcePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.ToTable("notebook_entries", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.PlacementAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("AnswersJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("AudioFilesJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Feedback")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("QuestionsJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ReviewedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ScoresJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CourseId", "CreatedAt");
+
+                    b.ToTable("placement_attempts", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.PlacementAudio", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("QuestionId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CourseId", "QuestionId", "FileName");
+
+                    b.ToTable("placement_audios", (string)null);
                 });
 
             modelBuilder.Entity("LanguageLearning.Domain.Entities.Question", b =>
@@ -533,6 +947,9 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("ClientAttemptId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("CompletedAt")
                         .HasColumnType("datetime(6)");
 
@@ -558,7 +975,8 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "ClientAttemptId")
+                        .IsUnique();
 
                     b.ToTable("quiz_attempts", (string)null);
                 });
@@ -614,6 +1032,9 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<double?>("PreviousIntervalDays")
+                        .HasColumnType("double");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
@@ -626,6 +1047,9 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 
+                    b.Property<bool?>("WasDue")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CardId");
@@ -634,6 +1058,169 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("review_events", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.SkillPracticeEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ActivityId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int?>("AnswerIndex")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ClientAttemptId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool?>("Correct")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<bool>("Practiced")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "ClientAttemptId")
+                        .IsUnique();
+
+                    b.ToTable("skill_practice_events", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.SkillPracticeProgress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ActivityId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CorrectAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CourseId", "Kind", "ActivityId")
+                        .IsUnique();
+
+                    b.ToTable("skill_practice_progresses", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.SpecialPracticeAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("AnswersJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("ContentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ContentSnapshotJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("EvaluationJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("ObjectiveMaxScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ObjectiveScore")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("SubjectiveMaxScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectiveScore")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CourseId", "ContentId", "Status");
+
+                    b.ToTable("special_practice_attempts", (string)null);
                 });
 
             modelBuilder.Entity("LanguageLearning.Domain.Entities.SyncOperation", b =>
@@ -736,6 +1323,9 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
+                    b.Property<string>("StudyTargetJson")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Timezone")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -809,6 +1399,15 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("MeaningsJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PartOfSpeech")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)");
+
                     b.Property<string>("Phonetic")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -829,6 +1428,85 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.ToTable("vocabularies", (string)null);
                 });
 
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.VocabularySession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("GroupIndex")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("LessonId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResultsJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StepsJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "LessonId", "CompletedAt");
+
+                    b.ToTable("vocabulary_sessions", (string)null);
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.WritingSubmission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("ClientSubmissionId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PromptId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "ClientSubmissionId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "PromptId", "CreatedAt");
+
+                    b.ToTable("writing_submissions", (string)null);
+                });
+
             modelBuilder.Entity("LanguageLearning.Domain.Entities.Card", b =>
                 {
                     b.HasOne("LanguageLearning.Domain.Entities.Deck", "Deck")
@@ -838,6 +1516,17 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Deck");
+                });
+
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.CardLessonSource", b =>
+                {
+                    b.HasOne("LanguageLearning.Domain.Entities.Card", "Card")
+                        .WithMany()
+                        .HasForeignKey("CardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Card");
                 });
 
             modelBuilder.Entity("LanguageLearning.Domain.Entities.CardSchedule", b =>
@@ -1102,6 +1791,17 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Navigation("Lesson");
                 });
 
+            modelBuilder.Entity("LanguageLearning.Domain.Entities.WritingSubmission", b =>
+                {
+                    b.HasOne("LanguageLearning.Domain.Entities.User", "User")
+                        .WithMany("WritingSubmissions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("LanguageLearning.Domain.Entities.Card", b =>
                 {
                     b.Navigation("ReviewEvents");
@@ -1177,6 +1877,8 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Navigation("SyncOperations");
 
                     b.Navigation("UserGoals");
+
+                    b.Navigation("WritingSubmissions");
                 });
 #pragma warning restore 612, 618
         }

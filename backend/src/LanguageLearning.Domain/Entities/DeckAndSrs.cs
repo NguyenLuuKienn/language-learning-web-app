@@ -34,6 +34,10 @@ public class Card : BaseEntity
     public Deck Deck { get; set; } = null!;
     public string Front { get; set; } = string.Empty;
     public string Back { get; set; } = string.Empty;
+    public string Phonetic { get; set; } = string.Empty;
+    public string PartOfSpeech { get; set; } = string.Empty;
+    public string MeaningsJson { get; set; } = "[]";
+    public string Example { get; set; } = string.Empty;
     public string? AudioUrl { get; set; }
     public string? ImageUrl { get; set; }
     public int Version { get; set; } = 1;
@@ -54,6 +58,14 @@ public class CardSchedule : BaseEntity
     public DateTime? LastReviewedAt { get; set; }
 }
 
+public class CardLessonSource : BaseEntity
+{
+    public Guid UserId { get; set; }
+    public Guid LessonId { get; set; }
+    public Guid CardId { get; set; }
+    public Card Card { get; set; } = null!;
+}
+
 public class ReviewEvent : BaseEntity
 {
     public Guid UserId { get; set; }
@@ -63,5 +75,7 @@ public class ReviewEvent : BaseEntity
     public SrsRating Rating { get; set; }
     public DateTime ReviewedAt { get; set; }
     public Guid ClientEventId { get; set; } // Idempotency key from client
+    public bool? WasDue { get; set; }
+    public double? PreviousIntervalDays { get; set; }
     public string AlgorithmVersion { get; set; } = "srs-v1";
 }

@@ -74,13 +74,22 @@ cd language-learning-web-app
 # Thiết lập file biến môi trường
 cp .env.example .env
 
+# Điền MYSQL_ROOT_PASSWORD, MYSQL_USER, MYSQL_PASSWORD,
+# CONNECTION_STRING và JWT_SECRET_KEY bằng giá trị riêng trong .env.
+# CONNECTION_STRING dùng hostname db và cùng tài khoản MySQL ở trên.
+
 # Khởi động toàn bộ MySQL, API và Web
 docker compose up --build -d
 ```
+Set `BOOTSTRAP_ADMIN_PASSWORD` in `.env` before the first start. The application creates only `admin@languagelearning.app`; languages, learners, courses, and decks are added through the app. Existing database records are not removed.
 Sau khi khởi động thành công:
 - **Frontend App:** http://localhost:3000
-- **Backend API Swagger:** http://localhost:5000/swagger
+- **API:** frontend chuyển tiếp các request `/api` đến backend; Swagger chỉ bật trong Development và không mở cổng API trực tiếp trong Compose.
 - **MySQL Database:** localhost:3306
+
+### Chạy với MySQL cài trên máy
+
+API chạy trực tiếp trong môi trường `Development` đọc `backend/src/LanguageLearning.Api/appsettings.Development.json` (hoặc biến môi trường `ConnectionStrings__DefaultConnection`). Host `db` trong `.env` chỉ dành cho Docker Compose, không dùng khi API kết nối MySQL local. Có thể kiểm tra đường nâng cấp schema trên **bản sao tạm** của database local bằng `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-local-mysql.ps1`; script sao lưu, phục hồi sang database tạm, khởi động API kiểm tra và xóa bản sao. Không chạy `dotnet ef database update` trực tiếp trên database đã tạo bằng `EnsureCreated` nếu chưa có kế hoạch baseline lịch sử migration.
 
 ---
 

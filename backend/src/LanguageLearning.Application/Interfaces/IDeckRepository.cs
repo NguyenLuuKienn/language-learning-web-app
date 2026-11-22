@@ -1,5 +1,6 @@
 
 using LanguageLearning.Domain.Entities;
+using LanguageLearning.Application.DTOs.Sharing;
 
 namespace LanguageLearning.Application.Interfaces;
 
@@ -9,10 +10,14 @@ public interface IDeckRepository
         Guid userId,
         int page,
         int pageSize,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        Guid? languageId = null,
+        string? level = null);
 
-    Task<List<Deck>> GetAllAsync(
-        CancellationToken cancellationToken = default);
+    Task<List<PublicDeckResponse>> GetDeckSummariesAsync(Guid? languageId, string? search, bool includePrivate, CancellationToken cancellationToken = default, string? level = null);
+
+    Task<List<Deck>> GetChangedUserDecksAsync(Guid userId, DateTime sinceUtc, CancellationToken cancellationToken = default, Guid? languageId = null, string? level = null);
+    Task<List<Card>> GetChangedUserCardsAsync(Guid userId, DateTime sinceUtc, CancellationToken cancellationToken = default, Guid? languageId = null, string? level = null);
 
     Task<Deck?> GetByIdAsync(
         Guid deckId,

@@ -8,6 +8,7 @@ public class DeckResponse
     public Guid OwnerId { get; set; }
 
     public Guid LanguageId { get; set; }
+    public string LanguageCode { get; set; } = string.Empty;
 
     public string Title { get; set; } = string.Empty;
 

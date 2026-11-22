@@ -10,13 +10,16 @@ public class DeckService : IDeckService
 {
     private readonly IDeckRepository _deckRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IStudyAccessService _access;
 
     public DeckService(
         IDeckRepository deckRepository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IStudyAccessService access)
     {
         _deckRepository = deckRepository;
         _currentUserService = currentUserService;
+        _access = access;
     }
 
     public async Task<DeckResponse> CreateDeckAsync(
@@ -24,16 +27,19 @@ public class DeckService : IDeckService
         CancellationToken cancellationToken = default)
     {
         var userId = _currentUserService.GetRequiredUserId();
+        var target = await _access.GetTargetAsync(userId, cancellationToken);
+        if (!_currentUserService.IsAdmin() && target?.LanguageId != request.LanguageId)
+            throw new ArgumentException(Messages.Course.StudyTargetRequired);
 
         if (request.LanguageId == Guid.Empty ||
             !await _deckRepository.LanguageExistsAsync(
                 request.LanguageId, cancellationToken))
         {
-            throw new ArgumentException("Invalid language.");
+            throw new ArgumentException(Messages.Deck.InvalidLanguage);
         }
 
         if (string.IsNullOrWhiteSpace(request.Title))
-            throw new ArgumentException("Deck title is required.");
+            throw new ArgumentException(Messages.Deck.TitleRequired);
 
         var deck = new Deck
         {
@@ -52,6 +58,8 @@ public class DeckService : IDeckService
 
             if (string.IsNullOrWhiteSpace(normalizedTag))
                 continue;
+            if (!_currentUserService.IsAdmin() && normalizedTag.StartsWith("course-level:", StringComparison.OrdinalIgnoreCase))
+                continue;
 
             if (deck.Tags.Any(t => t.Tag == normalizedTag))
                 continue;
@@ -62,6 +70,8 @@ public class DeckService : IDeckService
                 Tag = normalizedTag
             });
         }
+        if (!_currentUserService.IsAdmin() && target != null)
+            deck.Tags.Add(new DeckTag { Id = Guid.NewGuid(), Tag = $"course-level:{target.Level}" });
 
         await _deckRepository.AddAsync(
             deck, cancellationToken);
@@ -94,13 +104,18 @@ public class DeckService : IDeckService
         var userId = _currentUserService.GetRequiredUserId();
 
         ArgumentNullException.ThrowIfNull(pagination);
+        var target = _currentUserService.IsAdmin() ? null : await _access.GetTargetAsync(userId, cancellationToken);
+        if (!_currentUserService.IsAdmin() && target == null)
+            return new PagedResponse<DeckResponse>([], pagination.Page, pagination.PageSize, 0);
 
         var (decks, totalItems) =
             await _deckRepository.GetAccessibleDecksAsync(
                 userId,
                 pagination.Page,
                 pagination.PageSize,
-                cancellationToken);
+                cancellationToken,
+                target?.LanguageId,
+                target?.Level);
 
         var deckIds = decks
             .Select(deck => deck.Id)
@@ -126,6 +141,7 @@ public class DeckService : IDeckService
                 Id = deck.Id,
                 OwnerId = deck.OwnerId,
                 LanguageId = deck.LanguageId,
+                LanguageCode = deck.Language?.Code ?? string.Empty,
                 Title = deck.Title,
                 Description = deck.Description,
                 IsPublic = deck.IsPublic,
@@ -160,8 +176,10 @@ public class DeckService : IDeckService
         if (deck == null || (deck.OwnerId != userId && !deck.IsPublic))
         {
             throw new NotFoundException(
-                "The requested deck does not exist or is not accessible.");
+                Messages.Deck.NotAccessible);
         }
+        if (!_currentUserService.IsAdmin() && !await _access.CanAccessDeckAsync(userId, deckId, cancellationToken))
+            throw new NotFoundException(Messages.Deck.NotAccessible);
 
         var stats = await _deckRepository.GetDeckStatisticsAsync(
             deckId,
@@ -201,14 +219,16 @@ public class DeckService : IDeckService
         if (deck == null || deck.OwnerId != userId)
         {
             throw new NotFoundException(
-                "The requested deck does not exist or is not accessible.");
+                Messages.Deck.NotAccessible);
         }
+        if (!_currentUserService.IsAdmin() && !await _access.CanAccessDeckAsync(userId, deckId, cancellationToken))
+            throw new NotFoundException(Messages.Deck.NotAccessible);
 
         if (request.Title != null)
         {
             if (string.IsNullOrWhiteSpace(request.Title))
                 throw new ArgumentException(
-                    "Deck title cannot be empty.");
+                    Messages.Deck.TitleEmpty);
 
             deck.Title = request.Title.Trim();
         }
@@ -218,13 +238,16 @@ public class DeckService : IDeckService
 
         if (request.LanguageId.HasValue)
         {
+            var target = await _access.GetTargetAsync(userId, cancellationToken);
+            if (!_currentUserService.IsAdmin() && target?.LanguageId != request.LanguageId.Value)
+                throw new ArgumentException(Messages.Course.DeckLanguageMismatch);
             if (request.LanguageId.Value == Guid.Empty ||
                 !await _deckRepository.LanguageExistsAsync(
                     request.LanguageId.Value,
                     cancellationToken))
             {
                 throw new ArgumentException(
-                    "Invalid language.");
+                    Messages.Deck.InvalidLanguage);
             }
 
             deck.LanguageId = request.LanguageId.Value;
@@ -240,6 +263,12 @@ public class DeckService : IDeckService
                 .Select(tag => tag.Trim())
                 .Distinct()
                 .ToList();
+            if (!_currentUserService.IsAdmin())
+            {
+                var target = await _access.GetTargetAsync(userId, cancellationToken);
+                newTags.RemoveAll(tag => tag.StartsWith("course-level:", StringComparison.OrdinalIgnoreCase));
+                if (target != null) newTags.Add($"course-level:{target.Level}");
+            }
 
             var tagsToRemove = deck.Tags
                 .Where(tag => !newTags.Contains(tag.Tag))
@@ -305,8 +334,10 @@ public class DeckService : IDeckService
         if (deck == null || deck.OwnerId != userId)
         {
             throw new NotFoundException(
-                "The requested deck does not exist or is not accessible.");
+                Messages.Deck.NotAccessible);
         }
+        if (!_currentUserService.IsAdmin() && !await _access.CanAccessDeckAsync(userId, deckId, cancellationToken))
+            throw new NotFoundException(Messages.Deck.NotAccessible);
 
         _deckRepository.Delete(deck);
 

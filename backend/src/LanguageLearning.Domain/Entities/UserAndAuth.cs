@@ -1,4 +1,4 @@
-﻿using LanguageLearning.Domain.Common;
+using LanguageLearning.Domain.Common;
 using LanguageLearning.Domain.Enums;
 
 namespace LanguageLearning.Domain.Entities;
@@ -12,8 +12,8 @@ public class User : BaseEntity
     public string Timezone { get; set; } = "Asia/Ho_Chi_Minh";
     public string? AvatarUrl { get; set; }
     public bool IsActive { get; set; } = true;
+    public string? StudyTargetJson { get; set; }
 
-    // Navigation properties
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public ICollection<Deck> Decks { get; set; } = new List<Deck>();
     public ICollection<CardSchedule> CardSchedules { get; set; } = new List<CardSchedule>();
@@ -22,6 +22,7 @@ public class User : BaseEntity
     public ICollection<CourseEnrollment> CourseEnrollments { get; set; } = new List<CourseEnrollment>();
     public ICollection<DailyLearningStats> DailyLearningStats { get; set; } = new List<DailyLearningStats>();
     public ICollection<UserGoal> UserGoals { get; set; } = new List<UserGoal>();
+    public ICollection<WritingSubmission> WritingSubmissions { get; set; } = new List<WritingSubmission>();
     public ICollection<SyncOperation> SyncOperations { get; set; } = new List<SyncOperation>();
 }
 

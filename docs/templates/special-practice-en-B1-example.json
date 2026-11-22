@@ -1,0 +1,146 @@
+{
+  "certificateExams": [
+    {
+      "id": "1b8ce15e-c88d-48bb-90ec-51921b962600",
+      "title": "IELTS B1 practice sample",
+      "certificate": "IELTS",
+      "level": "B1",
+      "durationMinutes": 30,
+      "sections": [
+        {
+          "skill": "listening",
+          "questions": [
+            {
+              "id": "df2b6641-51eb-4f83-a7bb-6fdf0818851c",
+              "prompt": "Where will the speakers meet?",
+              "audioScript": "A: Shall we meet at the library? B: Yes, at three o'clock.",
+              "options": ["At the library", "At the station", "At the cafe"],
+              "correctIndex": 0,
+              "points": 1
+            }
+          ]
+        },
+        {
+          "skill": "reading",
+          "questions": [
+            {
+              "id": "b78c4dbd-acb7-4f2d-87ae-5d1dd502386a",
+              "prompt": "When does the library open?",
+              "passage": "The city library opens at nine every weekday.",
+              "options": ["At eight", "At nine", "At ten"],
+              "correctIndex": 1,
+              "points": 1
+            }
+          ]
+        },
+        {
+          "skill": "writing",
+          "questions": [
+            {
+              "id": "c19fe0ca-b9b5-4a4e-8d64-c4dc34c34fe0",
+              "prompt": "Write about a place you enjoy visiting.",
+              "rubric": "Assess task response, coherence, vocabulary and grammar.",
+              "points": 10
+            }
+          ]
+        },
+        {
+          "skill": "speaking",
+          "questions": [
+            {
+              "id": "ef8ea7d3-202c-4ccc-93c6-7013e2999c36",
+              "prompt": "Describe your hometown.",
+              "rubric": "Assess relevance, fluency, vocabulary and grammar from the response. Assess pronunciation only when recorded audio is available.",
+              "points": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ca1cf758-c1fa-4d92-bca4-3f4717d5a56b",
+      "title": "TOEIC Listening & Reading B1 practice sample",
+      "certificate": "TOEIC",
+      "level": "B1",
+      "sections": [
+        {
+          "skill": "listening",
+          "questions": [
+            {
+              "id": "436d5e2f-a583-4d72-a24e-e3e56ec1fc8a",
+              "prompt": "Where will the meeting take place?",
+              "audioScript": "The meeting will be in room five at two o'clock.",
+              "options": ["Room three", "Room five", "Room seven"],
+              "correctIndex": 1,
+              "points": 1
+            }
+          ]
+        },
+        {
+          "skill": "reading",
+          "questions": [
+            {
+              "id": "8ce38cce-4e1c-443a-974d-2d506936f0c9",
+              "prompt": "When is the office closed?",
+              "passage": "The office is open Monday through Friday and closed on weekends.",
+              "options": ["Friday", "Saturday", "Monday"],
+              "correctIndex": 1,
+              "points": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "380642a8-975f-43af-9f73-bf8e09f1c28b",
+      "title": "TOEIC Speaking & Writing B1 practice sample",
+      "certificate": "TOEIC",
+      "level": "B1",
+      "sections": [
+        {
+          "skill": "speaking",
+          "questions": [
+            {
+              "id": "6012db79-cfc0-43d3-8b2b-d6a08d8123f1",
+              "prompt": "Describe a typical workday.",
+              "rubric": "Assess task completion, clarity and language use. Assess pronunciation only when recorded audio is available.",
+              "points": 10
+            }
+          ]
+        },
+        {
+          "skill": "writing",
+          "questions": [
+            {
+              "id": "b3672456-e58a-4e5b-a40e-26d540c32171",
+              "prompt": "Write a short email to arrange a meeting.",
+              "rubric": "Assess task completion, organization, vocabulary and grammar.",
+              "points": 10
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "interviewScenarios": [
+    {
+      "id": "c6153fc8-31ce-4402-83bb-4c4a060b4bae",
+      "title": "Customer service interview B1",
+      "level": "B1",
+      "profession": "customer-service",
+      "rubric": "Assess relevant examples, professional vocabulary, clear structure and communication. Do not grade pronunciation from text alone.",
+      "turns": [
+        {
+          "id": "8f2520c8-8c95-42f8-86ba-11b72aa817af",
+          "prompt": "Please introduce yourself and your experience.",
+          "points": 10
+        },
+        {
+          "id": "31447124-943b-47ee-ab92-a0ed805596e1",
+          "prompt": "Tell me about a difficult customer request you handled.",
+          "points": 10
+        }
+      ]
+    }
+  ]
+}

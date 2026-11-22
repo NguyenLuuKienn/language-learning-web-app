@@ -1,12 +1,14 @@
-﻿using LanguageLearning.Domain.Common;
+using LanguageLearning.Domain.Common;
 using LanguageLearning.Domain.Enums;
 
 namespace LanguageLearning.Domain.Entities;
 
 public class Language : BaseEntity
 {
-    public string Code { get; set; } = string.Empty; // en, ja, ko...
-    public string Name { get; set; } = string.Empty; // English, Japanese...
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string NativeName { get; set; } = string.Empty;
+    public string FlagEmoji { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
 
     public ICollection<Course> Courses { get; set; } = new List<Course>();
@@ -19,7 +21,9 @@ public class Course : BaseEntity
     public Language Language { get; set; } = null!;
     public string Title { get; set; } = string.Empty;
     public string Level { get; set; } = "A1";
+    public string Domain { get; set; } = "General";
     public string Description { get; set; } = string.Empty;
+    public string? MaterialJson { get; set; }
     public ContentStatus Status { get; set; } = ContentStatus.Published;
 
     public ICollection<Unit> Units { get; set; } = new List<Unit>();
@@ -42,6 +46,7 @@ public class Lesson : BaseEntity
     public Unit Unit { get; set; } = null!;
     public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
+    public string LessonType { get; set; } = "Vocabulary";
     public int SortOrder { get; set; }
     public ContentStatus Status { get; set; } = ContentStatus.Published;
 
@@ -60,6 +65,8 @@ public class Vocabulary : BaseEntity
     public string Term { get; set; } = string.Empty;
     public string Phonetic { get; set; } = string.Empty;
     public string Meaning { get; set; } = string.Empty;
+    public string MeaningsJson { get; set; } = "[]";
+    public string PartOfSpeech { get; set; } = string.Empty;
     public string Example { get; set; } = string.Empty;
     public string? AudioUrl { get; set; }
     public string? ImageUrl { get; set; }
