@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { coursesApi } from './api/coursesApi';
 import { learningApi } from '../learning/api/progressApi';
+import { MediaPreview } from '../media/MediaPreview';
 
 export function LessonPage() {
   const { lessonId = '' } = useParams<{ lessonId: string }>();
@@ -75,11 +76,10 @@ export function LessonPage() {
                     <li key={word.id} className="rounded-xl border-2 border-stone-200 p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div><h3 className="text-lg font-extrabold">{word.term}</h3>{word.phonetic && <p className="text-sm text-stone-500">/{word.phonetic}/</p>}</div>
-                        {word.audioUrl && <audio controls preload="none" aria-label={`Phát âm ${word.term}`} src={word.audioUrl} className="h-8 w-32" />}
+                        <MediaPreview text={word.term} languageCode={lesson.data.languageCode} audioUrl={word.audioUrl} imageUrl={word.imageUrl} />
                       </div>
                       <p className="mt-3 font-semibold text-rose-700">{word.meaning}</p>
                       {word.example && <p className="mt-2 text-sm italic text-stone-600">{word.example}</p>}
-                      {word.imageUrl && <img src={word.imageUrl} alt={`Minh họa ${word.term}`} loading="lazy" className="mt-3 max-h-44 rounded-lg object-contain" />}
                     </li>
                   ))}
                 </ul>

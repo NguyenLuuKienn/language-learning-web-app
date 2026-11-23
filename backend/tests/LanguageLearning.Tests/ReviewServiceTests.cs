@@ -27,7 +27,9 @@ public class ReviewServiceTests
             Id = cardId,
             DeckId = deckId,
             Front = "Hello",
-            Back = "Xin chào"
+            Back = "Xin chào",
+            AudioUrl = "https://example.com/hello.mp3",
+            ImageUrl = "https://example.com/hello.png"
         };
 
         var schedule = new CardSchedule
@@ -75,6 +77,8 @@ public class ReviewServiceTests
         Assert.Equal(deckId, dueCard.DeckId);
         Assert.Equal("Hello", dueCard.Front);
         Assert.Equal("Xin chào", dueCard.Back);
+        Assert.Equal(card.AudioUrl, dueCard.AudioUrl);
+        Assert.Equal(card.ImageUrl, dueCard.ImageUrl);
         Assert.Equal("srs-v1", dueCard.AlgorithmVersion);
         Assert.Equal(schedule.DueAt, dueCard.DueAt);
 

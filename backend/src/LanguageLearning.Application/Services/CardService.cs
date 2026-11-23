@@ -217,6 +217,8 @@ public class CardService : ICardService
         {
             Id = card.Id,
             DeckId = card.DeckId,
+            AudioUrl = card.AudioUrl,
+            ImageUrl = card.ImageUrl,
             Front = card.Front,
             Back = card.Back,
             Version = card.Version

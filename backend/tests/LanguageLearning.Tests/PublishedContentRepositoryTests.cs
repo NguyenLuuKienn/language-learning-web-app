@@ -85,6 +85,7 @@ public class PublishedContentRepositoryTests
 
         Assert.NotNull(viewer);
         Assert.Equal("Theory", viewer.Content);
+        Assert.Equal("ja", viewer.LanguageCode);
         Assert.Equal("Hello", Assert.Single(viewer.Vocabulary).Meaning);
         Assert.Null(viewer.PreviousLessonId);
         Assert.Equal(middle.Id, viewer.NextLessonId);

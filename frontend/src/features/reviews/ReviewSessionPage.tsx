@@ -175,6 +175,8 @@ export function ReviewSessionPage({
           key={currentCard.cardId}
           front={currentCard.front}
           back={currentCard.back}
+          audioUrl={currentCard.audioUrl}
+          imageUrl={currentCard.imageUrl}
           isFlipped={isFlipped}
           onFlip={() => {
             if (!isTransitioning) {

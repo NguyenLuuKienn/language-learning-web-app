@@ -257,6 +257,8 @@ public sealed class ReviewService : IReviewService
             DeckId = schedule.Card.DeckId,
             Front = schedule.Card.Front,
             Back = schedule.Card.Back,
+            AudioUrl = schedule.Card.AudioUrl,
+            ImageUrl = schedule.Card.ImageUrl,
             DueAt = schedule.DueAt,
             AlgorithmVersion = schedule.AlgorithmVersion,
 

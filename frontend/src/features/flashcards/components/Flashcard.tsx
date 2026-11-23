@@ -1,9 +1,12 @@
+import { MediaPreview } from '../../media/MediaPreview';
 
 interface FlashcardProps {
   front: string;
   back: string;
   isFlipped: boolean;
   onFlip: () => void;
+  audioUrl?: string | null;
+  imageUrl?: string | null;
 }
 
 export function Flashcard({
@@ -11,12 +14,12 @@ export function Flashcard({
   back,
   isFlipped,
   onFlip,
+  audioUrl,
+  imageUrl,
 }: FlashcardProps) {
   return (
-    <div
-      className="h-[320px] w-full"
-      style={{ perspective: '1000px' }}
-    >
+    <div className="w-full">
+    <div className="h-[320px] w-full" style={{ perspective: '1000px' }}>
       <button
         type="button"
         onClick={onFlip}
@@ -71,6 +74,8 @@ export function Flashcard({
           </div>
         </div>
       </button>
+    </div>
+    {(audioUrl || imageUrl) && <div className="mt-4"><MediaPreview text={front} audioUrl={audioUrl} imageUrl={imageUrl} /></div>}
     </div>
   );
 }
