@@ -263,6 +263,8 @@ public class DeckService : IDeckService
 
         if (request.IsPublic.HasValue)
         {
+            if (request.IsPublic.Value && deck.IsModerated)
+                throw new ConflictException("This deck is hidden by moderation.");
             deck.IsPublic = request.IsPublic.Value;
         }
 

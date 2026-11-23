@@ -305,6 +305,7 @@ public class AuthApiTests
             $"/api/v1/decks/{deckId}",
             new UpdateDeckRequest
             {
+                BaseVersion = 1,
                 Title = "Unauthorized Change"
             });
 
@@ -399,6 +400,11 @@ public class AuthApiTests
 
                     services.AddSingleton<IUserRepository>(
                         repository);
+                    services.RemoveAll<IAccountStatus>();
+                    var accountStatus = new Mock<IAccountStatus>();
+                    accountStatus.Setup(value => value.IsActiveAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(true);
+                    services.AddSingleton(accountStatus.Object);
 
                     if (languageService != null)
                     {
