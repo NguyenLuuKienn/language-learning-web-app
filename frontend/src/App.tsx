@@ -192,6 +192,7 @@ useEffect(() => {
         </div>
 
         <div className="p-3 border-t-2 border-[#262626] space-y-2">
+          {user?.role === 'Admin' && <button type="button" onClick={() => navigate('/admin')} className="w-full rounded-lg px-3 py-2 text-left text-xs font-bold text-stone-700 hover:bg-stone-200/50">Quản trị</button>}
           <button type="button" onClick={() => navigate('/profile')} className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-stone-600 hover:text-stone-900 transition">
             <SettingOutlined />
             <span>Cài đặt</span>

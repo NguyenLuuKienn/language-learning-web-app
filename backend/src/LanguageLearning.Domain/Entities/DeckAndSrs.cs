@@ -12,6 +12,7 @@ public class Deck : BaseEntity
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public bool IsPublic { get; set; } = false;
+    public bool IsModerated { get; set; } = false;
     public Guid? SourceDeckId { get; set; }
     public int Version { get; set; } = 1;
     public bool IsDeleted { get; set; } = false;

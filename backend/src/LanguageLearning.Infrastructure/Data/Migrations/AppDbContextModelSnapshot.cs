@@ -87,6 +87,7 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("Version")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -264,6 +265,9 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsModerated")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<bool>("IsPublic")
                         .HasColumnType("tinyint(1)");
 
@@ -405,6 +409,7 @@ namespace LanguageLearning.Infrastructure.Data.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Status")
+                        .IsConcurrencyToken()
                         .IsRequired()
                         .HasColumnType("longtext");
 
