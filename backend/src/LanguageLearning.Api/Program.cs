@@ -47,6 +47,17 @@ builder.Services
     .AddJwtBearer(options =>
     {
         options.MapInboundClaims = false;
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var subject = context.Principal?.FindFirst("sub")?.Value;
+                if (!Guid.TryParse(subject, out var userId) ||
+                    !await context.HttpContext.RequestServices.GetRequiredService<IAccountStatus>()
+                        .IsActiveAsync(userId, context.HttpContext.RequestAborted))
+                    context.Fail("Account is inactive.");
+            }
+        };
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
@@ -85,6 +96,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<AdminContentService>();
+builder.Services.AddScoped<AdminModerationService>();
 builder.Services.AddScoped<PublishedContentService>();
 builder.Services.AddScoped<IDeckService, DeckService>();
 builder.Services.AddScoped<ICardService, CardService>();

@@ -53,6 +53,8 @@ public static class DependencyInjection
         services.AddSingleton<IMediaStorage>(_ => new LocalMediaStorage(
             configuration["Media:StoragePath"] ?? Path.Combine(Directory.GetCurrentDirectory(), "storage", "uploads")));
         services.AddScoped<IAdminContentRepository, AdminContentRepository>();
+        services.AddScoped<IAdminModerationRepository, AdminModerationRepository>();
+        services.AddScoped<IAccountStatus, AccountStatus>();
         services.AddScoped<ISharingReadRepository, SharingReadRepository>();
         services.AddScoped<SharingService>();
         services.AddScoped<IPublishedContentRepository, PublishedContentRepository>();

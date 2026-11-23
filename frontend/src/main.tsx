@@ -15,6 +15,7 @@ import { AuthPage } from './features/auth/AuthPage.tsx';
 import { AuthProvider } from './features/auth/AuthProvider.tsx';
 import { ProtectedRoute } from './features/auth/ProtectedRoute.tsx';
 import { ProfilePage } from './features/profile/ProfilePage.tsx';
+import { AdminModerationPage } from './features/admin/AdminModerationPage.tsx';
 import { CourseCatalogPage, CourseDetailPage, LessonPage } from './features/courses/courseRoutes.tsx';
 import { ReviewSessionPage } from './features/reviews/ReviewSessionPage.tsx';
 import './index.css';
@@ -76,6 +77,7 @@ createRoot(document.getElementById('root')!).render(
                 </ProtectedRoute>
               }
             />
+            <Route path="/admin" element={<ProtectedRoute><AdminModerationPage /></ProtectedRoute>} />
 
             <Route
               path="/courses"
