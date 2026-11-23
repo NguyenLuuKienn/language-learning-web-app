@@ -2,6 +2,7 @@
 using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Application.Services;
 using LanguageLearning.Infrastructure.Data;
+using LanguageLearning.Infrastructure.Media;
 using LanguageLearning.Infrastructure.Repositories;
 using LanguageLearning.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,8 @@ public static class DependencyInjection
         services.AddScoped<IStatisticsRepository, StatisticsRepository>();
         services.AddScoped<StatisticsService>();
         services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<IMediaStorage>(_ => new LocalMediaStorage(
+            configuration["Media:StoragePath"] ?? Path.Combine(Directory.GetCurrentDirectory(), "storage", "uploads")));
         services.AddScoped<IAdminContentRepository, AdminContentRepository>();
         services.AddScoped<ISharingReadRepository, SharingReadRepository>();
         services.AddScoped<SharingService>();
