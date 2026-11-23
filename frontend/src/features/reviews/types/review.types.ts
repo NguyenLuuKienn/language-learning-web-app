@@ -11,6 +11,8 @@ export interface DueCardResponse {
   deckId: string;
   front: string;
   back: string;
+  audioUrl?: string | null;
+  imageUrl?: string | null;
   dueAt: string;
   algorithmVersion: string;
   intervals: ReviewIntervalsResponse | null;

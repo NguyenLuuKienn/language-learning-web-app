@@ -69,6 +69,8 @@ async function getOfflineDueCards(
         deckId,
         front: card.front,
         back: card.back,
+        audioUrl: card.audioUrl,
+        imageUrl: card.imageUrl,
         dueAt: schedule.dueAt,
         algorithmVersion: schedule.algorithmVersion,
         intervals: null,
