@@ -10,6 +10,8 @@ public class CardResponse
     public string Front { get; set; } = string.Empty;
 
     public string Back { get; set; } = string.Empty;
+    public string? AudioUrl { get; set; }
+    public string? ImageUrl { get; set; }
 
     public int Version { get; set; }
 }
