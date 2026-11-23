@@ -1,3 +1,4 @@
+
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
@@ -25,6 +26,7 @@ public class AuthApiTests
         var repository = new InMemoryUserRepository();
         using var factory = CreateFactory(repository);
         using var client = factory.CreateClient();
+
         var request = new RegisterRequest
         {
             Email = "learner@example.com",
@@ -35,13 +37,21 @@ public class AuthApiTests
         var firstResponse = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             request);
+
         var duplicateResponse = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             request);
 
-        Assert.Equal(HttpStatusCode.Created, firstResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.BadRequest, duplicateResponse.StatusCode);
-        Assert.StartsWith("application/problem+json",
+        Assert.Equal(
+            HttpStatusCode.Created,
+            firstResponse.StatusCode);
+
+        Assert.Equal(
+            HttpStatusCode.BadRequest,
+            duplicateResponse.StatusCode);
+
+        Assert.StartsWith(
+            "application/problem+json",
             duplicateResponse.Content.Headers.ContentType?.MediaType);
     }
 
@@ -59,6 +69,7 @@ public class AuthApiTests
                 Email = "learner@example.com",
                 Password = "secure-password"
             });
+
         var loginResponse = await client.PostAsJsonAsync(
             "/api/v1/auth/login",
             new LoginRequest
@@ -66,14 +77,29 @@ public class AuthApiTests
                 Email = "learner@example.com",
                 Password = "secure-password"
             });
-        var response = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
 
-        Assert.Equal(HttpStatusCode.Created, registerResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+        var response = await loginResponse.Content
+            .ReadFromJsonAsync<AuthResponse>();
+
+        Assert.Equal(
+            HttpStatusCode.Created,
+            registerResponse.StatusCode);
+
+        Assert.Equal(
+            HttpStatusCode.OK,
+            loginResponse.StatusCode);
+
         Assert.NotNull(response);
-        Assert.Equal(3, response.AccessToken.Split('.').Length);
-        Assert.False(string.IsNullOrWhiteSpace(response.RefreshToken));
-        Assert.NotEqual(response.RefreshToken,
+
+        Assert.Equal(
+            3,
+            response.AccessToken.Split('.').Length);
+
+        Assert.False(
+            string.IsNullOrWhiteSpace(response.RefreshToken));
+
+        Assert.NotEqual(
+            response.RefreshToken,
             repository.GetUser("learner@example.com")!
                 .RefreshTokens.Last().TokenHash);
     }
@@ -92,6 +118,7 @@ public class AuthApiTests
                 Email = "learner@example.com",
                 Password = "secure-password"
             });
+
         var registered = await registerResponse.Content
             .ReadFromJsonAsync<AuthResponse>();
 
@@ -101,6 +128,7 @@ public class AuthApiTests
             {
                 RefreshToken = registered!.RefreshToken
             });
+
         var refreshed = await refreshResponse.Content
             .ReadFromJsonAsync<AuthResponse>();
 
@@ -110,6 +138,7 @@ public class AuthApiTests
             {
                 RefreshToken = refreshed!.RefreshToken
             });
+
         var revokedRefreshResponse = await client.PostAsJsonAsync(
             "/api/v1/auth/refresh",
             new RefreshTokenRequest
@@ -117,12 +146,26 @@ public class AuthApiTests
                 RefreshToken = refreshed.RefreshToken
             });
 
-        Assert.Equal(HttpStatusCode.Created, registerResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.OK, refreshResponse.StatusCode);
+        Assert.Equal(
+            HttpStatusCode.Created,
+            registerResponse.StatusCode);
+
+        Assert.Equal(
+            HttpStatusCode.OK,
+            refreshResponse.StatusCode);
+
         Assert.NotNull(refreshed);
-        Assert.NotEqual(registered.RefreshToken, refreshed.RefreshToken);
-        Assert.Equal(HttpStatusCode.NoContent, logoutResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.Unauthorized,
+
+        Assert.NotEqual(
+            registered.RefreshToken,
+            refreshed.RefreshToken);
+
+        Assert.Equal(
+            HttpStatusCode.NoContent,
+            logoutResponse.StatusCode);
+
+        Assert.Equal(
+            HttpStatusCode.Unauthorized,
             revokedRefreshResponse.StatusCode);
     }
 
@@ -131,43 +174,62 @@ public class AuthApiTests
     {
         var repository = new InMemoryUserRepository();
         var languageService = new Mock<ILanguageService>();
+
         languageService
             .Setup(service => service.GetActiveLanguagesAsync(
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<LanguageOptionResponse>());
-        using var factory = CreateFactory(repository, languageService.Object);
+
+        using var factory = CreateFactory(
+            repository,
+            languageService.Object);
+
         using var client = factory.CreateClient();
+
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Bearer",
                 CreateAccessToken("Guest"));
 
-        var response = await client.GetAsync("/api/v1/languages");
+        var response = await client.GetAsync(
+            "/api/v1/languages");
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal(
+            HttpStatusCode.Forbidden,
+            response.StatusCode);
     }
 
     [Theory]
     [InlineData("Learner")]
     [InlineData("Admin")]
-    public async Task ProtectedEndpoint_AllowedRole_ReturnsSuccess(string role)
+    public async Task ProtectedEndpoint_AllowedRole_ReturnsSuccess(
+        string role)
     {
         var repository = new InMemoryUserRepository();
         var languageService = new Mock<ILanguageService>();
+
         languageService
             .Setup(service => service.GetActiveLanguagesAsync(
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<LanguageOptionResponse>());
-        using var factory = CreateFactory(repository, languageService.Object);
+
+        using var factory = CreateFactory(
+            repository,
+            languageService.Object);
+
         using var client = factory.CreateClient();
+
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Bearer",
                 CreateAccessToken(role));
 
-        var response = await client.GetAsync("/api/v1/languages");
+        var response = await client.GetAsync(
+            "/api/v1/languages");
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(
+            HttpStatusCode.OK,
+            response.StatusCode);
     }
 
     [Theory]
@@ -178,16 +240,144 @@ public class AuthApiTests
         HttpStatusCode expectedStatusCode)
     {
         var repository = new InMemoryUserRepository();
+
         using var factory = CreateFactory(repository);
         using var client = factory.CreateClient();
+
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Bearer",
                 CreateAccessToken(role));
 
-        var response = await client.GetAsync("/api/v1/admin/access");
+        var response = await client.GetAsync(
+            "/api/v1/admin/access");
 
-        Assert.Equal(expectedStatusCode, response.StatusCode);
+        Assert.Equal(
+            expectedStatusCode,
+            response.StatusCode);
+    }
+
+    [Fact]
+    public async Task TC03_LearnerCannotUpdateAnotherUsersDeck_ReturnsNotFound()
+    {
+        var deckId = Guid.NewGuid();
+        var ownerId = Guid.NewGuid();
+
+        var deck = new Deck
+        {
+            Id = deckId,
+            OwnerId = ownerId,
+            LanguageId = Guid.NewGuid(),
+            Title = "Owner Deck",
+            IsPublic = false,
+            Version = 1
+        };
+
+        var deckRepository = new Mock<IDeckRepository>();
+
+        deckRepository
+            .Setup(repo => repo.GetByIdAsync(
+                deckId,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(deck);
+
+        using var factory = CreateFactory(
+            new InMemoryUserRepository())
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.RemoveAll<IDeckRepository>();
+
+                    services.AddSingleton<IDeckRepository>(
+                        deckRepository.Object);
+                });
+            });
+
+        using var client = factory.CreateClient();
+
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer",
+                CreateAccessToken("Learner"));
+
+        var response = await client.PatchAsJsonAsync(
+            $"/api/v1/decks/{deckId}",
+            new UpdateDeckRequest
+            {
+                Title = "Unauthorized Change"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            response.StatusCode);
+
+        Assert.Equal("Owner Deck", deck.Title);
+        Assert.Equal(1, deck.Version);
+
+        deckRepository.Verify(
+            repo => repo.SaveChangesAsync(
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task TC12_PrivateDeck_OtherLearnerCannotAccess_Returns404()
+    {
+        var deckId = Guid.NewGuid();
+        var ownerId = Guid.NewGuid();
+
+        var deck = new Deck
+        {
+            Id = deckId,
+            OwnerId = ownerId,
+            LanguageId = Guid.NewGuid(),
+            Title = "Private Deck",
+            IsPublic = false,
+            Version = 1
+        };
+
+        var deckRepository = new Mock<IDeckRepository>();
+
+        deckRepository
+            .Setup(repo => repo.GetByIdAsync(
+                deckId,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(deck);
+
+        using var factory = CreateFactory(
+            new InMemoryUserRepository())
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.RemoveAll<IDeckRepository>();
+
+                    services.AddSingleton<IDeckRepository>(
+                        deckRepository.Object);
+                });
+            });
+
+        using var client = factory.CreateClient();
+
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer",
+                CreateAccessToken("Learner"));
+
+        var response = await client.GetAsync(
+            $"/api/v1/decks/{deckId}");
+
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            response.StatusCode);
+
+        deckRepository.Verify(
+            repo => repo.GetDeckStatisticsAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     private static WebApplicationFactory<Program> CreateFactory(
@@ -198,18 +388,24 @@ public class AuthApiTests
             .WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("Development");
+
                 builder.UseSetting(
                     "Jwt:SecretKey",
                     "test-secret-key-that-is-long-enough-for-hmac-sha256");
+
                 builder.ConfigureTestServices(services =>
                 {
                     services.RemoveAll<IUserRepository>();
-                    services.AddSingleton<IUserRepository>(repository);
+
+                    services.AddSingleton<IUserRepository>(
+                        repository);
 
                     if (languageService != null)
                     {
                         services.RemoveAll<ILanguageService>();
-                        services.AddSingleton(languageService);
+
+                        services.AddSingleton(
+                            languageService);
                     }
                 });
             });
@@ -219,13 +415,16 @@ public class AuthApiTests
     {
         private readonly Dictionary<string, User> _users =
             new(StringComparer.OrdinalIgnoreCase);
+
         private User? _pendingUser;
 
         public Task<User?> GetByIdAsync(
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(_users.Values.FirstOrDefault(user => user.Id == id));
+            return Task.FromResult(
+                _users.Values.FirstOrDefault(
+                    user => user.Id == id));
         }
 
         public Task<User?> GetByEmailAsync(
@@ -243,7 +442,8 @@ public class AuthApiTests
         {
             var refreshToken = _users.Values
                 .SelectMany(user => user.RefreshTokens)
-                .FirstOrDefault(token => token.TokenHash == tokenHash);
+                .FirstOrDefault(
+                    token => token.TokenHash == tokenHash);
 
             return Task.FromResult(refreshToken);
         }
@@ -269,7 +469,10 @@ public class AuthApiTests
         {
             if (_pendingUser != null)
             {
-                _users.Add(_pendingUser.Email, _pendingUser);
+                _users.Add(
+                    _pendingUser.Email,
+                    _pendingUser);
+
                 _pendingUser = null;
             }
 
@@ -286,22 +489,29 @@ public class AuthApiTests
 
     private static string CreateAccessToken(string role)
     {
-        var header = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(new
-        {
-            alg = "HS256",
-            typ = "JWT"
-        }));
-        var payload = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(new
-        {
-            sub = Guid.NewGuid().ToString(),
-            email = "learner@example.com",
-            role,
-            iss = "LanguageLearningApp",
-            aud = "LanguageLearningAppClient",
-            iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            exp = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds()
-        }));
+        var header = Base64UrlEncode(
+            JsonSerializer.SerializeToUtf8Bytes(new
+            {
+                alg = "HS256",
+                typ = "JWT"
+            }));
+
+        var payload = Base64UrlEncode(
+            JsonSerializer.SerializeToUtf8Bytes(new
+            {
+                sub = Guid.NewGuid().ToString(),
+                email = "learner@example.com",
+                role,
+                iss = "LanguageLearningApp",
+                aud = "LanguageLearningAppClient",
+                iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                exp = DateTimeOffset.UtcNow
+                    .AddMinutes(5)
+                    .ToUnixTimeSeconds()
+            }));
+
         var unsignedToken = $"{header}.{payload}";
+
         var signature = HMACSHA256.HashData(
             Encoding.UTF8.GetBytes(
                 "test-secret-key-that-is-long-enough-for-hmac-sha256"),
