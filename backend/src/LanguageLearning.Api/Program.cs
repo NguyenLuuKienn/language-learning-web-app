@@ -91,6 +91,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<ISyncService, SyncService>();
 builder.Services.AddScoped<ISyncPullService, SyncPullService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
+builder.Services.AddScoped<MediaService>();
 
 var app = builder.Build();
 
