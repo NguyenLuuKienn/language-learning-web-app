@@ -52,6 +52,7 @@ export interface LessonViewer {
   unitId: string;
   courseId: string;
   courseTitle: string;
+  languageCode: string;
   unitTitle: string;
   title: string;
   content: string;

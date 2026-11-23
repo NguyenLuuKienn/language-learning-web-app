@@ -68,7 +68,7 @@ public class PublishedContentRepository : IPublishedContentRepository
     public async Task<LessonViewerResponse?> GetLessonViewerAsync(Guid id, CancellationToken ct)
     {
         var lesson = await _context.Lessons.AsNoTracking()
-            .Include(value => value.Unit).ThenInclude(unit => unit.Course)
+            .Include(value => value.Unit).ThenInclude(unit => unit.Course).ThenInclude(course => course.Language)
             .Include(value => value.Vocabularies)
             .FirstOrDefaultAsync(value => value.Id == id && value.Status == ContentStatus.Published &&
                 value.Unit.Course.Status == ContentStatus.Published && value.Unit.Course.Language.IsActive, ct);
@@ -104,6 +104,7 @@ public class PublishedContentRepository : IPublishedContentRepository
             lesson.UnitId,
             lesson.Unit.CourseId,
             lesson.Unit.Course.Title,
+            lesson.Unit.Course.Language.Code,
             lesson.Unit.Title,
             lesson.Title,
             lesson.Content,
