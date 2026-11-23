@@ -7,6 +7,7 @@ using LanguageLearning.Application.Interfaces;
 using LanguageLearning.Application.Services;
 using LanguageLearning.Domain.Enums;
 using LanguageLearning.Infrastructure;
+using LanguageLearning.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -100,6 +101,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    if (app.Configuration.GetValue<bool>("SampleContent:SeedA1"))
+    {
+        using var scope = app.Services.CreateScope();
+        await A1SampleContentSeeder.SeedAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>());
+    }
 }
 
 app.UseHttpsRedirection();

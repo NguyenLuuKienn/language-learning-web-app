@@ -14,6 +14,7 @@ public record LessonViewerResponse(
     Guid UnitId,
     Guid CourseId,
     string CourseTitle,
+    string LanguageCode,
     string UnitTitle,
     string Title,
     string Content,

@@ -1,10 +1,26 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ArrowRight, BookOpen, List } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, List, Volume2 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { coursesApi } from './api/coursesApi';
 import { learningApi } from '../learning/api/progressApi';
+import type { LessonVocabulary } from './types/course.types';
+
+function speak(word: LessonVocabulary, languageCode: string) {
+  const synthesize = () => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(word.term);
+    utterance.lang = languageCode;
+    window.speechSynthesis.speak(utterance);
+  };
+  if (!word.audioUrl) {
+    synthesize();
+    return;
+  }
+  void new Audio(word.audioUrl).play().catch(synthesize);
+}
 
 export function LessonPage() {
   const { lessonId = '' } = useParams<{ lessonId: string }>();
@@ -75,7 +91,7 @@ export function LessonPage() {
                     <li key={word.id} className="rounded-xl border-2 border-stone-200 p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div><h3 className="text-lg font-extrabold">{word.term}</h3>{word.phonetic && <p className="text-sm text-stone-500">/{word.phonetic}/</p>}</div>
-                        {word.audioUrl && <audio controls preload="none" aria-label={`Phát âm ${word.term}`} src={word.audioUrl} className="h-8 w-32" />}
+                        <button type="button" disabled={!word.audioUrl && !('speechSynthesis' in window)} onClick={() => speak(word, lesson.data.languageCode)} aria-label={`Nghe phát âm ${word.term}`} className="rounded-lg border-2 border-stone-900 bg-amber-100 p-2 hover:bg-amber-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 disabled:cursor-not-allowed disabled:opacity-50"><Volume2 size={19} aria-hidden="true" /></button>
                       </div>
                       <p className="mt-3 font-semibold text-rose-700">{word.meaning}</p>
                       {word.example && <p className="mt-2 text-sm italic text-stone-600">{word.example}</p>}
