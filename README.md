@@ -1,14 +1,6 @@
 # Language Learning (LinguaFlow)
 
-<<<<<<< Updated upstream
-[![Build & Test CI](https://github.com/NguyenLuuKienn/language-learning-web-app/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/NguyenLuuKienn/language-learning-web-app/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![.NET Version](https://img.shields.io/badge/.NET-8.0%2F9.0-purple.svg)](https://dotnet.microsoft.com/)
-[![React Version](https://img.shields.io/badge/React-18%2B-blue.svg)](https://react.dev/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
-=======
 Ứng dụng web học ngoại ngữ, được xây dựng trong học phần Phát triển phần mềm mã nguồn mở. Người học chọn ngôn ngữ, trình độ và lĩnh vực, học theo từng bài trong khóa học, sau đó ôn từ vựng bằng flashcard theo lịch lặp lại ngắt quãng (SRS).
->>>>>>> Stashed changes
 
 Dự án gồm giao diện React, API ASP.NET Core và cơ sở dữ liệu MySQL. Nội dung học do quản trị viên biên soạn hoặc nhập từ JSON; bản cài đặt mới chưa có sẵn khóa học để học ngay.
 
@@ -112,34 +104,6 @@ $env:ConnectionStrings__DefaultConnection = 'Server=localhost;Port=3306;Database
 $env:Jwt__SecretKey = 'replace-this-with-your-own-random-key-at-least-32-bytes'
 $env:Bootstrap__AdminPassword = 'your_initial_admin_password'
 
-<<<<<<< Updated upstream
-## 🚀 Hướng dẫn Chạy Nhanh (Quick Start)
-
-### 1. Yêu cầu môi trường
-- [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/) v18+ và npm/yarn
-- [.NET SDK 8.0+](https://dotnet.microsoft.com/)
-- [Docker Desktop](https://www.docker.com/) (Khuyến nghị) hoặc MySQL Server 8.0
-
-### 2. Chạy toàn bộ hệ thống bằng Docker Compose (Khuyên dùng)
-```bash
-# Clone repository
-git clone https://github.com/NguyenLuuKienn/language-learning-web-app.git
-cd language-learning-web-app
-
-# Thiết lập file biến môi trường
-cp .env.example .env
-
-# Khởi động toàn bộ MySQL, API và Web
-docker compose up --build -d
-```
-Sau khi khởi động thành công:
-- **Frontend App:** http://localhost:3000
-- **Backend API Swagger:** http://localhost:5000/swagger
-- **MySQL Database:** localhost:3306
-
----
-=======
 dotnet restore backend/LanguageLearning.sln
 dotnet run --project backend/src/LanguageLearning.Api --launch-profile http
 ```
@@ -149,7 +113,6 @@ API chạy tại **http://localhost:5039**; Swagger tại **http://localhost:503
 API chạy trực tiếp không tự đọc file `.env` ở thư mục gốc. Có thể cấu hình qua biến môi trường như trên hoặc dùng .NET User Secrets cho project API. Host `db` chỉ dùng giữa các container; API chạy trên máy dùng `localhost` và cổng MySQL được mở trên máy.
 
 ### Frontend
->>>>>>> Stashed changes
 
 Mở terminal khác:
 
